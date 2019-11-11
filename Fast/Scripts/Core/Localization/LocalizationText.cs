@@ -47,6 +47,9 @@ namespace Fast.Localization
 
         private TMPro.TextMeshProUGUI text = null;
 
+        [SerializeField]
+        private string simon_casual;
+
         private void Awake()
         {
             text = gameObject.GetComponent<TMPro.TextMeshProUGUI>();
