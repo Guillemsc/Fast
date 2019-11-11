@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Fast.Localization
 {
-    public enum LocalizationTextDisplayType //SimonCasual
+    public enum LocalizationTextDisplayType
     {
         AS_IT_IS,
         ALL_TO_UPPER,
@@ -46,9 +46,6 @@ namespace Fast.Localization
         private List<string> arguments = new List<string>();
 
         private TMPro.TextMeshProUGUI text = null;
-
-        [SerializeField]
-        private string simon_casual;
 
         private void Awake()
         {
