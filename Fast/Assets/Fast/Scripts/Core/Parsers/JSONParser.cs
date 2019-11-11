@@ -22,5 +22,10 @@ namespace Fast.Parsers
         {
             return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(json_data);
         }
+
+        public static string ComposeObject(object obj)
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(obj, Newtonsoft.Json.Formatting.Indented);
+        }
     }
 }

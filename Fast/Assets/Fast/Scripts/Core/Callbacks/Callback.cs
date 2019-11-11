@@ -90,44 +90,53 @@ namespace Fast
 
         public void Subscribe(Action action)
         {
-            actions.Add(action);
-        }
-
-        public void SubscribeUnique(Action action)
-        {
-            bool already_added = false;
-
-            for (int i = 0; i < actions.Count; ++i)
-            {
-                Action curr_action = actions[i];
-
-                if (curr_action == action)
-                {
-                    already_added = true;
-
-                    break;
-                }
-            }
-
-            if (!already_added)
+            if (action != null)
             {
                 actions.Add(action);
             }
         }
 
+        public void SubscribeUnique(Action action)
+        {
+            if (action != null)
+            {
+                bool already_added = false;
+
+                for (int i = 0; i < actions.Count; ++i)
+                {
+                    Action curr_action = actions[i];
+
+                    if (curr_action == action)
+                    {
+                        already_added = true;
+
+                        break;
+                    }
+                }
+
+                if (!already_added)
+                {
+                    actions.Add(action);
+                }
+            }
+        }
+
         public void UnSubscribe(Action action)
         {
-            for (int i = 0; i < actions.Count;)
+            if (action != null)
             {
-                Action curr_action = actions[i];
+                for (int i = 0; i < actions.Count;)
+                {
+                    Action curr_action = actions[i];
 
-                if (curr_action == action)
-                {
-                    actions.RemoveAt(i);
-                }
-                else
-                {
-                    ++i;
+                    if (curr_action == action)
+                    {
+                        actions.RemoveAt(i);
+                    }
+                    else
+                    {
+                        ++i;
+                    }
                 }
             }
         }

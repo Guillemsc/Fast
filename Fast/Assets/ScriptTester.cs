@@ -3,60 +3,66 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-[System.Serializable]
-public enum EnumTest
-{
-    TEST1,
-    TEST2,
-}
-
 public class ScriptTester : MonoBehaviour
 {
-    //private Fast.Flow.FlowController flow = new Fast.Flow.FlowController();
+    [SerializeField] private bool as_server = false;
 
-    //private Fast.EventsController events = new Fast.EventsController();
+    [SerializeField] private TMPro.TextMeshProUGUI messages_text = null;
 
-    //[SerializeField] private Fast.UI.Form curr_form = null;
+    private Fast.Networking.Server server = null;
+    private Fast.Networking.Client client = null;
 
-    // Start is called before the first frame update
     void Start()
     {
-        Fast.GoogleDrive.DownloadSpreadsheet request = new Fast.GoogleDrive.DownloadSpreadsheet(
-            "599653651007-097sgjq4ialisovl9c5d82vaq13hvg1l.apps.googleusercontent.com", "lD8oKNHZg8Y-nEJ50Wd5RPt8",
-            "16DrdMG_Hz9RHUbBYd1W52E6tkjvJ9Oown_LRyw17bPs", "Sheet1");
-
-        request.RunRequest(
-        delegate (Fast.GoogleDrive.DownloadSpreadsheetSuccessObject success)
+        if (as_server)
         {
-            string tsv_data = Fast.Parsers.TSVParser.Compose(success.data);
+            Fast.FastInstance.Instance.MApplication.MaxFps = 5;
+            Fast.FastInstance.Instance.MApplication.VSync = false;
 
-            Fast.Serializers.TextAssetSerializer.SerializeAssetsPath("data.txt", tsv_data );
+            server = new Fast.Networking.Server(8184);
+            server.Start();
+
+            messages_text.text += "Server started at: " + server.Port; 
+
+            Debug.Log("Server started at: " + server.Port);
         }
-        , delegate (Fast.GoogleDrive.DownloadSpreadsheetErrorObject error)
+        else
         {
+            //157.245.79.172
 
-        });
+            client = new Fast.Networking.Client("localhost", 8184);
+            client.Connect();
 
-        //flow.CreateContainer(0).FlowSetCurrForm(curr_form).FlowNextStartAtEndOfLast().FlowSetCurrForm(curr_form);
+            client.OnConnected.Subscribe(delegate ()
+            {
+                messages_text.text += "Client connected to server at at:" + client.IP + " and: " + client.Port;
 
-        //events.Subscribe(0, CallbackEvet);
-        //events.UnSubscribe(0, CallbackEvet);
+                Debug.Log("Client connected to server at at:" + client.IP + " and: " + client.Port);
 
-        //TextAsset asset = Resources.Load<TextAsset>("test");
-
-        //List<string> lines = Fast.Parsers.TextAssetParser.Parse(asset);
-
-        //List<Fast.Parsers.TSVParsedData> data = Fast.Parsers.TSVParser.Parse(lines);
+            });
+        }
     }
 
-    // Update is called once per frame
     void Update()
     {
-      
-    }
+        if(as_server)
+        {
+            server.ReadMessages();
+        }
+        else
+        {
+            client.ReadMessages();
 
-    private void CallbackEvet(int event_id)
-    {
+            List<object> messages = client.PopMessages();
 
+            for(int i = 0; i < messages.Count; ++i)
+            {
+                string str_msg = (string)messages[i];
+
+                messages_text.text += "Message: " + str_msg;
+
+                Debug.Log("Message: " + str_msg);
+            }
+        }
     }
 }
