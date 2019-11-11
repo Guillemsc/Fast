@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Fast.Localization
 {
-    public enum LocalizationTextDisplayType
+    public enum LocalizationTextDisplayType //SimonCasual
     {
         AS_IT_IS,
         ALL_TO_UPPER,
