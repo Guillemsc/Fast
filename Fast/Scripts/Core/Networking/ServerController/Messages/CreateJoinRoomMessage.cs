@@ -3,12 +3,12 @@
 namespace Fast.Networking
 {
     [System.Serializable]
-    class CreateJoinRoomMessage : Message
+    public class CreateJoinRoomMessage : ServerControllerMessage
     {
         private string room_name = "";
         private string room_id = "";
 
-        public CreateJoinRoomMessage(string room_name, string room_id) : base(MessageType.CREATE_JOIN_ROOM)
+        public CreateJoinRoomMessage(string room_name, string room_id) : base(ServerControllerMessageType.CREATE_JOIN_ROOM)
         {
             this.room_name = room_name;
             this.room_id = room_id;

@@ -25,16 +25,26 @@ namespace Fast.Networking
 
     class PlayerCluster
     {
-        private Server server = null;
+        private ServerController server = null;
 
-        private void Init(Server server)
+        public void Init(ServerController server)
         {
             this.server = server;
         }
 
         public ReadOnlyCollection<Player> ConnectedPlayers
         {
-            get { return server.ServerController.Players; }
+            get { return server.Players; }
+        }
+
+        public void PlayerConnected(Player player)
+        {
+
+        }
+
+        public void PlayerDisconnected(Player player)
+        {
+
         }
 
         public virtual void OnPlayerConnected(Player player)

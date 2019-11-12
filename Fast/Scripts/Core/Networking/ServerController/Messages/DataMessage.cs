@@ -3,11 +3,11 @@
 namespace Fast.Networking
 {
     [System.Serializable]
-    public class DataMessage : Message
+    public class DataMessage : ServerControllerMessage
     {
         private object message_obj = null;
 
-        public DataMessage(object message_obj) : base(MessageType.DATA)
+        public DataMessage(object message_obj) : base(ServerControllerMessageType.DATA)
         {
             this.message_obj = message_obj;
         }

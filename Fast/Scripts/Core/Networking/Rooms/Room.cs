@@ -24,14 +24,14 @@ namespace Fast.Networking
 
     public class Room
     {
-        private Server server = null;
+        private ServerController server = null;
 
         private string room_name = "";
         private string room_id = "";
 
         private List<RoomPlayer> connected_players = new List<RoomPlayer>();
 
-        public void Init(Server server, string room_name, string room_id)
+        public void Init(ServerController server, string room_name, string room_id)
         {
             this.server = server;
             this.room_name = room_name;
@@ -48,22 +48,50 @@ namespace Fast.Networking
             get { return room_id; }
         }
 
-        public void PlayerConnect(int client_id)
+        public void PlayerConnect(int client_id, Action on_success, Action<ServerControllerError> on_error)
         {
             RoomPlayer player = new RoomPlayer();
             player.Init(server, client_id);
 
             lock (connected_players)
             {
-                if(connected_players.Count == 0)
+                Task.Factory.StartNew(() => OnPlayerWantsToConnect(player)).
+                ContinueWith(delegate (Task<bool> player_wants_to_connect_task)
                 {
-                    OnRoomOpened();
-                }
+                    if (player_wants_to_connect_task.Result)
+                    {                    
+                        if (connected_players.Count == 0)
+                        {
+                            Task.Factory.StartNew(() => OnRoomOpened()).
+                            ContinueWith(delegate (Task room_opened_task)
+                            {
+                                connected_players.Add(player);
 
-                connected_players.Add(player);
+                                Task.Factory.StartNew(() => OnPlayerConnected(player)).
+                                ContinueWith(delegate (Task player_connected_task)
+                                {
+                                    if (on_success != null)
+                                        on_success.Invoke();
+                                });
+                            });
+                        }
+                        else
+                        {
+                            Task.Factory.StartNew(() => OnPlayerConnected(player)).
+                            ContinueWith(delegate (Task player_connected_task)
+                            {
+                                if (on_success != null)
+                                    on_success.Invoke();
+                            });
+                        }
+                    }
+                    else
+                    {
+                        if (on_error != null)
+                            on_error.Invoke(ServerControllerError.EMPTY);
+                    }
+                });
             }
-
-            OnPlayerConnected(player);
         }
 
         public void PlayerDisconnect(int client_id)
@@ -131,6 +159,11 @@ namespace Fast.Networking
         protected virtual void OnRoomOpened()
         {
 
+        }
+
+        protected virtual bool OnPlayerWantsToConnect(RoomPlayer player)
+        {
+            return false;
         }
 
         protected virtual void OnPlayerConnected(RoomPlayer player)

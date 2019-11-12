@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Fast
 {
-    public class Callback<T>
+    public class Callback<in T>
     {
         private List<Action<T>> actions = new List<Action<T>>();
 
@@ -39,13 +39,6 @@ namespace Fast
             {
                 actions.Add(action);
             }
-        }
-
-        public void SubscribeUnique(Action<T> action)
-        {
-            UnSubscribeAll();
-
-            Subscribe(action);
         }
 
         public void UnSubscribe(Action<T> action)
@@ -93,31 +86,6 @@ namespace Fast
             if (action != null)
             {
                 actions.Add(action);
-            }
-        }
-
-        public void SubscribeUnique(Action action)
-        {
-            if (action != null)
-            {
-                bool already_added = false;
-
-                for (int i = 0; i < actions.Count; ++i)
-                {
-                    Action curr_action = actions[i];
-
-                    if (curr_action == action)
-                    {
-                        already_added = true;
-
-                        break;
-                    }
-                }
-
-                if (!already_added)
-                {
-                    actions.Add(action);
-                }
             }
         }
 

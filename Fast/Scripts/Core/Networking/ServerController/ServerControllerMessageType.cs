@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Fast.Networking
 {
-    public enum MessageType
+    public enum ServerControllerMessageType
     {
         DATA,
 

@@ -8,17 +8,17 @@ namespace Fast
 {
     class EventsController
     {
-        private Dictionary<int, Callback<int>> events_list = new Dictionary<int, Callback<int>>();
+        private Dictionary<int, Callback<Event>> events_list = new Dictionary<int, Callback<Event>>();
 
-        public void Subscribe(int event_id, Action<int> callback)
+        public void Subscribe(int event_id, Action<Event> callback)
         {
-            Callback<int> event_callback = null;
+            Callback<Event> event_callback = null;
 
             bool exists = events_list.TryGetValue(event_id, out event_callback);
 
             if(!exists)
             {
-                event_callback = new Callback<int>();
+                event_callback = new Callback<Event>();
 
                 events_list[event_id] = event_callback;
             }
@@ -26,9 +26,9 @@ namespace Fast
             event_callback.Subscribe(callback);
         }
 
-        public void UnSubscribe(int event_id, Action<int> callback)
+        public void UnSubscribe(int event_id, Action<Event> callback)
         {
-            Callback<int> event_callback = null;
+            Callback<Event> event_callback = null;
 
             bool exists = events_list.TryGetValue(event_id, out event_callback);
 
@@ -38,15 +38,18 @@ namespace Fast
             }
         }
 
-        public void Invoke(int event_id)
+        public void Invoke(Event ev)
         {
-            Callback<int> event_callback = null;
-
-            bool exists = events_list.TryGetValue(event_id, out event_callback);
-
-            if (exists)
+            if (ev != null)
             {
-                event_callback.Invoke(event_id);
+                Callback<Event> event_callback = null;
+
+                bool exists = events_list.TryGetValue(ev.Index, out event_callback);
+
+                if (exists)
+                {
+                    event_callback.Invoke(ev);
+                }
             }
         }
     }

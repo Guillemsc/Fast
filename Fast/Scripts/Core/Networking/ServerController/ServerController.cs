@@ -19,20 +19,136 @@ namespace Fast.Networking
         private List<Room> rooms = new List<Room>();
         private List<Player> players = new List<Player>();
 
-        public ServerController(Server server, string player_cluster_name)
+        public ServerController(int server_port, string player_cluster_name)
         {
-            this.server = server;
+            Logger.ServerLogInfo("Starting server with port: " + server_port + "and player cluster: " + player_cluster_name);
 
-            Logger.ServerLogInfo("Starting server");
+            server = new Server(server_port);
+
+            server.OnClientConnected.Subscribe(OnClientConnected);
+            server.OnClientDisconnected.Subscribe(OnClientDisconnected);
+            server.OnMessageReceived.Subscribe(OnMessageReceived);
 
             GetDataTypes();
 
-            player_cluster = CreatePlayerCluster(server, player_cluster_name);
+            player_cluster = CreatePlayerCluster(player_cluster_name);
         }
 
-        public ReadOnlyCollection<Player> Players
+        public void Start()
         {
-            get { return players.AsReadOnly(); }
+            server.Start();
+        }
+
+        public void Update()
+        {
+            server.ReadMessages();
+        }
+
+        private void OnClientConnected(int client_id)
+        {
+            Player player = CreatePlayer(client_id);
+        }
+
+        private void OnClientDisconnected(int client_id)
+        {
+            RemovePlayer(client_id);
+        }
+
+        public void SendDataMessage(int client_id, object message_obj)
+        {
+            DataMessage message = new DataMessage(message_obj);
+
+            byte[] data = Parsers.ByteParser.ComposeObject(message);
+
+            server.SendMessage(client_id, data);
+        }
+
+        private void OnMessageReceived(ServerMessage server_message)
+        {
+            ServerControllerMessage message = Parsers.ByteParser.ParseObject<ServerControllerMessage>(server_message.Data);
+
+            switch (message.Type)
+            {
+                case ServerControllerMessageType.DATA:
+                    {
+                        DataMessage data_message = (DataMessage)message;
+
+                        ClientMessageReceived(server_message.ClientId, data_message.MessageObj);
+
+                        break;
+                    }
+
+                case ServerControllerMessageType.CREATE_ROOM:
+                    {
+                        CreateRoomMessage create_room_message = (CreateRoomMessage)message;
+
+                        PlayerCreateRoom(server_message.ClientId, create_room_message.RoomName, create_room_message.RoomId,
+                        delegate()
+                        {
+                            byte[] data = Parsers.ByteParser.ComposeObject(new CreateRoomResponseMessage(true, create_room_message.RoomId));
+
+                            server.SendMessage(server_message.ClientId, data);
+                        }
+                        , delegate(ServerControllerError error)
+                        {
+                            byte[] data = Parsers.ByteParser.ComposeObject(new CreateRoomResponseMessage(false, error));
+
+                            server.SendMessage(server_message.ClientId, data);
+                        });
+
+                        break;
+                    }
+
+                case ServerControllerMessageType.JOIN_ROOM:
+                    {
+                        JoinRoomMessage join_room_message = (JoinRoomMessage)message;
+
+                        PlayerJoinRoom(server_message.ClientId, join_room_message.RoomId,
+                        delegate()
+                        {
+                            byte[] data = Parsers.ByteParser.ComposeObject(new JoinRoomResponseMessage(true, join_room_message.RoomId));
+
+                            server.SendMessage(server_message.ClientId, data);
+                        }
+                        , delegate(ServerControllerError error)
+                        {
+                            byte[] data = Parsers.ByteParser.ComposeObject(new JoinRoomResponseMessage(false, error));
+
+                            server.SendMessage(server_message.ClientId, data);
+                        });
+
+                        break;
+                    }
+
+                case ServerControllerMessageType.CREATE_JOIN_ROOM:
+                    {
+                        CreateJoinRoomMessage create_join_room_message = (CreateJoinRoomMessage)message;
+
+                        PlayerCreateJoinRoom(server_message.ClientId, create_join_room_message.RoomName,
+                        create_join_room_message.RoomId, 
+                        delegate()
+                        {
+                            byte[] data = Parsers.ByteParser.ComposeObject(new CreateJoinRoomResponseMessage(true, create_join_room_message.RoomId));
+
+                            server.SendMessage(server_message.ClientId, data);
+                        }
+                        , delegate(ServerControllerError error)
+                        {
+                            byte[] data = Parsers.ByteParser.ComposeObject(new CreateJoinRoomResponseMessage(false, error));
+
+                            server.SendMessage(server_message.ClientId, data);
+                        });
+
+                        break;
+                    }
+
+                case ServerControllerMessageType.LEAVE_ROOM:
+                    {
+                        PlayerLeaveRoom(server_message.ClientId);
+
+                        break;
+                    }
+            }
         }
 
         private void GetDataTypes()
@@ -114,7 +230,7 @@ namespace Fast.Networking
             Logger.ServerLogInfo(log_player_clusters);
         }
 
-        private PlayerCluster CreatePlayerCluster(Server server, string player_cluster_name)
+        private PlayerCluster CreatePlayerCluster(string player_cluster_name)
         {
             PlayerCluster ret = null;
 
@@ -125,12 +241,14 @@ namespace Fast.Networking
             if (exists)
             {
                 ret = (PlayerCluster)Activator.CreateInstance(type);
+
+                ret.Init(this);
             }
 
             return ret;
         }
 
-        private Room CreateRoom(Server server, string room_name, string room_id)
+        private Room CreateRoom(string room_name, string room_id)
         {
             Room ret = null;
 
@@ -142,7 +260,7 @@ namespace Fast.Networking
             {
                 ret = (Room)Activator.CreateInstance(type);
 
-                ret.Init(server, room_name, room_id);
+                ret.Init(this, room_name, room_id);
 
                 lock (rooms)
                 {
@@ -188,6 +306,11 @@ namespace Fast.Networking
             return ret;
         }
 
+        public ReadOnlyCollection<Player> Players
+        {
+            get { return players.AsReadOnly(); }
+        }
+
         public Player CreatePlayer(int client_id)
         {
             Player ret = new Player(client_id);
@@ -199,7 +322,7 @@ namespace Fast.Networking
 
             if(player_cluster != null)
             {
-                player_cluster.OnPlayerConnected(ret);
+                player_cluster.PlayerConnected(ret);
             }
 
             return ret;
@@ -224,7 +347,7 @@ namespace Fast.Networking
 
                         if (player_cluster != null)
                         {
-                            player_cluster.OnPlayerDisconnected(curr_player);
+                            player_cluster.PlayerDisconnected(curr_player);
                         }
 
                         break;
@@ -250,45 +373,51 @@ namespace Fast.Networking
             return ret;
         }
 
-        public bool PlayerCreateRoom(int client_id, string room_name, string room_id)
+        public void PlayerCreateRoom(int client_id, string room_name, string room_id, Action on_succes, Action<ServerControllerError> on_fail)
         {
-            bool ret = false;
-
-            room_id = "";
-
             Player player = GetPlayer(client_id);
 
-            Room room_check = GetRoom(room_id);
-
-            if (player != null && room_check == null)
+            if (player != null)
             {
-                Room room = CreateRoom(server, room_name, room_id);
+                Room room_test = GetRoom(room_id);
 
-                if (room != null)
+                if (room_test == null)
                 {
-                    if (player.ConnectedToRoom)
+                    Room room = CreateRoom(room_name, room_id);
+
+                    if (room != null)
                     {
-                        PlayerLeaveRoom(player.ClientId);
+                        if (player.ConnectedToRoom)
+                        {
+                            PlayerLeaveRoom(player.ClientId);
+                        }
+
+                        player.ConnectedToRoom = true;
+                        player.RoomId = room.RoomId;
+
+                        room.PlayerConnect(client_id, on_succes, on_fail);
                     }
-
-                    player.ConnectedToRoom = true;
-                    player.RoomId = room.RoomId;
-
-                    Task.Factory.StartNew(() => room.PlayerConnect(client_id));
-
-                    room_id = room.RoomId;
-
-                    ret = true;
+                    else
+                    {
+                        if (on_fail != null)
+                            on_fail.Invoke(ServerControllerError.EMPTY);
+                    }
                 }
-            } 
-
-            return ret;
+                else
+                {
+                    if (on_fail != null)
+                        on_fail.Invoke(ServerControllerError.EMPTY);
+                }
+            }
+            else
+            {
+                if (on_fail != null)
+                    on_fail.Invoke(ServerControllerError.EMPTY);
+            }
         }
 
-        public bool PlayerJoinRoom(int client_id, string room_id)
+        public void PlayerJoinRoom(int client_id, string room_id, Action on_succes, Action<ServerControllerError> on_fail)
         {
-            bool ret = false;
-
             Player player = GetPlayer(client_id);
 
             if (player != null)
@@ -305,19 +434,23 @@ namespace Fast.Networking
                     player.ConnectedToRoom = true;
                     player.RoomId = room.RoomId;
 
-                    Task.Factory.StartNew(() => room.PlayerConnect(client_id));
-
-                    ret = true;
+                    room.PlayerConnect(client_id, on_succes, on_fail);
+                }
+                else
+                {
+                    if (on_fail != null)
+                        on_fail.Invoke(ServerControllerError.EMPTY);
                 }
             }
-
-            return ret;
+            else
+            {
+                if (on_fail != null)
+                    on_fail.Invoke(ServerControllerError.EMPTY);
+            }
         }
 
-        public bool PlayerCreateJoinRoom(int client_id, string room_name, string room_id)
+        public void PlayerCreateJoinRoom(int client_id, string room_name, string room_id, Action on_succes, Action<ServerControllerError> on_fail)
         {
-            bool ret = false;
-
             Player player = GetPlayer(client_id);
 
             if (player != null)
@@ -326,7 +459,7 @@ namespace Fast.Networking
 
                 if (room == null)
                 {
-                    room = CreateRoom(server, room_name, room_id);
+                    room = CreateRoom(room_name, room_id);
                 }
 
                 if (room != null)
@@ -339,13 +472,19 @@ namespace Fast.Networking
                     player.ConnectedToRoom = true;
                     player.RoomId = room.RoomId;
 
-                    Task.Factory.StartNew(() => room.PlayerConnect(client_id));
-
-                    ret = true;
+                    room.PlayerConnect(client_id, on_succes, on_fail);
+                }
+                else
+                {
+                    if (on_fail != null)
+                        on_fail.Invoke(ServerControllerError.EMPTY);
                 }
             }
-
-            return ret;
+            else
+            {
+                if (on_fail != null)
+                    on_fail.Invoke(ServerControllerError.EMPTY);
+            }
         }
 
         public void PlayerLeaveRoom(int client_id)
@@ -365,9 +504,11 @@ namespace Fast.Networking
                         player.ConnectedToRoom = false;
                         player.RoomId = "";
 
-                        server.SendDisconnectedFromRoomMessage(player.ClientId);
+                        byte[] data = Parsers.ByteParser.ComposeObject(new DisconnectedFromRoomMessage());
 
-                        if(room.ConnectedPlayersCount == 0)
+                        server.SendMessage(client_id, data);
+
+                        if (room.ConnectedPlayersCount == 0)
                         {
                             RemoveRoom(room.RoomId);
                         }

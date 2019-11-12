@@ -8,10 +8,10 @@ namespace Fast.Networking
 {
     public class RoomPlayer
     {
-        private Server server = null;
+        private ServerController server = null;
         private int client_id = 0;
 
-        public void Init(Server server, int client_id)
+        public void Init(ServerController server, int client_id)
         {
             this.server = server;
             this.client_id = client_id;
@@ -26,7 +26,7 @@ namespace Fast.Networking
         {
             if(server != null)
             {
-                server.SendMessage(client_id, obj_to_send);
+                server.SendDataMessage(client_id, obj_to_send);
             }
         }
 
@@ -34,7 +34,7 @@ namespace Fast.Networking
         {
             if (server != null)
             {
-                server.ServerController.PlayerLeaveRoom(client_id);
+                server.PlayerLeaveRoom(client_id);
             }
         }
     }
