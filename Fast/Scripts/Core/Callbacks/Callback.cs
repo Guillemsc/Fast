@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Fast
 {
-    public class Callback<in T>
+    public class Callback<T>
     {
         private List<Action<T>> actions = new List<Action<T>>();
 

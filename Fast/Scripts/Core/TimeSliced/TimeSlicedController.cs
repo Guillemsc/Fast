@@ -8,6 +8,11 @@ namespace Fast.TimeSliced
         private Fast.Containers.PriorityQueue<TimeSlicedTask> tasks_queue
             = new Fast.Containers.PriorityQueue<TimeSlicedTask>();
 
+        public void Update()
+        {
+            UpdateTasks();
+        }
+
         public TimeSlicedTask PushTask(TimeSlicedTask task, int weight = 0)
         {
             bool already_added = false;
@@ -43,7 +48,7 @@ namespace Fast.TimeSliced
             }
         }
 
-        public void Update()
+        private void UpdateTasks()
         {
             if(tasks_queue.Count > 0)
             {

@@ -21,7 +21,7 @@ namespace Fast.Networking
 
         public ServerController(int server_port, string player_cluster_name)
         {
-            Logger.ServerLogInfo("Starting server with port: " + server_port + "and player cluster: " + player_cluster_name);
+            Logger.ServerLogInfo("Starting server with port: " + server_port + " and player cluster: " + player_cluster_name);
 
             server = new Server(server_port);
 
@@ -267,7 +267,7 @@ namespace Fast.Networking
                     rooms.Add(ret);
                 }
 
-                Logger.ServerLogInfo("Room created with id: " + ret.RoomId + " | Rooms count: " + rooms.Count);
+                Logger.ServerLogInfo(ret.ToString() + " Room created");
             }
 
             return ret;
@@ -279,9 +279,13 @@ namespace Fast.Networking
             {
                 for (int i = 0; i < rooms.Count; ++i)
                 {
-                    if (rooms[i].RoomId == room_id)
+                    Room curr_room = rooms[i];
+
+                    if (curr_room.RoomId == room_id)
                     {
                         rooms.RemoveAt(i);
+
+                        Logger.ServerLogInfo(curr_room.ToString() + " Room removed");
 
                         break;
                     }
@@ -318,6 +322,8 @@ namespace Fast.Networking
             lock(players)
             {
                 players.Add(ret);
+
+                Logger.ServerLogInfo("Player created with id: " + client_id + " | Players count: " + players.Count);
             }
 
             if(player_cluster != null)
@@ -338,9 +344,7 @@ namespace Fast.Networking
 
                     if(curr_player.ClientId == client_id)
                     {
-                        players.RemoveAt(i);
-
-                        if(curr_player.ConnectedToRoom)
+                        if (curr_player.ConnectedToRoom)
                         {
                             PlayerLeaveRoom(client_id);
                         }
@@ -349,6 +353,10 @@ namespace Fast.Networking
                         {
                             player_cluster.PlayerDisconnected(curr_player);
                         }
+
+                        players.RemoveAt(i);
+
+                        Logger.ServerLogInfo("Player removed with id: " + client_id + " | Players count: " + players.Count);
 
                         break;
                     }
@@ -395,7 +403,22 @@ namespace Fast.Networking
                         player.ConnectedToRoom = true;
                         player.RoomId = room.RoomId;
 
-                        room.PlayerConnect(client_id, on_succes, on_fail);
+                        room.PlayerConnect(client_id, 
+                        delegate()
+                        {
+                            if (on_succes != null)
+                                on_succes.Invoke();
+                        }, 
+                        delegate(ServerControllerError error)
+                        {
+                            if (room.ConnectedPlayersCount == 0)
+                            {
+                                RemoveRoom(room.RoomId);
+                            }
+
+                            if (on_fail != null)
+                                on_fail.Invoke(error);
+                        });
                     }
                     else
                     {
@@ -434,7 +457,22 @@ namespace Fast.Networking
                     player.ConnectedToRoom = true;
                     player.RoomId = room.RoomId;
 
-                    room.PlayerConnect(client_id, on_succes, on_fail);
+                    room.PlayerConnect(client_id, 
+                    delegate ()
+                    {
+                        if (on_succes != null)
+                            on_succes.Invoke();
+                    },
+                    delegate (ServerControllerError error)
+                    {
+                        if (room.ConnectedPlayersCount == 0)
+                        {
+                            RemoveRoom(room.RoomId);
+                        }
+
+                        if (on_fail != null)
+                            on_fail.Invoke(error);
+                    });
                 }
                 else
                 {
@@ -472,7 +510,22 @@ namespace Fast.Networking
                     player.ConnectedToRoom = true;
                     player.RoomId = room.RoomId;
 
-                    room.PlayerConnect(client_id, on_succes, on_fail);
+                    room.PlayerConnect(client_id,
+                    delegate ()
+                    {
+                        if (on_succes != null)
+                            on_succes.Invoke();
+                    },
+                    delegate (ServerControllerError error)
+                    {
+                        if (room.ConnectedPlayersCount == 0)
+                        {
+                            RemoveRoom(room.RoomId);
+                        }
+
+                        if (on_fail != null)
+                            on_fail.Invoke(error);
+                    });
                 }
                 else
                 {
@@ -499,7 +552,7 @@ namespace Fast.Networking
 
                     if(room != null)
                     {
-                        Task.Factory.StartNew(() => room.PlayerDisconnect(client_id));
+                        room.PlayerDisconnect(client_id);
 
                         player.ConnectedToRoom = false;
                         player.RoomId = "";
@@ -529,7 +582,7 @@ namespace Fast.Networking
 
                     if (room != null)
                     {
-                        Task.Factory.StartNew(() => room.MessageReceived(client_id, message_obj));
+                        room.MessageReceived(client_id, message_obj);
                     }
                 }
             }

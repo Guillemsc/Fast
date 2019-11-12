@@ -38,6 +38,11 @@ namespace Fast.Networking
             this.room_id = room_id;
         }
 
+        public override string ToString()
+        {
+            return "[Name:" + room_name + "][Id:" + room_id + "][Connected Players:" + connected_players.Count + "]";
+        }
+
         public string RoomName
         {
             get { return room_name; }
@@ -70,6 +75,8 @@ namespace Fast.Networking
                                 Task.Factory.StartNew(() => OnPlayerConnected(player)).
                                 ContinueWith(delegate (Task player_connected_task)
                                 {
+                                    Logger.ServerLogInfo(ToString() + ": Player with id: " + client_id + " connected");
+
                                     if (on_success != null)
                                         on_success.Invoke();
                                 });
@@ -77,9 +84,13 @@ namespace Fast.Networking
                         }
                         else
                         {
+                            connected_players.Add(player);
+
                             Task.Factory.StartNew(() => OnPlayerConnected(player)).
                             ContinueWith(delegate (Task player_connected_task)
                             {
+                                Logger.ServerLogInfo(ToString() + ": Player with id: " + client_id + " connected");
+
                                 if (on_success != null)
                                     on_success.Invoke();
                             });
@@ -106,15 +117,17 @@ namespace Fast.Networking
                     {
                         connected_players.RemoveAt(i);
 
-                        OnPlayerDisconnected(curr_player);
+                        Task.Factory.StartNew(() => OnPlayerDisconnected(curr_player));
+
+                        Logger.ServerLogInfo(ToString() + ": Player with id: " + client_id + " disconnected");
 
                         break;
                     }
                 }
 
                 if(connected_players.Count == 0)
-                { 
-                    OnRoomClosed();
+                {
+                    Task.Factory.StartNew(() => OnRoomClosed());
                 }
             }
         }
@@ -152,8 +165,13 @@ namespace Fast.Networking
 
             if(player != null)
             {
-                OnMessageReceived(player, message_obj);
+                Task.Factory.StartNew(() => OnMessageReceived(player, message_obj));
             }
+        }
+
+        public void Log(string log)
+        {
+            Logger.RoomLogInfo(this, log);
         }
 
         protected virtual void OnRoomOpened()
@@ -182,6 +200,11 @@ namespace Fast.Networking
         }
 
         protected virtual void OnMessageReceived(RoomPlayer player, object message_obj)
+        {
+
+        }
+
+        protected virtual void Update()
         {
 
         }

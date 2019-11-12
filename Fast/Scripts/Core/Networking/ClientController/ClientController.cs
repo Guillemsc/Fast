@@ -12,16 +12,16 @@ namespace Fast.Networking
         private bool connected_to_room = false;
         private string connected_room_id = "";
 
-        private Callback on_connect_success = new Callback();
+        private Callback on_connected_to_server = new Callback();
 
         private Callback on_create_room_success = new Callback();
-        private Callback on_create_room_fail = new Callback();
+        private Callback<ServerControllerError> on_create_room_fail = new Callback<ServerControllerError>();
 
         private Callback on_join_room_success = new Callback();
-        private Callback on_join_room_fail = new Callback();
+        private Callback<ServerControllerError> on_join_room_fail = new Callback<ServerControllerError>();
 
         private Callback on_create_join_room_success = new Callback();
-        private Callback on_create_join_room_fail = new Callback();
+        private Callback<ServerControllerError> on_create_join_room_fail = new Callback<ServerControllerError>();
 
         private Callback on_disconnected_from_room = new Callback();
 
@@ -34,10 +34,10 @@ namespace Fast.Networking
             client.OnMessageReceived.Subscribe(OnMessageReceived);
         }
 
-        public void Connect(Action on_success = null)
+        public void Start(Action on_connected = null)
         {
-            on_connect_success.UnSubscribeAll();
-            on_connect_success.Subscribe(on_success);
+            on_connected_to_server.UnSubscribeAll();
+            on_connected_to_server.Subscribe(on_connected);
 
             client.Connect();
         }
@@ -49,12 +49,14 @@ namespace Fast.Networking
 
         private void OnConnected()
         {
-            on_connect_success.Invoke();
+            on_connected_to_server.Invoke();
+
+            Logger.ClientLogInfo("Connected to server");
         }
 
         private void OnDisconnected()
         {
-            
+            Logger.ClientLogInfo("Disconnected from server");
         }
 
         private void OnMessageReceived(byte[] message_data)
@@ -87,6 +89,8 @@ namespace Fast.Networking
                         {
                             connected_to_room = false;
                             connected_room_id = "";
+
+                            on_create_room_fail.Invoke(response_message.Error);
                         }
 
                         break;
@@ -107,6 +111,8 @@ namespace Fast.Networking
                         {
                             connected_to_room = false;
                             connected_room_id = "";
+
+                            on_join_room_fail.Invoke(response_message.Error);
                         }
 
                         break;
@@ -127,6 +133,8 @@ namespace Fast.Networking
                         {
                             connected_to_room = false;
                             connected_room_id = "";
+
+                            on_create_join_room_fail.Invoke(response_message.Error);
                         }
 
                         break;
@@ -148,6 +156,9 @@ namespace Fast.Networking
                 on_create_room_success.UnSubscribeAll();
                 on_create_room_success.Subscribe(on_success);
 
+                on_create_room_fail.UnSubscribeAll();
+                on_create_room_fail.Subscribe(on_fail);
+
                 byte[] data = Parsers.ByteParser.ComposeObject(new CreateRoomMessage(room_name, room_id));
 
                 client.SendMessage(data);
@@ -161,6 +172,9 @@ namespace Fast.Networking
                 on_join_room_success.UnSubscribeAll();
                 on_join_room_success.Subscribe(on_success);
 
+                on_join_room_fail.UnSubscribeAll();
+                on_join_room_fail.Subscribe(on_fail);
+
                 byte[] data = Parsers.ByteParser.ComposeObject(new JoinRoomMessage(room_id));
 
                 client.SendMessage(data);
@@ -173,6 +187,9 @@ namespace Fast.Networking
             {
                 on_create_join_room_success.UnSubscribeAll();
                 on_create_join_room_success.Subscribe(on_success);
+
+                on_create_join_room_fail.UnSubscribeAll();
+                on_create_join_room_fail.Subscribe(on_fail);
 
                 byte[] data = Parsers.ByteParser.ComposeObject(new CreateJoinRoomMessage(room_name, room_id));
 
