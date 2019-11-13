@@ -11,15 +11,23 @@ namespace Fast.Networking
         private ServerController server = null;
         private int client_id = 0;
 
-        public void Init(ServerController server, int client_id)
+        private object join_data_object = null;
+
+        public void Init(ServerController server, int client_id, object join_data_object)
         {
             this.server = server;
             this.client_id = client_id;
+            this.join_data_object = join_data_object;
         }
 
         public int ClientId
         {
             get { return client_id; }
+        }
+
+        public object JoinDataObject
+        {
+            get { return join_data_object; }
         }
 
         public void SendMessage(object obj_to_send)
@@ -34,7 +42,7 @@ namespace Fast.Networking
         {
             if (server != null)
             {
-                server.PlayerLeaveRoom(client_id);
+                server.PlayerLeaveRoom(client_id, PlayerLeaveRoomCause.ROOM_DISCONNECTED_CLIENT);
             }
         }
     }

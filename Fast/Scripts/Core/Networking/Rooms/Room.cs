@@ -53,51 +53,120 @@ namespace Fast.Networking
             get { return room_id; }
         }
 
-        public void PlayerConnect(int client_id, Action on_success, Action<ServerControllerError> on_error)
+        public ServerController ServerController
+        {
+            get { return server; }
+        }
+
+        public void PlayerConnect(int client_id, object join_data, Action on_success, Action<ServerControllerError> on_error)
         {
             RoomPlayer player = new RoomPlayer();
-            player.Init(server, client_id);
+            player.Init(server, client_id, join_data);
 
             lock (connected_players)
             {
                 Task.Factory.StartNew(() => OnPlayerWantsToConnect(player)).
                 ContinueWith(delegate (Task<bool> player_wants_to_connect_task)
                 {
-                    if (player_wants_to_connect_task.Result)
-                    {                    
-                        if (connected_players.Count == 0)
+                    if (player_wants_to_connect_task.IsCompleted && !player_wants_to_connect_task.IsFaulted && 
+                    !player_wants_to_connect_task.IsCanceled)
+                    {
+                        if (player_wants_to_connect_task.Result)
                         {
-                            Task.Factory.StartNew(() => OnRoomOpened()).
-                            ContinueWith(delegate (Task room_opened_task)
+                            if (connected_players.Count == 0)
+                            {
+                                Task.Factory.StartNew(() => OnRoomOpened()).
+                                ContinueWith(delegate (Task room_opened_task)
+                                {
+                                    if (room_opened_task.IsCompleted && !room_opened_task.IsFaulted && !room_opened_task.IsCanceled)
+                                    {
+                                        connected_players.Add(player);
+
+                                        Logger.ServerLogInfo(ToString() + ": Player with id: " + client_id + " connected");
+
+                                        Task.Factory.StartNew(() => OnPlayerConnected(player)).
+                                        ContinueWith(delegate (Task player_connected_task)
+                                        {
+                                            if (player_connected_task.IsFaulted || player_connected_task.IsCanceled)
+                                            {
+                                                if (player_connected_task.Exception != null)
+                                                {
+                                                    Logger.ServerLogError(ToString() + " OnPlayerConnected(): " + player_connected_task.Exception);
+                                                }
+                                                else
+                                                {
+                                                    Logger.ServerLogError(ToString() + " OnPlayerConnected(): " + "Task faulted or cancelled");
+                                                }
+                                            }
+
+                                            if (on_success != null)
+                                                on_success.Invoke();
+                                        });
+                                    }
+                                    else
+                                    {
+                                        if (room_opened_task.Exception != null)
+                                        {
+                                            Logger.ServerLogError(ToString() + " OnRoomOpened(): " + room_opened_task.Exception);
+                                        }
+                                        else
+                                        {
+                                            Logger.ServerLogError(ToString() + " OnRoomOpened(): " + "Task faulted or cancelled");
+                                        }
+
+                                        if (on_error != null)
+                                            on_error.Invoke(ServerControllerError.EMPTY);
+                                    }
+                                });
+                            }
+                            else
                             {
                                 connected_players.Add(player);
 
                                 Task.Factory.StartNew(() => OnPlayerConnected(player)).
                                 ContinueWith(delegate (Task player_connected_task)
                                 {
-                                    Logger.ServerLogInfo(ToString() + ": Player with id: " + client_id + " connected");
+                                    if (player_connected_task.IsCompleted && !player_connected_task.IsFaulted && !player_connected_task.IsCanceled)
+                                    {
+                                        Logger.ServerLogInfo(ToString() + ": Player with id: " + client_id + " connected");
 
-                                    if (on_success != null)
-                                        on_success.Invoke();
+                                        if (on_success != null)
+                                            on_success.Invoke();
+                                    }
+                                    else
+                                    {
+                                        if (player_connected_task.Exception != null)
+                                        {
+                                            Logger.ServerLogError(ToString() + " OnPlayerConnected(): " + player_connected_task.Exception);
+                                        }
+                                        else
+                                        {
+                                            Logger.ServerLogError(ToString() + " OnPlayerConnected(): " + "Task faulted or cancelled");
+                                        }
+
+                                        if (on_error != null)
+                                            on_error.Invoke(ServerControllerError.EMPTY);
+                                    }
                                 });
-                            });
+                            }
                         }
                         else
                         {
-                            connected_players.Add(player);
-
-                            Task.Factory.StartNew(() => OnPlayerConnected(player)).
-                            ContinueWith(delegate (Task player_connected_task)
-                            {
-                                Logger.ServerLogInfo(ToString() + ": Player with id: " + client_id + " connected");
-
-                                if (on_success != null)
-                                    on_success.Invoke();
-                            });
+                            if (on_error != null)
+                                on_error.Invoke(ServerControllerError.EMPTY);
                         }
                     }
-                    else
+                    else 
                     {
+                        if (player_wants_to_connect_task.Exception != null)
+                        {
+                            Logger.ServerLogError(ToString() + " OnPlayerWantsToConnect(): " + player_wants_to_connect_task.Exception);
+                        }
+                        else
+                        {
+                            Logger.ServerLogError(ToString() + " OnPlayerWantsToConnect(): " + "Task faulted or cancelled");
+                        }
+
                         if (on_error != null)
                             on_error.Invoke(ServerControllerError.EMPTY);
                     }
@@ -117,9 +186,23 @@ namespace Fast.Networking
                     {
                         connected_players.RemoveAt(i);
 
-                        Task.Factory.StartNew(() => OnPlayerDisconnected(curr_player));
-
                         Logger.ServerLogInfo(ToString() + ": Player with id: " + client_id + " disconnected");
+
+                        Task.Factory.StartNew(() => OnPlayerDisconnected(curr_player)).
+                        ContinueWith(delegate (Task player_disconnected_task)
+                        {
+                            if(player_disconnected_task.IsFaulted || player_disconnected_task.IsCanceled)
+                            {
+                                if(player_disconnected_task.Exception != null)
+                                {
+                                    Logger.ServerLogError(ToString() + " OnPlayerDisconnected(): " + player_disconnected_task.Exception);
+                                }
+                                else
+                                {
+                                    Logger.ServerLogError(ToString() + " OnPlayerDisconnected(): " + "Task faulted or cancelled");
+                                }
+                            }
+                        }); 
 
                         break;
                     }

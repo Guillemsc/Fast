@@ -23,7 +23,7 @@ namespace Fast.Networking
         private Callback on_create_join_room_success = new Callback();
         private Callback<ServerControllerError> on_create_join_room_fail = new Callback<ServerControllerError>();
 
-        private Callback on_disconnected_from_room = new Callback();
+        private Callback<PlayerLeaveRoomCause> on_disconnected_from_room = new Callback<PlayerLeaveRoomCause>();
 
         public ClientController(string server_ip, int server_port)
         {
@@ -142,14 +142,17 @@ namespace Fast.Networking
 
                 case ServerControllerMessageType.DISCONNECTED_FROM_ROOM:
                     {
-                        on_disconnected_from_room.Invoke();
+                        DisconnectedFromRoomMessage disconnected_message = (DisconnectedFromRoomMessage)message;
+
+                        on_disconnected_from_room.Invoke(disconnected_message.PlayerLeaveRoomCause);
 
                         break;
                     }
             }
         }
 
-        public void CreateRoom(string room_name, string room_id, Action on_success = null, Action<ServerControllerError> on_fail = null)
+        public void CreateRoom(string room_name, string room_id, object join_data = null, 
+            Action on_success = null, Action<ServerControllerError> on_fail = null)
         {
             if (client.Connected)
             {
@@ -159,13 +162,13 @@ namespace Fast.Networking
                 on_create_room_fail.UnSubscribeAll();
                 on_create_room_fail.Subscribe(on_fail);
 
-                byte[] data = Parsers.ByteParser.ComposeObject(new CreateRoomMessage(room_name, room_id));
+                byte[] data = Parsers.ByteParser.ComposeObject(new CreateRoomMessage(room_name, room_id, join_data));
 
                 client.SendMessage(data);
             }
         }
 
-        public void JoinRoom(string room_id, Action on_success = null, Action<ServerControllerError> on_fail = null)
+        public void JoinRoom(string room_id, object join_data = null, Action on_success = null, Action<ServerControllerError> on_fail = null)
         {
             if (client.Connected)
             {
@@ -175,13 +178,13 @@ namespace Fast.Networking
                 on_join_room_fail.UnSubscribeAll();
                 on_join_room_fail.Subscribe(on_fail);
 
-                byte[] data = Parsers.ByteParser.ComposeObject(new JoinRoomMessage(room_id));
+                byte[] data = Parsers.ByteParser.ComposeObject(new JoinRoomMessage(room_id, join_data));
 
                 client.SendMessage(data);
             }
         }
 
-        public void CreateJoinRoom(string room_name, string room_id, Action on_success = null, Action<ServerControllerError> on_fail = null)
+        public void CreateJoinRoom(string room_name, string room_id, object join_data = null, Action on_success = null, Action<ServerControllerError> on_fail = null)
         {
             if (client.Connected)
             {
@@ -191,7 +194,7 @@ namespace Fast.Networking
                 on_create_join_room_fail.UnSubscribeAll();
                 on_create_join_room_fail.Subscribe(on_fail);
 
-                byte[] data = Parsers.ByteParser.ComposeObject(new CreateJoinRoomMessage(room_name, room_id));
+                byte[] data = Parsers.ByteParser.ComposeObject(new CreateJoinRoomMessage(room_name, room_id, join_data));
 
                 client.SendMessage(data);
             }
@@ -211,6 +214,11 @@ namespace Fast.Networking
 
             connected_to_room = false;
             connected_room_id = "";
+        }
+
+        public Callback<PlayerLeaveRoomCause> OnDisconnectedFromRoom
+        {
+            get { return on_disconnected_from_room; }
         }
 
         public void SendMessage(object obj_to_send)

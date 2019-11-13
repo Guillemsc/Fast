@@ -10,7 +10,15 @@ namespace Fast.Networking
     {
         public static void ServerLogInfo(string to_log)
         {
-            string log = "[Fast.Networking] SERVER: " + to_log;
+            string log = "[Fast.Networking] SERVER INFO: " + to_log;
+
+            Console.WriteLine(log);
+            UnityEngine.Debug.Log(log);
+        }
+
+        public static void ServerLogError(string to_log)
+        {
+            string log = "[Fast.Networking] SERVER ERROR: " + to_log;
 
             Console.WriteLine(log);
             UnityEngine.Debug.Log(log);

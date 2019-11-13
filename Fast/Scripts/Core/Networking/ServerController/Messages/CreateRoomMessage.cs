@@ -7,8 +7,9 @@ namespace Fast.Networking
     {
         private string room_name = "";
         private string room_id = "";
+        private object join_data_object = null;
 
-        public CreateRoomMessage(string room_name, string room_id) : base(ServerControllerMessageType.CREATE_ROOM)
+        public CreateRoomMessage(string room_name, string room_id, object join_data_object) : base(ServerControllerMessageType.CREATE_ROOM)
         {
             this.room_name = room_name;
             this.room_id = room_id;
@@ -22,6 +23,11 @@ namespace Fast.Networking
         public string RoomId
         {
             get { return room_id; }
+        }
+
+        public object JoinDataObject
+        {
+            get { return join_data_object; }
         }
     }
 }
