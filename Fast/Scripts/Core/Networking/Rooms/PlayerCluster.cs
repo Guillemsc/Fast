@@ -37,17 +37,25 @@ namespace Fast.Networking
             get { return server.Players; }
         }
 
-        public void PlayerConnected(Player player)
+        public void PlayerConnected(Player player, object join_data)
         {
+            Task.Factory.StartNew(() => OnPlayerConnected(player, join_data)).
+            ContinueWith(delegate (Task player_connected_task)
+            {
 
+            });
         }
 
         public void PlayerDisconnected(Player player)
         {
+            Task.Factory.StartNew(() => OnPlayerDisconnected(player)).
+            ContinueWith(delegate (Task player_disconnected_task)
+            {
 
+            });
         }
 
-        public virtual void OnPlayerConnected(Player player)
+        public virtual void OnPlayerConnected(Player player, object join_data)
         {
 
         }

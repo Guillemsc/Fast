@@ -6,12 +6,12 @@ namespace Fast.Networking
     public class JoinRoomMessage : ServerControllerMessage
     {
         private string room_id = "";
-        private object join_data_object = null;
+        private object join_data = null;
 
-        public JoinRoomMessage(string room_id, object join_data_object) : base(ServerControllerMessageType.JOIN_ROOM)
+        public JoinRoomMessage(string room_id, object join_data) : base(ServerControllerMessageType.JOIN_ROOM)
         {
             this.room_id = room_id;
-            this.join_data_object = join_data_object;
+            this.join_data = join_data;
         }
 
         public string RoomId
@@ -19,9 +19,9 @@ namespace Fast.Networking
             get { return room_id; }
         }
 
-        public object JoinDataObject
+        public object JoinData
         {
-            get { return join_data_object; }
+            get { return join_data; }
         }
     }
 }

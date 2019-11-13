@@ -46,7 +46,7 @@ namespace Fast.Networking
 
         private void OnClientConnected(int client_id)
         {
-            Player player = CreatePlayer(client_id);
+
         }
 
         private void OnClientDisconnected(int client_id)
@@ -69,6 +69,21 @@ namespace Fast.Networking
 
             switch (message.Type)
             {
+                case ServerControllerMessageType.CREATE_PLAYER:
+                    {
+                        CreatePlayerMessage create_player_message = (CreatePlayerMessage)message;
+
+                        Player player = CreatePlayer(server_message.ClientId, create_player_message.JoinData);
+
+                        bool success = player != null;
+
+                        byte[] data = Parsers.ByteParser.ComposeObject(new CreatePlayerResponseMessage(success));
+
+                        server.SendMessage(server_message.ClientId, data);
+
+                        break;
+                    }
+
                 case ServerControllerMessageType.DATA:
                     {
                         DataMessage data_message = (DataMessage)message;
@@ -83,7 +98,7 @@ namespace Fast.Networking
                         CreateRoomMessage create_room_message = (CreateRoomMessage)message;
 
                         PlayerCreateRoom(server_message.ClientId, create_room_message.RoomName, create_room_message.RoomId, 
-                            create_room_message.JoinDataObject,
+                            create_room_message.JoinData,
                         delegate ()
                         {
                             byte[] data = Parsers.ByteParser.ComposeObject(new CreateRoomResponseMessage(true, create_room_message.RoomId));
@@ -104,7 +119,7 @@ namespace Fast.Networking
                     {
                         JoinRoomMessage join_room_message = (JoinRoomMessage)message;
 
-                        PlayerJoinRoom(server_message.ClientId, join_room_message.RoomId, join_room_message.JoinDataObject,
+                        PlayerJoinRoom(server_message.ClientId, join_room_message.RoomId, join_room_message.JoinData,
                         delegate ()
                         {
                             byte[] data = Parsers.ByteParser.ComposeObject(new JoinRoomResponseMessage(true, join_room_message.RoomId));
@@ -126,7 +141,7 @@ namespace Fast.Networking
                         CreateJoinRoomMessage create_join_room_message = (CreateJoinRoomMessage)message;
 
                         PlayerCreateJoinRoom(server_message.ClientId, create_join_room_message.RoomName, 
-                        create_join_room_message.RoomId, create_join_room_message.JoinDataObject,
+                        create_join_room_message.RoomId, create_join_room_message.JoinData,
                         delegate ()
                         {
                             byte[] data = Parsers.ByteParser.ComposeObject(new CreateJoinRoomResponseMessage(true, create_join_room_message.RoomId));
@@ -316,7 +331,7 @@ namespace Fast.Networking
             get { return players.AsReadOnly(); }
         }
 
-        public Player CreatePlayer(int client_id)
+        public Player CreatePlayer(int client_id, object join_data)
         {
             Player ret = new Player(client_id);
 
@@ -329,7 +344,7 @@ namespace Fast.Networking
 
             if(player_cluster != null)
             {
-                player_cluster.PlayerConnected(ret);
+                player_cluster.PlayerConnected(ret, join_data);
             }
 
             return ret;

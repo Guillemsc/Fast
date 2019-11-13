@@ -10,6 +10,9 @@ namespace Fast.Networking
     {
         DATA,
 
+        CREATE_PLAYER,
+        CREATE_PLAYER_RESPONSE,
+
         CREATE_ROOM,
         CREATE_ROOM_RESPONSE,
 

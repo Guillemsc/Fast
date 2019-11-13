@@ -7,12 +7,17 @@ namespace Fast.Networking
     {
         private Client client = null;
 
+        private bool connected = false;
+
+        private object join_data = null;
+
         private List<object> messages_to_read = new List<object>();
 
         private bool connected_to_room = false;
         private string connected_room_id = "";
 
-        private Callback on_connected_to_server = new Callback();
+        private Callback on_connect_to_server_success = new Callback();
+        private Callback on_connect_to_server_fail = new Callback();
 
         private Callback on_create_room_success = new Callback();
         private Callback<ServerControllerError> on_create_room_fail = new Callback<ServerControllerError>();
@@ -34,10 +39,15 @@ namespace Fast.Networking
             client.OnMessageReceived.Subscribe(OnMessageReceived);
         }
 
-        public void Start(Action on_connected = null)
+        public void Connect(object join_data = null, Action on_connect_success = null, Action on_connect_fail = null)
         {
-            on_connected_to_server.UnSubscribeAll();
-            on_connected_to_server.Subscribe(on_connected);
+            on_connect_to_server_success.UnSubscribeAll();
+            on_connect_to_server_success.Subscribe(on_connect_success);
+
+            on_connect_to_server_fail.UnSubscribeAll();
+            on_connect_to_server_fail.Subscribe(on_connect_fail);
+
+            this.join_data = join_data;
 
             client.Connect();
         }
@@ -49,13 +59,15 @@ namespace Fast.Networking
 
         private void OnConnected()
         {
-            on_connected_to_server.Invoke();
+            byte[] data = Parsers.ByteParser.ComposeObject(new CreatePlayerMessage(join_data));
 
-            Logger.ClientLogInfo("Connected to server");
+            client.SendMessage(data);
         }
 
         private void OnDisconnected()
         {
+            connected = false;
+
             Logger.ClientLogInfo("Disconnected from server");
         }
 
@@ -65,6 +77,28 @@ namespace Fast.Networking
 
             switch (message.Type)
             {
+                case ServerControllerMessageType.CREATE_PLAYER_RESPONSE:
+                    {
+                        CreatePlayerResponseMessage response_message = (CreatePlayerResponseMessage)message;
+
+                        if(response_message.Success)
+                        {
+                            connected = true;
+
+                            on_connect_to_server_success.Invoke();
+                        }
+                        else
+                        {
+                            connected = false;
+
+                            client.Disconnect();
+
+                            on_connect_to_server_fail.Invoke();
+                        }
+
+                        break;
+                    }
+
                 case ServerControllerMessageType.DATA:
                     {
                         DataMessage data_message = (DataMessage)message;
@@ -154,7 +188,7 @@ namespace Fast.Networking
         public void CreateRoom(string room_name, string room_id, object join_data = null, 
             Action on_success = null, Action<ServerControllerError> on_fail = null)
         {
-            if (client.Connected)
+            if (client.Connected && connected)
             {
                 on_create_room_success.UnSubscribeAll();
                 on_create_room_success.Subscribe(on_success);
@@ -170,7 +204,7 @@ namespace Fast.Networking
 
         public void JoinRoom(string room_id, object join_data = null, Action on_success = null, Action<ServerControllerError> on_fail = null)
         {
-            if (client.Connected)
+            if (client.Connected && connected)
             {
                 on_join_room_success.UnSubscribeAll();
                 on_join_room_success.Subscribe(on_success);
@@ -186,7 +220,7 @@ namespace Fast.Networking
 
         public void CreateJoinRoom(string room_name, string room_id, object join_data = null, Action on_success = null, Action<ServerControllerError> on_fail = null)
         {
-            if (client.Connected)
+            if (client.Connected && connected)
             {
                 on_create_join_room_success.UnSubscribeAll();
                 on_create_join_room_success.Subscribe(on_success);
@@ -202,7 +236,7 @@ namespace Fast.Networking
 
         public void LeaveRoom()
         {
-            if (client.Connected)
+            if (client.Connected && connected)
             {
                 if (connected_to_room)
                 {
@@ -223,7 +257,7 @@ namespace Fast.Networking
 
         public void SendMessage(object obj_to_send)
         {
-            if (client.Connected)
+            if (client.Connected && connected)
             {
                 if (connected_to_room)
                 {

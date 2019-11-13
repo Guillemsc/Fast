@@ -65,7 +65,7 @@ namespace Fast.Networking
 
             lock (connected_players)
             {
-                Task.Factory.StartNew(() => OnPlayerWantsToConnect(player)).
+                Task.Factory.StartNew(() => OnPlayerWantsToConnect(player, join_data)).
                 ContinueWith(delegate (Task<bool> player_wants_to_connect_task)
                 {
                     if (player_wants_to_connect_task.IsCompleted && !player_wants_to_connect_task.IsFaulted && 
@@ -84,7 +84,7 @@ namespace Fast.Networking
 
                                         Logger.ServerLogInfo(ToString() + ": Player with id: " + client_id + " connected");
 
-                                        Task.Factory.StartNew(() => OnPlayerConnected(player)).
+                                        Task.Factory.StartNew(() => OnPlayerConnected(player, join_data)).
                                         ContinueWith(delegate (Task player_connected_task)
                                         {
                                             if (player_connected_task.IsFaulted || player_connected_task.IsCanceled)
@@ -123,7 +123,7 @@ namespace Fast.Networking
                             {
                                 connected_players.Add(player);
 
-                                Task.Factory.StartNew(() => OnPlayerConnected(player)).
+                                Task.Factory.StartNew(() => OnPlayerConnected(player, join_data)).
                                 ContinueWith(delegate (Task player_connected_task)
                                 {
                                     if (player_connected_task.IsCompleted && !player_connected_task.IsFaulted && !player_connected_task.IsCanceled)
@@ -262,12 +262,12 @@ namespace Fast.Networking
 
         }
 
-        protected virtual bool OnPlayerWantsToConnect(RoomPlayer player)
+        protected virtual bool OnPlayerWantsToConnect(RoomPlayer player, object join_data)
         {
             return false;
         }
 
-        protected virtual void OnPlayerConnected(RoomPlayer player)
+        protected virtual void OnPlayerConnected(RoomPlayer player, object join_data)
         {
 
         }
