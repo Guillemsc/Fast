@@ -9,6 +9,14 @@ namespace Fast.Networking
     public enum ServerControllerError
     {
         EMPTY,
+
+        PLAYER_IS_NOT_CONNECTED,
+        ROOM_DOES_NOT_EXIST,
+        ROOM_TYPE_DOES_NOT_EXIST,
+        ROOM_ALREADY_EXIST,
+
+        CONNECTION_TO_ROOM_DENIED,
+        ROOM_EXCEPTION,
     }
 
     public class ServerControllerErrorToString

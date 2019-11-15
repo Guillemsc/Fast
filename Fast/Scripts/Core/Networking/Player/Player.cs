@@ -10,17 +10,25 @@ namespace Fast.Networking
     {
         private int client_id = 0;
 
+        private object join_data = null;
+
         private bool connected_to_room = false;
         private string room_id = "";
 
-        public Player(int client_id)
+        public Player(int client_id, object join_data)
         {
             this.client_id = client_id;
+            this.join_data = join_data;
         }
 
         public int ClientId
         {
             get { return client_id; }
+        }
+
+        public object JoinData
+        {
+            get { return join_data; }
         }
 
         public bool ConnectedToRoom

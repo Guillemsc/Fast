@@ -8,8 +8,6 @@ namespace Fast.Networking
 {
     public enum ServerControllerMessageType
     {
-        DATA,
-
         CREATE_PLAYER,
         CREATE_PLAYER_RESPONSE,
 
@@ -23,6 +21,8 @@ namespace Fast.Networking
         CREATE_JOIN_ROOM_RESPONSE,
 
         LEAVE_ROOM,
+
+        ROOM_MESSAGE,
 
         DISCONNECTED_FROM_ROOM,
     }

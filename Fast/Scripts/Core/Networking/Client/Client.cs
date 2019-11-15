@@ -109,14 +109,5 @@ namespace Fast.Networking
                 }
             }
         }
-
-        //public List<object> PopMessages()
-        //{
-        //    List<object> ret = new List<object>(messages_to_read);
-
-        //    messages_to_read.Clear();
-
-        //    return ret;
-        //}
     }
 }

@@ -32,7 +32,7 @@ namespace Fast.Networking
             UnityEngine.Debug.Log(log);
         }
 
-        public static void RoomLogInfo(Room room, string to_log)
+        public static void RoomLogInfo(BaseRoom room, string to_log)
         {
             if (room != null)
             {
