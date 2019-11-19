@@ -44,7 +44,7 @@ namespace Ziggurat.Tools
 
         private Fast.EditorTools.Styles styles = null;
 
-        public LocalizationDownloaderWindow() : base("Fast-Tools-LocalizationDownloaderWindow")
+        public LocalizationDownloaderWindow() : base("Fast-EditorTools-LocalizationDownloaderWindow")
         {
 
         }
