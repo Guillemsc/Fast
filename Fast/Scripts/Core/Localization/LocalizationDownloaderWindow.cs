@@ -124,7 +124,17 @@ namespace Fast.Localization
 
             EditorGUILayout.Separator();
 
-            if (GUILayout.Button("Add file"))
+            EditorGUILayout.BeginHorizontal();
+            {
+                EditorGUILayout.LabelField("Resources path to save at", GUILayout.MaxWidth(175));
+
+                serialized_data.resources_path_to_save_at = EditorGUILayout.TextField(serialized_data.resources_path_to_save_at);
+            }
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.Separator();
+
+            if (GUILayout.Button("Add spreadsheet"))
             {
                 serialized_data.files_to_download.Add(new LocalizationFileToDownload());
             }
@@ -147,6 +157,9 @@ namespace Fast.Localization
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUI.indentLevel++;
+
+                string filepath = "Assets/Resources/" + serialized_data.resources_path_to_save_at + "/" + curr_file.name_to_save_as + ".txt";
+                EditorGUILayout.LabelField(filepath);
 
                 EditorGUILayout.BeginHorizontal();
                 {
@@ -177,18 +190,7 @@ namespace Fast.Localization
 
             EditorGUILayout.Separator();
 
-            EditorGUILayout.BeginHorizontal();
-            {
-                EditorGUILayout.LabelField("Resources path to save at", GUILayout.MaxWidth(175));
-
-                serialized_data.resources_path_to_save_at = EditorGUILayout.TextField(serialized_data.resources_path_to_save_at);
-            }
-
-            EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.Separator();
-
-            EditorGUI.BeginDisabledGroup(updating_data);
+            EditorGUI.BeginDisabledGroup(updating_data || serialized_data.files_to_download.Count == 0);
 
             if (GUILayout.Button("Update"))
             {
