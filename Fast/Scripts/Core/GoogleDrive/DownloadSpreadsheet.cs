@@ -12,6 +12,8 @@ using Google.Apis.Services;
 using System.Collections.Generic;
 using System.Linq;
 
+# if UNITY_EDITOR
+
 namespace Fast.GoogleDrive
 {
     public class DownloadSpreadsheetSuccessObject
@@ -158,4 +160,5 @@ namespace Fast.GoogleDrive
         }
     }
 }
- 
+
+#endif
