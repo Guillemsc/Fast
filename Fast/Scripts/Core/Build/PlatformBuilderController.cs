@@ -130,6 +130,8 @@ namespace Fast.Build
             PlayerSettings.productName = settings.basic_settings.game_name;
             PlayerSettings.companyName = settings.basic_settings.company_name;
             PlayerSettings.bundleVersion = settings.basic_settings.version.ToString();
+
+            PlayerSettings.muteOtherAudioSources = settings.advanced_settings.mute_other_audio_devices;
         }
 
         public void BuildAll(BuildSettings settings, Action on_finish)

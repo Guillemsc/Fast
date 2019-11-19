@@ -27,6 +27,8 @@ namespace Fast.Build
 
         [SerializeField] private bool enhance_android_chartboost_dropdown = false;
 
+        private Vector2 scroll_pos = new Vector2();
+
         private string curr_build_progress = "";
 
         [MenuItem("Fast/Build")]
@@ -48,6 +50,8 @@ namespace Fast.Build
             InitStyles();
 
             this.minSize = new Vector2(275, this.minSize.y);
+
+            scroll_pos = EditorGUILayout.BeginScrollView(scroll_pos);
 
             GUILayout.Label("FAST BUILD", editor_style.MainTitleStyle);
 
@@ -262,6 +266,8 @@ namespace Fast.Build
             EditorGUI.EndDisabledGroup();
 
             EditorGUILayout.LabelField("Progress: " + curr_build_progress);
+
+            EditorGUILayout.EndScrollView();
         }
 
         private void DrawBasicSettings()
@@ -321,6 +327,9 @@ namespace Fast.Build
             {
                 settings.advanced_settings.development_build = EditorGUILayout.Toggle("Development build",
                     settings.advanced_settings.development_build);
+
+                settings.advanced_settings.mute_other_audio_devices = EditorGUILayout.Toggle("Mute other audio devices",
+                    settings.advanced_settings.mute_other_audio_devices);
             }
             EditorGUILayout.EndVertical();
         }

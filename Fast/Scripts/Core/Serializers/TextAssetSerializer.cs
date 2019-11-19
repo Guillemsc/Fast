@@ -17,7 +17,11 @@ namespace Fast.Serializers
         {
             bool ret = false;
 
-            File.WriteAllText(Application.dataPath + "/" + assets_filepath, to_serialize);
+            string path = Application.dataPath + "/" + assets_filepath;
+
+            Directory.CreateDirectory(path);
+
+            File.WriteAllText(path, to_serialize);
 
             AssetDatabase.SaveAssets();
 

@@ -65,6 +65,7 @@ namespace Fast.Build
             { }
 
             public bool development_build = false;
+            public bool mute_other_audio_devices = false;
         }
         public AdvancedSettings advanced_settings = new AdvancedSettings();
 

@@ -13,7 +13,7 @@ namespace Fast.Networking
 
         private object join_data = null;
 
-        private List<object> messages_to_read = new List<object>();
+        private List<object> room_messages_to_read = new List<object>();
 
         private Callback on_connect_to_server_success = new Callback();
         private Callback on_connect_to_server_fail = new Callback();
@@ -111,11 +111,11 @@ namespace Fast.Networking
             }
         }
 
-        public List<object> ReadMessages()
+        public List<object> ReadRoomMessages()
         {
-            List<object> ret = new List<object>(messages_to_read);
+            List<object> ret = new List<object>(room_messages_to_read);
 
-            messages_to_read.Clear();
+            room_messages_to_read.Clear();
 
             return ret;
         }
