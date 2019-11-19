@@ -8,7 +8,7 @@ using System;
 
 using UnityEditor;
 
-namespace Ziggurat.Tools
+namespace Fast.Localization
 {
     [System.Serializable]
     public class LocalizationWindowData
