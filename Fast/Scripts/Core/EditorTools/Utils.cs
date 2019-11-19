@@ -4,7 +4,7 @@
 
 using UnityEditor;
 
-namespace Fast.EditorUI
+namespace Fast.EditorTools
 {
     class Utils
     {

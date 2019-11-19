@@ -57,7 +57,7 @@ namespace Fast.Build
 
             EditorGUILayout.BeginHorizontal();
             {
-                Fast.EditorUI.Utils.DropdownHeader("Basic Settings", ref basic_settings_dropdown, editor_style.HeaderIdleColor,
+                Fast.EditorTools.Utils.DropdownHeader("Basic Settings", ref basic_settings_dropdown, editor_style.HeaderIdleColor,
                     editor_style.HeaderShowColor, editor_style.DropdownHeaderStyle);
 
                 if (GUILayout.Button("Save", editor_style.SaveLoadButtonStyle))
@@ -87,7 +87,7 @@ namespace Fast.Build
 
             EditorGUILayout.BeginHorizontal();
             {
-                Fast.EditorUI.Utils.DropdownHeader("Advanced Settings", ref advanced_settings_dropdown, editor_style.HeaderIdleColor,
+                Fast.EditorTools.Utils.DropdownHeader("Advanced Settings", ref advanced_settings_dropdown, editor_style.HeaderIdleColor,
                     editor_style.HeaderShowColor, editor_style.DropdownHeaderStyle);
 
                 if (GUILayout.Button("Save", editor_style.SaveLoadButtonStyle))
@@ -117,7 +117,7 @@ namespace Fast.Build
 
             EditorGUILayout.BeginHorizontal();
             {
-                Fast.EditorUI.Utils.DropdownHeader("Windows Settings", ref windows_settings_dropdown, editor_style.HeaderIdleColor,
+                Fast.EditorTools.Utils.DropdownHeader("Windows Settings", ref windows_settings_dropdown, editor_style.HeaderIdleColor,
                 editor_style.HeaderShowColor, editor_style.DropdownHeaderStyle);
 
                 if (GUILayout.Button("Save", editor_style.SaveLoadButtonStyle))
@@ -147,7 +147,7 @@ namespace Fast.Build
 
             EditorGUILayout.BeginHorizontal();
             {
-                Fast.EditorUI.Utils.DropdownHeader("Android Settings", ref android_settings_dropdown, editor_style.HeaderIdleColor,
+                Fast.EditorTools.Utils.DropdownHeader("Android Settings", ref android_settings_dropdown, editor_style.HeaderIdleColor,
                 editor_style.HeaderShowColor, editor_style.DropdownHeaderStyle);
 
                 if (GUILayout.Button("Save", editor_style.SaveLoadButtonStyle))
@@ -177,7 +177,7 @@ namespace Fast.Build
 
             EditorGUILayout.BeginHorizontal();
             {
-                Fast.EditorUI.Utils.DropdownHeader("Enhance Android Settings", ref enhance_android_settings_dropdown, editor_style.HeaderIdleColor,
+                Fast.EditorTools.Utils.DropdownHeader("Enhance Android Settings", ref enhance_android_settings_dropdown, editor_style.HeaderIdleColor,
                 editor_style.HeaderShowColor, editor_style.DropdownHeaderStyle);
 
                 if (GUILayout.Button("Save", editor_style.SaveLoadButtonStyle))
@@ -207,7 +207,7 @@ namespace Fast.Build
 
             EditorGUILayout.BeginHorizontal();
             {
-                Fast.EditorUI.Utils.DropdownHeader("Enable Builds", ref enable_builds_dropdown, editor_style.HeaderIdleColor,
+                Fast.EditorTools.Utils.DropdownHeader("Enable Builds", ref enable_builds_dropdown, editor_style.HeaderIdleColor,
                 editor_style.HeaderShowColor, editor_style.DropdownHeaderStyle);
 
                 if (GUILayout.Button("Save", editor_style.SaveLoadButtonStyle))
@@ -409,7 +409,7 @@ namespace Fast.Build
                 {
                     settings.enhance_android_settings.chartboost = EditorGUILayout.Toggle("", settings.enhance_android_settings.chartboost, GUILayout.MaxWidth(10));
 
-                    Fast.EditorUI.Utils.DropdownHeader("ChartBoost", ref enhance_android_chartboost_dropdown, editor_style.HeaderIdleColor,
+                    Fast.EditorTools.Utils.DropdownHeader("ChartBoost", ref enhance_android_chartboost_dropdown, editor_style.HeaderIdleColor,
                     editor_style.HeaderShowColor, editor_style.DropdownHeaderStyle);
                 }
                 EditorGUILayout.EndHorizontal();
