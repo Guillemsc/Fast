@@ -73,6 +73,7 @@ namespace Fast.Flow
             if (!running)
             {
                 running = true;
+                finished = false;
 
                 OnRunInternal();
                 OnPostRunInternal();

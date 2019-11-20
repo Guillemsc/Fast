@@ -9,22 +9,44 @@ namespace Fast.Modules
     class FlowModule : UpdatableModule
     {
         private Fast.Flow.FlowController flow_controller = new Flow.FlowController();
-        private Fast.Flow.FlowContainer curr_flow_container = null;
 
         public override void Update()
         {
             flow_controller.Update();
         }
 
-        public Fast.Flow.FlowController FlowController
+        public void RunContainer(int identifier_id, Action on_finish = null)
         {
-            get { return flow_controller; }
+            Flow.FlowContainer container = null;
+
+            bool could_run = flow_controller.RunContainer(identifier_id, out container);
+
+            if(could_run)
+            {
+                container.OnFinish.UnSubscribeAll();
+                container.OnFinish.Subscribe(on_finish);
+            }
         }
 
-        public Fast.Flow.FlowContainer CurrFlowContainer
+        public void PushRunContainer(int identifier_id, Action on_start = null, Action on_finish = null)
         {
-            get { return curr_flow_container; }
-            set { curr_flow_container = value; }
+            Flow.FlowContainer container = null;
+
+            bool could_run = flow_controller.PushRunContainer(identifier_id, out container);
+
+            if (could_run)
+            {
+                container.OnStart.UnSubscribeAll();
+                container.OnStart.Subscribe(on_start);
+
+                container.OnFinish.UnSubscribeAll();
+                container.OnFinish.Subscribe(on_finish);
+            }
+        }
+
+        public Flow.FlowContainer CreateContainer(int identifier_id)
+        {
+            return flow_controller.CreateContainer(identifier_id);
         }
     }
 }

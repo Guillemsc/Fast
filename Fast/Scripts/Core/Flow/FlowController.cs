@@ -49,14 +49,22 @@ namespace Fast.Flow
             return ret;
         }
 
-        public void RunContainer(int identifier_id)
+        public bool RunContainer(int identifier_id, out FlowContainer container)
         {
-            if(container_playing == null && containers_to_play.Count == 0)
+            bool ret = false;
+
+            container = null;
+
+            if (container_playing == null && containers_to_play.Count == 0)
             {
                 FlowContainer to_run = GetContainer(identifier_id);
 
                 if (to_run != null)
                 {
+                    ret = true;
+
+                    container = to_run;
+
                     containers_to_play.Add(to_run);
                 }
                 else
@@ -64,21 +72,32 @@ namespace Fast.Flow
                     Debug.LogError("[Fast.Flow.FlowController] The container identifier_id could not be found");
                 }
             }
+
+            return ret;
         }
 
-        public void PushRunContainer(int identifier_id)
-        {            
+        public bool PushRunContainer(int identifier_id, out FlowContainer container)
+        {
+            bool ret = false;
+
+            container = null;
+
             FlowContainer to_run = GetContainer(identifier_id);
 
             if (to_run != null)
             {
+                ret = true;
+
+                container = to_run;
+
                 containers_to_play.Add(to_run);
             }
             else
             {
                 Debug.LogError("[Fast.Flow.FlowController] The container identifier_id could not be found");
             }
-            
+
+            return ret;
         }
 
         public void Update()
@@ -89,9 +108,9 @@ namespace Fast.Flow
                 {
                     container_playing = containers_to_play[0];
 
-                    containers_to_play.RemoveAt(0);
-
                     StartContainer(container_playing);
+
+                    containers_to_play.RemoveAt(0);
                 }
             }
             else
@@ -102,6 +121,8 @@ namespace Fast.Flow
 
         private void StartContainer(FlowContainer container)
         {
+            container.OnStart.Invoke();
+
             container.NodesToPlay.AddRange(container.AllNodes);
         }
 
@@ -194,6 +215,8 @@ namespace Fast.Flow
 
         private void FinishContainer(FlowContainer container)
         {
+            container.OnFinish.Invoke();
+
             container_playing = null;
         }
     }

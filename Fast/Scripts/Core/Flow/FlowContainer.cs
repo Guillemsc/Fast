@@ -20,6 +20,9 @@ namespace Fast.Flow
         private bool next_starts_with_last = false;
         private bool next_starts_at_end_of_last = false;
 
+        private Callback on_start = new Callback();
+        private Callback on_finish = new Callback();
+
         public FlowContainer(FlowController controller, int identifier_id)
         {
             this.controller = controller;
@@ -46,6 +49,16 @@ namespace Fast.Flow
         {
             get { return next_starts_at_end_of_last; }
             set { next_starts_at_end_of_last = value; }
+        }
+
+        public Callback OnStart
+        {
+            get { return on_finish; }
+        }
+
+        public Callback OnFinish
+        {
+            get { return on_finish; }
         }
 
         public void AddFlowNode(FlowNode node)
