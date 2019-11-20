@@ -141,11 +141,13 @@ namespace Fast.Localization
 
             for (int i = 0; i < serialized_data.files_to_download.Count; ++i)
             {
+                EditorGUILayout.Separator();
+
                 LocalizationFileToDownload curr_file = serialized_data.files_to_download[i];
 
                 EditorGUILayout.BeginHorizontal();
                 {
-                    EditorGUILayout.LabelField("File " + (i + 1) + ": " + curr_file.name_to_save_as);
+                    EditorGUILayout.LabelField("File " + (i + 1) + ": " + curr_file.name_to_save_as, styles.BoldTextStyle);
 
                     if (GUILayout.Button("X"))
                     {

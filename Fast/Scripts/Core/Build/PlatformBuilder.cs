@@ -14,6 +14,11 @@ namespace Fast.Build
             return "Undefined";
         }
 
+        public virtual void OnGUI()
+        {
+
+        }
+
         public virtual bool CanBuild(BuildSettings settings, ref List<string> errors)
         {
             return false;
