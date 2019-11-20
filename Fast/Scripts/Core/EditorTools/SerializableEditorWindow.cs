@@ -6,7 +6,7 @@ using UnityEditor;
 
 namespace Fast.EditorTools
 {
-    class SerializableEditorWindow<T> : EditorWindow
+    public class SerializableEditorWindow<T> : EditorWindow
     {
         private string window_uid = "";
 
