@@ -30,7 +30,7 @@ namespace Fast.UI
                 CanvasGroup curr_go_cg = curr_go.GetOrAddComponent<CanvasGroup>();
 
                 Fast.Animations.FadeAnimation fade_in_anim 
-                    = new Fast.Animations.FadeAnimation(curr_go, 3.4f, 0, 1, ForceStartingValues);
+                    = new Fast.Animations.FadeAnimation(curr_go, 0.4f, 0, 1, ForceStartingValues);
 
                 sequence.Join(fade_in_anim.AnimateForward());
             }
@@ -52,7 +52,7 @@ namespace Fast.UI
                 CanvasGroup curr_go_cg = curr_go.GetOrAddComponent<CanvasGroup>();
 
                 Fast.Animations.FadeAnimation fade_in_anim 
-                    = new Fast.Animations.FadeAnimation(curr_go, 3.4f, 0, 1, ForceStartingValues);
+                    = new Fast.Animations.FadeAnimation(curr_go, 0.4f, 0, 1, ForceStartingValues);
 
                 sequence.Join(fade_in_anim.AnimateBackward());
             }

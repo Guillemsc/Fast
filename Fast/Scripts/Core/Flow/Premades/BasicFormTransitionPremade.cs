@@ -86,7 +86,7 @@ public static class BasicFormTransitionPremade
         }
 
         container
-            .FlowNextStartWithLast().FlowCurrSubFormSetActive(false)
+            .FlowCurrSubFormSetActive(false)
             .FlowNextStartWithLast().FlowCurrSubFormHide()
             .FlowRemoveCurrSubForm();
     }
