@@ -242,7 +242,8 @@ namespace Fast.Localization
                 files_to_download_now.RemoveAt(0);
 
                 Fast.GoogleDrive.DownloadSpreadsheet download_spreadsheet_request
-                    = new Fast.GoogleDrive.DownloadSpreadsheet(serialized_data.client_id, serialized_data.client_secret, curr_file.document_id, curr_file.document_range);
+                    = new Fast.GoogleDrive.DownloadSpreadsheet(serialized_data.client_id, serialized_data.client_secret, 
+                    curr_file.document_id, curr_file.document_range);
 
                 download_spreadsheet_request.RunRequest(
                 delegate (Fast.GoogleDrive.DownloadSpreadsheetSuccessObject success)

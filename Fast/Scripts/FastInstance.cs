@@ -13,6 +13,7 @@ namespace Fast
         private Fast.Modules.ApplicationModule application_module = null;
         private Fast.Modules.PlatformModule platform_module = null;
         private Fast.Modules.LocalizationModule localization_module = null;
+        private Fast.Modules.EventModule event_module = null;
 
         private Fast.Modules.FlowModule flow_module = null;
         private Fast.Modules.LogicModule logic_module = null;
@@ -22,9 +23,15 @@ namespace Fast
 
         FastInstance()
         {
+            if(instance == null)
+            {
+                instance = this;
+            }
+
             application_module = (Modules.ApplicationModule)AddModule(new Modules.ApplicationModule());
             platform_module = (Modules.PlatformModule)AddModule(new Modules.PlatformModule());
             localization_module = (Modules.LocalizationModule)AddModule(new Modules.LocalizationModule());
+            event_module = (Modules.EventModule)AddModule(new Modules.EventModule());
 
             flow_module = (Modules.FlowModule)AddUpdatableModule(new Modules.FlowModule());
             logic_module = (Modules.LogicModule)AddUpdatableModule(new Modules.LogicModule());
@@ -130,6 +137,11 @@ namespace Fast
         public Fast.Modules.LocalizationModule MLocalization
         {
             get { return localization_module; }
+        }
+
+        public Fast.Modules.EventModule MEvent
+        {
+            get { return event_module; }
         }
 
         public Fast.Modules.FlowModule MFlow

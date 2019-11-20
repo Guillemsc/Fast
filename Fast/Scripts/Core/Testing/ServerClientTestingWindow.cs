@@ -196,8 +196,6 @@ namespace Fast.Testing
             }
 
             EditorGUILayout.EndScrollView();
-
-            EditorUtility.SetDirty(this);
         }
 
         private void StartProcess(bool as_server)
@@ -210,7 +208,7 @@ namespace Fast.Testing
                 myProcess.StartInfo.UseShellExecute = true;
                 myProcess.StartInfo.CreateNoWindow = true;
                 myProcess.StartInfo.FileName = server_build_filepath;
-                myProcess.StartInfo.Arguments = "-batchmode -" + serialized_data.server_arg;
+                myProcess.StartInfo.Arguments = "-" + serialized_data.server_arg;
             }
             else
             {

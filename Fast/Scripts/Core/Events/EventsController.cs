@@ -38,7 +38,7 @@ namespace Fast
             }
         }
 
-        public void Invoke(Event ev)
+        public void SendEvent(Event ev)
         {
             if (ev != null)
             {
