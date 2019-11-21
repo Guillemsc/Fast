@@ -4,13 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-public static class BasicFormTransitionPremade
+public static class FormTransitionPremade
 {
-    public static Fast.Flow.FlowNode PremadeBasicFormTransition(this Fast.Flow.FlowContainer container,
-        string to_deactivate_transition, bool to_deactivate_transition_backward, Fast.UI.Form to_activate,
-        string to_activate_transition, bool to_activate_transition_backward)
+    private static Fast.Flow.FlowContainer PremadeFormTransitionEx(this Fast.Flow.FlowContainer container,
+        string to_deactivate_transition, bool to_deactivate_transition_backward, bool transiton_start_together, Fast.UI.Form to_activate,
+        string to_activate_transition, bool to_activate_transition_backward, out Fast.Flow.FlowNode mid_node)
     {
-        Fast.Flow.FlowNode ret = null;
 
         container.FlowAllSubFormsPlayDefaultBackwardAnimation();
 
@@ -23,9 +22,12 @@ public static class BasicFormTransitionPremade
             container.FlowNextStartWithLast().FlowCurrFormPlayForwardAnimation(to_deactivate_transition, false);
         }
 
-        container.FlowNextStartWithLast().FlowSetCurrForm(to_activate);
+        if (transiton_start_together)
+            container.FlowNextStartWithLast().FlowSetCurrForm(to_activate);
+        else
+            container.FlowSetCurrForm(to_activate);
 
-        ret = container.LastNode;
+        mid_node = container.LastNode;
 
         if (to_activate_transition_backward)
         {
@@ -49,7 +51,41 @@ public static class BasicFormTransitionPremade
             .FlowAllSubFormsSetActive(false)
             .FlowRemoveAllSubForms();
 
-        return ret;
+        return container;
+    }
+
+    public static Fast.Flow.FlowContainer PremadeFormTransition(this Fast.Flow.FlowContainer container,
+        string to_deactivate_transition, bool to_deactivate_transition_backward, Fast.UI.Form to_activate,
+        string to_activate_transition, bool to_activate_transition_backward)
+    {
+        Fast.Flow.FlowNode out_node;
+        return PremadeFormTransitionEx(container, to_deactivate_transition, to_deactivate_transition_backward, false,
+                                        to_activate, to_activate_transition, to_activate_transition_backward, out out_node);
+    }
+
+    public static Fast.Flow.FlowContainer PremadeFormTransition(this Fast.Flow.FlowContainer container,
+        string to_deactivate_transition, bool to_deactivate_transition_backward, Fast.UI.Form to_activate,
+        string to_activate_transition, bool to_activate_transition_backward, out Fast.Flow.FlowNode mid_node)
+    {
+        return PremadeFormTransitionEx(container, to_deactivate_transition, to_deactivate_transition_backward, false,
+                                        to_activate, to_activate_transition, to_activate_transition_backward, out mid_node);
+    }
+
+    public static Fast.Flow.FlowContainer PremadeFormTransitionTogether(this Fast.Flow.FlowContainer container,
+        string to_deactivate_transition, bool to_deactivate_transition_backward, Fast.UI.Form to_activate,
+        string to_activate_transition, bool to_activate_transition_backward)
+    {
+        Fast.Flow.FlowNode out_node;
+        return PremadeFormTransitionEx(container, to_deactivate_transition, to_deactivate_transition_backward, true,
+                                        to_activate, to_activate_transition, to_activate_transition_backward, out out_node);
+    }
+
+    public static Fast.Flow.FlowContainer PremadeFormTransitionTogether(this Fast.Flow.FlowContainer container,
+        string to_deactivate_transition, bool to_deactivate_transition_backward, Fast.UI.Form to_activate,
+        string to_activate_transition, bool to_activate_transition_backward, out Fast.Flow.FlowNode mid_node)
+    {
+        return PremadeFormTransitionEx(container, to_deactivate_transition, to_deactivate_transition_backward, true,
+                                        to_activate, to_activate_transition, to_activate_transition_backward, out mid_node);
     }
 
     public static void PremadeOpenSubFormTransition(this Fast.Flow.FlowContainer container,
