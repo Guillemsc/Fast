@@ -23,9 +23,13 @@ public static class FormTransitionPremade
         }
 
         if (transiton_start_together)
+        {
             container.FlowNextStartWithLast().FlowSetCurrForm(to_activate);
+        }
         else
+        {
             container.FlowSetCurrForm(to_activate);
+        }
 
         mid_node = container.LastNode;
 
