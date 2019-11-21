@@ -125,7 +125,7 @@ namespace Fast.Testing
 
             EditorGUILayout.BeginHorizontal();
             {
-                EditorGUILayout.LabelField("Server", GUILayout.MaxWidth(105));
+                EditorGUILayout.LabelField("Execute Server", GUILayout.MaxWidth(105));
 
                 serialized_data.server = EditorGUILayout.Toggle(serialized_data.server);
             }
@@ -133,7 +133,7 @@ namespace Fast.Testing
 
             EditorGUILayout.BeginHorizontal();
             {
-                EditorGUILayout.LabelField("Clients", GUILayout.MaxWidth(105));
+                EditorGUILayout.LabelField("Execute Clients", GUILayout.MaxWidth(105));
 
                 serialized_data.clients = EditorGUILayout.IntField(serialized_data.clients);
             }

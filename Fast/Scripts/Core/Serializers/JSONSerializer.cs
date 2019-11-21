@@ -58,7 +58,7 @@ namespace Fast.Serializers
             return ret;
         }
 
-        public static bool SerializeObjectPersistenPath(string save_name, object to_serialize)
+        public static bool SerializeObjectPersistentPath(string save_name, object to_serialize)
         {
             bool ret = false;
 
