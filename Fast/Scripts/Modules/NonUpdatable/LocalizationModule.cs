@@ -27,7 +27,7 @@ namespace Fast.Modules
             languages_data[data.Language] = data;
         }
 
-        public void SetCurrentLanguage(string set)
+        public bool SetCurrentLanguage(string set)
         {
             bool language_found = languages_data.TryGetValue(set, out curr_language_data);
 
@@ -35,6 +35,8 @@ namespace Fast.Modules
             {
                 UpdateTexts();
             }
+
+            return language_found;
         }
 
         public string GetLocalizedText(string key, List<string> args)
