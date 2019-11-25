@@ -48,12 +48,12 @@ public static class FormTransitionPremade
 
             .FlowLastCurrFormSetAsCurrForm()
             .FlowCurrFormHide()
-            .FlowCurrFormSetActive(false)
+            .FlowNextStartWithLast().FlowCurrFormSetActive(false)
 
             .FlowSetCurrForm(to_activate)
-            .FlowAllSubFormsHide()
-            .FlowAllSubFormsSetActive(false)
-            .FlowRemoveAllSubForms();
+            .FlowNextStartWithLast().FlowAllSubFormsHide()
+            .FlowNextStartWithLast().FlowAllSubFormsSetActive(false)
+            .FlowNextStartWithLast().FlowRemoveAllSubForms();
 
         return container;
     }

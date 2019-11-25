@@ -66,6 +66,8 @@ namespace Fast.Flow
                     container = to_run;
 
                     containers_to_play.Add(to_run);
+
+                    Update();
                 }
                 else
                 {
@@ -91,6 +93,8 @@ namespace Fast.Flow
                 container = to_run;
 
                 containers_to_play.Add(to_run);
+
+                Update();
             }
             else
             {
@@ -111,6 +115,8 @@ namespace Fast.Flow
                     StartContainer(container_playing);
 
                     containers_to_play.RemoveAt(0);
+
+                    UpdateContainer(container_playing);
                 }
             }
             else
