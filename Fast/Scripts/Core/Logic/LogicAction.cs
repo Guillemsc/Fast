@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Fast.Logic
 {
-    class LogicAction
+    public class LogicAction
     {
         private bool started = false;
         private bool finished = false;

@@ -27,10 +27,10 @@ namespace Fast.Animations
 
             if (ForceStartValues)
             {
-                ret.Append(go.transform.DOMove(start_pos, 0.0f));
+                ret.Append(go.transform.DOLocalMove(start_pos, 0.0f));
             }
 
-            ret.Append(go.transform.DOMove(end_pos, time).SetEase(Ease.InOutQuad));
+            ret.Append(go.transform.DOLocalMove(end_pos, time).SetEase(Ease.InOutQuad));
 
             return ret;
         }
@@ -41,10 +41,10 @@ namespace Fast.Animations
 
             if (ForceStartValues)
             {
-                ret.Append(go.transform.DOMove(end_pos, 0.0f));
+                ret.Append(go.transform.DOLocalMove(end_pos, 0.0f));
             }
 
-            ret.Append(go.transform.DOMove(start_pos, time).SetEase(Ease.InOutQuad));
+            ret.Append(go.transform.DOLocalMove(start_pos, time).SetEase(Ease.InOutQuad));
 
             return ret;
         }

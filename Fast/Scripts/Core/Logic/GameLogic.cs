@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Fast.Logic
 {
-    class GameLogic
+    public class GameLogic
     {
         private bool running = false;
         private bool finished = false;
