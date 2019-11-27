@@ -15,6 +15,8 @@ namespace Fast.Networking
         private bool connected_to_room = false;
         private string connected_room_id = "";
 
+        private List<object> room_messages_to_read = new List<object>();
+
         public RoomsClientModule(ClientController client_controller) : base(client_controller)
         {
 
@@ -98,6 +100,15 @@ namespace Fast.Networking
 
                         break;
                     }
+
+                case ServerControllerMessageType.ROOM_MESSAGE:
+                    {
+                        RoomMessage room_message = (RoomMessage)message;
+
+                        room_messages_to_read.Add(room_message.MessageObj);
+
+                        break;
+                    }
             }
         }
 
@@ -122,6 +133,23 @@ namespace Fast.Networking
 
             connected_to_room = false;
             connected_room_id = "";
+        }
+
+        public List<object> ReadRoomMessages()
+        {
+            List<object> ret = new List<object>(room_messages_to_read);
+
+            room_messages_to_read.Clear();
+
+            return ret;
+        }
+
+        public void SendRoomMessage(object message)
+        {
+            if (connected_to_room)
+            {
+                ClientController.SendMessage(new RoomMessage(message));
+            }
         }
 
         public Callback OnJoinRoomSuccess

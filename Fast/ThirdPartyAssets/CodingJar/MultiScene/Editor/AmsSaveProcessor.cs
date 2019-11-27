@@ -132,7 +132,6 @@ namespace CodingJar.MultiScene.Editor
 
                 xRef.fromProperty.serializedObject.ApplyModifiedPropertiesWithoutUndo();
 
-
                 // Restore if we're not about to enter play mode
                 if ( !EditorApplication.isPlayingOrWillChangePlaymode )
 				{
