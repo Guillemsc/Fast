@@ -121,13 +121,20 @@ namespace CodingJar.MultiScene.Editor
 				if ( !bSaveCrossSceneReferences )
 					Debug.LogWarningFormat( "Cross-Scene Reference {0} will become null", xRef );
 
-				// Set it to null.
-				int refIdToRestore = xRef.fromProperty.objectReferenceInstanceIDValue;
-				xRef.fromProperty.objectReferenceInstanceIDValue = 0;
-				xRef.fromProperty.serializedObject.ApplyModifiedPropertiesWithoutUndo();
+                // Set it to null.
+                int refIdToRestore = 0;
 
-				// Restore if we're not about to enter play mode
-				if ( !EditorApplication.isPlayingOrWillChangePlaymode )
+                var obj = xRef.fromProperty.objectReferenceValue;
+
+                refIdToRestore = obj ? obj.GetInstanceID() : 0;
+
+                xRef.fromProperty.objectReferenceInstanceIDValue = 0;
+
+                xRef.fromProperty.serializedObject.ApplyModifiedPropertiesWithoutUndo();
+
+
+                // Restore if we're not about to enter play mode
+                if ( !EditorApplication.isPlayingOrWillChangePlaymode )
 				{
 					EditorApplication.delayCall += () =>
 						{

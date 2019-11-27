@@ -44,7 +44,6 @@ namespace Fast.Animations
                 ret.Append(go.transform.DOScale(end_scale, 0.0f));
             }
 
-
             ret.Append(go.transform.DOScale(start_scale, time).SetEase(Ease.InOutQuad));
 
             return ret;

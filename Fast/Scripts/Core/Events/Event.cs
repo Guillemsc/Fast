@@ -1,7 +1,7 @@
 ﻿
 namespace Fast
 {
-    class Event
+    public class Event
     {
         private int index = 0;
 

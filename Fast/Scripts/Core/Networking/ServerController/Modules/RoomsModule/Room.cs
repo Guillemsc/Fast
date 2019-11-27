@@ -77,8 +77,6 @@ namespace Fast.Networking
                                                     {
                                                         Logger.ServerLogError(ToString() + " OnPlayerConnected(): " + player_connected_task.Exception);
 
-                                                        //ServerController.OnServerException(player_connected_task.Exception);
-
                                                     }
                                                     else
                                                     {
@@ -92,8 +90,6 @@ namespace Fast.Networking
                                             if (room_opened_task.Exception != null)
                                             {
                                                 Logger.ServerLogError(ToString() + " OnRoomOpened(): " + room_opened_task.Exception);
-
-                                                //ServerController.OnServerException(room_opened_task.Exception);
                                             }
                                             else
                                             {
@@ -122,8 +118,6 @@ namespace Fast.Networking
                                             if (player_connected_task.Exception != null)
                                             {
                                                 Logger.ServerLogError(ToString() + " OnPlayerConnected(): " + player_connected_task.Exception);
-
-                                                //ServerController.OnServerException(player_connected_task.Exception);
                                             }
                                             else
                                             {
@@ -147,8 +141,6 @@ namespace Fast.Networking
                             if (player_wants_to_connect_task.Exception != null)
                             {
                                 Logger.ServerLogError(ToString() + " OnPlayerWantsToConnect(): " + player_wants_to_connect_task.Exception);
-
-                                //ServerController.OnServerException(player_wants_to_connect_task.Exception);
                             }
                             else
                             {
@@ -190,8 +182,6 @@ namespace Fast.Networking
                                 if(player_disconnected_task.Exception != null)
                                 {
                                     Logger.ServerLogError(ToString() + " OnPlayerDisconnected(): " + player_disconnected_task.Exception);
-
-                                    //ServerController.OnServerException(player_disconnected_task.Exception);
                                 }
                                 else
                                 {

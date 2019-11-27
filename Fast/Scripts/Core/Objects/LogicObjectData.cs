@@ -7,11 +7,18 @@ namespace Fast
 {
     public class LogicObjectData<T>
     {
+        private int object_type = 0;
         private int object_uid = 0;
 
-        public LogicObjectData(int object_uid)
+        public LogicObjectData(int object_type, int object_uid)
         {
+            this.object_type = object_type;
             this.object_uid = object_uid;
+        }
+
+        public int ObjectType
+        {
+            get { return object_type; }
         }
 
         public int ObjectUID
@@ -19,7 +26,7 @@ namespace Fast
             get { return object_uid; }
         }
 
-        protected virtual T Clone()
+        public virtual T Clone()
         {
             return default(T);
         }

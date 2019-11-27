@@ -12,19 +12,7 @@ namespace Fast.Modules
 
         public override void Update()
         {
-            List<Logic.GameLogic> to_update = new List<Logic.GameLogic>(game_logic_running);
-
-            for (int i = 0; i < to_update.Count; ++i)
-            {
-                Logic.GameLogic curr_game_logic = to_update[i];
-
-                if (!curr_game_logic.Running)
-                {
-                    curr_game_logic.Start();
-                }
-
-                curr_game_logic.Update();
-            }
+            UpdateLogic();
         }
 
         public void StartLogic(Logic.GameLogic logic)
@@ -75,6 +63,23 @@ namespace Fast.Modules
                         break;
                     }
                 }
+            }
+        }
+
+        private void UpdateLogic()
+        {
+            List<Logic.GameLogic> to_update = new List<Logic.GameLogic>(game_logic_running);
+
+            for (int i = 0; i < to_update.Count; ++i)
+            {
+                Logic.GameLogic curr_game_logic = to_update[i];
+
+                if (!curr_game_logic.Running)
+                {
+                    curr_game_logic.Start();
+                }
+
+                curr_game_logic.Update();
             }
         }
     }

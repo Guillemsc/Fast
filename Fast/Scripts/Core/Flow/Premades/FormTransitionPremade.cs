@@ -48,12 +48,12 @@ public static class FormTransitionPremade
 
             .FlowLastCurrFormSetAsCurrForm()
             .FlowCurrFormHide()
-            .FlowCurrFormSetActive(false)
+            .FlowNextStartWithLast().FlowCurrFormSetActive(false)
 
             .FlowSetCurrForm(to_activate)
-            .FlowAllSubFormsHide()
-            .FlowAllSubFormsSetActive(false)
-            .FlowRemoveAllSubForms();
+            .FlowNextStartWithLast().FlowAllSubFormsHide()
+            .FlowNextStartWithLast().FlowAllSubFormsSetActive(false)
+            .FlowNextStartWithLast().FlowRemoveAllSubForms();
 
         return container;
     }
@@ -92,7 +92,7 @@ public static class FormTransitionPremade
                                         to_activate, to_activate_transition, to_activate_transition_backward, out mid_node);
     }
 
-    public static void PremadeOpenSubFormTransition(this Fast.Flow.FlowContainer container,
+    public static Fast.Flow.FlowContainer PremadeOpenSubFormTransition(this Fast.Flow.FlowContainer container,
         Fast.UI.Form to_activate, string to_activate_animation, bool to_activate_animation_backward)
     {
         container.FlowAddAndSetCurrSubForm(to_activate);
@@ -109,9 +109,11 @@ public static class FormTransitionPremade
         container
             .FlowNextStartWithLast().FlowCurrSubFormSetActive(true)
             .FlowNextStartWithLast().FlowCurrSubFormShow();
+
+        return container;
     }
 
-    public static void PremadeCloseSubFormTransition(this Fast.Flow.FlowContainer container,
+    public static Fast.Flow.FlowContainer PremadeCloseSubFormTransition(this Fast.Flow.FlowContainer container,
         Fast.UI.Form to_activate, string to_activate_animation, bool to_activate_animation_backward)
     {
         container.FlowAddAndSetCurrSubForm(to_activate);
@@ -129,6 +131,8 @@ public static class FormTransitionPremade
             .FlowCurrSubFormSetActive(false)
             .FlowNextStartWithLast().FlowCurrSubFormHide()
             .FlowRemoveCurrSubForm();
+
+        return container;
     }
 }
 
