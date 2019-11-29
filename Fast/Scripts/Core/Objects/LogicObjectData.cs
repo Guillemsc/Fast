@@ -5,7 +5,7 @@ using System;
 
 namespace Fast
 {
-    public class LogicObjectData<T>
+    public class LogicObjectData
     {
         private int object_type = 0;
         private int object_uid = 0;
@@ -24,11 +24,6 @@ namespace Fast
         public int ObjectUID
         {
             get { return object_uid; }
-        }
-
-        public virtual T Clone()
-        {
-            return default(T);
         }
     }
 }

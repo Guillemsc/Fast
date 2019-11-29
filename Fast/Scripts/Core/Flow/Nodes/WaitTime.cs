@@ -3,9 +3,9 @@ using DG.Tweening;
 
 public static class AddWaitTimeExtension
 {
-    public static Fast.Flow.FlowContainer FlowAddWaitTime(this Fast.Flow.FlowContainer container, float time)
+    public static Fast.Flow.FlowContainer FlowWaitTime(this Fast.Flow.FlowContainer container, float time)
     {
-        Fast.Flow.AddWaitTimeNode node = new Fast.Flow.AddWaitTimeNode(container, time);
+        Fast.Flow.WaitTime node = new Fast.Flow.WaitTime(container, time);
 
         container.AddFlowNode(node);
 
@@ -15,11 +15,11 @@ public static class AddWaitTimeExtension
 
 namespace Fast.Flow
 {
-    public class AddWaitTimeNode : FlowNode
+    public class WaitTime : FlowNode
     {
         private float wait_time;
 
-        public AddWaitTimeNode(FlowContainer container, float time) : base(container)
+        public WaitTime(FlowContainer container, float time) : base(container)
         {
             wait_time = time;
         }
