@@ -166,5 +166,10 @@ namespace Fast.Networking
         {
             get { return on_disconnect_from_room; }
         }
+
+        //public void RetreiveRoomsList(string room_name)
+        //{
+
+        //}
     }
 }

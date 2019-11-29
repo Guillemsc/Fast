@@ -56,7 +56,9 @@ namespace Fast.Networking
 
         private void OnConnected()
         {
-            SendMessage(new CreatePlayerMessage(join_data));
+            byte[] message_data = Parsers.ByteParser.ComposeObject(new CreatePlayerMessage(join_data));
+
+            client.SendMessage(message_data);
         }
 
         private void OnDisconnected()

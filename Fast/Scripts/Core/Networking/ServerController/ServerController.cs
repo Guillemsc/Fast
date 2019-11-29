@@ -42,6 +42,11 @@ namespace Fast.Networking
         public void Update()
         {
             server.ReadMessages();
+
+            for (int i = 0; i < modules.Count; ++i)
+            {
+                modules[i].Update();
+            }
         }
 
         private void AddModule(ServerModule module)
@@ -51,7 +56,7 @@ namespace Fast.Networking
 
         private void OnClientConnected(int client_id)
         {
-
+            int i = 0;
         }
 
         private void OnClientDisconnected(int client_id)

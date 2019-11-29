@@ -10,13 +10,16 @@ namespace Fast.Networking
     {
         private RoomsServerModule rooms_module = null;
 
-        private string room_name = "";
+        private RoomSettings settings = null;
+
         private string room_id = "";
 
-        public void Init(RoomsServerModule rooms_module, string room_name, string room_id)
+        protected bool finished_updating = true;
+
+        public void Init(RoomsServerModule rooms_module, RoomSettings settings, string room_id)
         {
             this.rooms_module = rooms_module;
-            this.room_name = room_name;
+            this.settings = settings;
             this.room_id = room_id;
         }
 
@@ -27,7 +30,7 @@ namespace Fast.Networking
 
         public string RoomName
         {
-            get { return room_name; }
+            get { return settings.Name; }
         }
 
         public string RoomId
@@ -38,6 +41,16 @@ namespace Fast.Networking
         public virtual bool IsEmpty()
         {
             return true;
+        }
+
+        public bool _Updatable
+        {
+            get { return settings.Updatable; }
+        }
+
+        public bool _FinishedUpdating
+        {
+            get { return finished_updating; }
         }
 
         public virtual void PlayerConnect(Player player, object join_data, Action on_success, Action<ServerControllerError> on_error)
@@ -52,6 +65,11 @@ namespace Fast.Networking
         }
 
         public virtual void MessageReceived(Player player, object message_obj)
+        {
+
+        }
+
+        public virtual void Update()
         {
 
         }

@@ -8,7 +8,7 @@ namespace Fast.Networking
 {
     public class RoomsServerModule : ServerModule
     {
-        private Dictionary<string, Type> room_types = new Dictionary<string, Type>();
+        private Dictionary<RoomSettings, Type> room_types = new Dictionary<RoomSettings, Type>();
 
         private List<BaseRoom> rooms = new List<BaseRoom>();
 
@@ -20,6 +20,11 @@ namespace Fast.Networking
         public override void Start()
         {
             GetRoomsTypes();
+        }
+
+        public override void Update()
+        {
+            UpdateRooms();
         }
 
         private void GetRoomsTypes()
@@ -38,15 +43,15 @@ namespace Fast.Networking
                 {
                     Type curr_type = types[y];
 
-                    object[] attributes_room = curr_type.GetCustomAttributes(typeof(RoomName), true);
+                    object[] attributes_room = curr_type.GetCustomAttributes(typeof(RoomSettings), true);
 
                     if (attributes_room != null && attributes_room.Length > 0)
                     {
-                        List<RoomName> room_name = attributes_room.Cast<RoomName>().ToList();
+                        List<RoomSettings> room_settings = attributes_room.Cast<RoomSettings>().ToList();
 
-                        if (room_name.Count > 0)
+                        if (room_settings.Count > 0)
                         {
-                            room_types.Add(room_name[0].Name, curr_type);
+                            room_types.Add(room_settings[0], curr_type);
                         }
                     }
                 }
@@ -55,9 +60,9 @@ namespace Fast.Networking
             string log_rooms = "Room types loaded: ";
 
             int counter = 0;
-            foreach (KeyValuePair<string, Type> entry in room_types)
+            foreach (KeyValuePair<RoomSettings, Type> entry in room_types)
             {
-                log_rooms += entry.Key;
+                log_rooms += entry.Key.Name;
 
                 if (counter < room_types.Count - 1)
                 {
@@ -150,14 +155,28 @@ namespace Fast.Networking
             BaseRoom ret = null;
 
             Type type = null;
+            RoomSettings settings = null;
 
-            bool exists = room_types.TryGetValue(room_name, out type);
+            bool exists = false;
+
+            foreach (KeyValuePair<RoomSettings, Type> entry in room_types)
+            {
+                if (entry.Key.Name == room_name)
+                {
+                    type = entry.Value;
+                    settings = entry.Key;
+
+                    exists = true;
+
+                    break;
+                }
+            }
 
             if (exists)
             {
                 ret = (BaseRoom)Activator.CreateInstance(type);
 
-                ret.Init(this, room_name, room_id);
+                ret.Init(this, settings, room_id);
 
                 lock (rooms)
                 {
@@ -205,6 +224,24 @@ namespace Fast.Networking
             }
 
             return ret;
+        }
+
+        private void UpdateRooms()
+        {
+            for (int i = 0; i < rooms.Count; ++i)
+            {
+                BaseRoom curr_room = rooms[i];
+
+                if (curr_room._Updatable)
+                {
+                    if (curr_room._FinishedUpdating)
+                    {
+                        curr_room.Update();
+                    }
+
+                    break;
+                }
+            }
         }
 
         public void PlayerCreateRoom(Player player, string room_name, string room_id, object join_data,

@@ -21,6 +21,11 @@ namespace Fast.Networking
 
         }
 
+        public virtual void Update()
+        {
+
+        }
+
         public virtual void OnPlayerConnected(Player player)
         {
 

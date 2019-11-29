@@ -8,18 +8,25 @@ using System.Threading.Tasks;
 namespace Fast.Networking
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class RoomName : Attribute
+    public class RoomSettings : Attribute
     {
         private string name = "";
+        private bool updatable = false;
 
-        public RoomName(string name)
+        public RoomSettings(string name, bool updatable)
         {
             this.name = name;
+            this.updatable = updatable;
         }
 
         public string Name
         {
             get { return name; }
+        }
+
+        public bool Updatable
+        {
+            get { return updatable; }
         }
     }
 
@@ -196,9 +203,46 @@ namespace Fast.Networking
 
                 if(connected_players.Count == 0)
                 {
-                    Task.Factory.StartNew(() => OnRoomClosed());
+                    Task.Factory.StartNew(() => OnRoomClosed())
+                    .ContinueWith(delegate(Task room_closed_task)
+                    {
+                        if (room_closed_task.IsFaulted || room_closed_task.IsCanceled)
+                        {
+                            if (room_closed_task.Exception != null)
+                            {
+                                Logger.ServerLogError(ToString() + " OnRoomClosed(): " + room_closed_task.Exception);
+                            }
+                            else
+                            {
+                                Logger.ServerLogError(ToString() + " OnRoomClosed(): " + "Task faulted or cancelled");
+                            }
+                        }
+                    });
                 }
             }
+        }
+
+        public override void Update()
+        {
+            finished_updating = false;
+
+            Task.Factory.StartNew(() => OnUpdate()).
+            ContinueWith(delegate (Task update_task)
+            {
+                if (update_task.IsFaulted || update_task.IsCanceled)
+                {
+                    if (update_task.Exception != null)
+                    {
+                        Logger.ServerLogError(ToString() + " OnUpdate(): " + update_task.Exception);
+                    }
+                    else
+                    {
+                        Logger.ServerLogError(ToString() + " OnUpdate(): " + "Task faulted or cancelled");
+                    }
+                }
+
+                finished_updating = true;
+            });
         }
 
         public override void MessageReceived(Player player, object message_obj)
@@ -250,9 +294,12 @@ namespace Fast.Networking
 
         public void BroadcastMessage(object message_obj)
         {
-            for(int i = 0; i < connected_players.Count; ++i)
+            lock (connected_players)
             {
-                connected_players[i].SendMessage(message_obj);
+                for (int i = 0; i < connected_players.Count; ++i)
+                {
+                    connected_players[i].SendMessage(message_obj);
+                }
             }
         }
 
@@ -282,6 +329,11 @@ namespace Fast.Networking
         }
 
         protected virtual void OnMessageReceived(P player, object message_obj)
+        {
+
+        }
+
+        protected virtual void OnUpdate()
         {
 
         }

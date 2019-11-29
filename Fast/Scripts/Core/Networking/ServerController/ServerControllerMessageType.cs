@@ -25,5 +25,7 @@ namespace Fast.Networking
         ROOM_MESSAGE,
 
         DISCONNECTED_FROM_ROOM,
+
+        RETRIEVE_ROOMS_LIST,
     }
 }
