@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Fast.UI
 {
     /// <summary>
-    /// Represents a piece of UI that is has some independent functionallity
+    /// Represents a piece of UI that is has some independent functionality
     /// </summary>
     [Sirenix.OdinInspector.HideMonoScript]
     public class Form : MonoBehaviour

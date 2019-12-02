@@ -20,9 +20,14 @@ namespace Fast.Networking
             this.join_data = join_data;
         }
 
-        public Player ServerPlayer
+        public int ServerClientId
         {
-            get { return player; }
+            get { return player.ClientId; }
+        }
+
+        public object ServerJoinData
+        {
+            get { return player.JoinData; }
         }
 
         public object JoinData
