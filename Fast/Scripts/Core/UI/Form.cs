@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace Fast.UI
 {
+    /// <summary>
+    /// Represents a piece of UI that is has some independent functionallity
+    /// </summary>
     [Sirenix.OdinInspector.HideMonoScript]
     public class Form : MonoBehaviour
     {
@@ -34,16 +37,26 @@ namespace Fast.UI
             OnAwakeInternal();
         }
 
+        /// <summary>
+        /// [Internal, don't use] Parent object for all the form UI.
+        /// </summary>
         public GameObject Parent
         {
             get { return parent; }
         }
 
+        /// <summary>
+        /// [Internal, don't use] Animation used in default ocasions.
+        /// </summary>
         public FormAnimation DefaultAnimation
         {
             get { return default_animation; }
         }
 
+        /// <summary>
+        /// [Internal, don't use] Gets an animation added to this form.
+        /// </summary>
+        /// <param name="animation_name"> The unique name of the animation.</param>
         public FormAnimation GetAnimation(string animation_name)
         {
             FormAnimation ret = null;
@@ -61,6 +74,9 @@ namespace Fast.UI
             return ret;
         }
 
+        /// <summary>
+        /// [Internal, don't use] Calls the virtual method OnShowInternal(), and marks the form as being used.
+        /// </summary>
         public void Show()
         {
             if (!showing)
@@ -71,6 +87,9 @@ namespace Fast.UI
             }
         }
 
+        /// <summary>
+        /// [Internal, don't use] Calls the virtual method OnShowInternal(), and marks the form as not being used.
+        /// </summary>
         public void Hide()
         {
             if (showing)
@@ -81,16 +100,25 @@ namespace Fast.UI
             }
         }
 
+        /// <summary>
+        /// Called on the same time as the MonoBehaveour's Awake().
+        /// </summary>
         virtual protected void OnAwakeInternal()
         {
 
         }
 
+        /// <summary>
+        /// Called when the the form is marked as being used.
+        /// </summary>
         virtual protected void OnShowInternal()
         {
 
         }
 
+        /// <summary>
+        /// Called when the the form stops to be marked as being used.
+        /// </summary>
         virtual protected void OnHideInternal()
         {
 

@@ -136,6 +136,11 @@ namespace Fast.Testing
                 EditorGUILayout.LabelField("Execute Clients", GUILayout.MaxWidth(105));
 
                 serialized_data.clients = EditorGUILayout.IntField(serialized_data.clients);
+
+                if(serialized_data.clients < 0)
+                {
+                    serialized_data.clients = 0;
+                }
             }
             EditorGUILayout.EndHorizontal();
 

@@ -27,15 +27,17 @@ namespace Fast.Github
     {
         private string github_username = "";
         private string github_access_token = "";
+        private string github_repo_owner = "";
         private string github_repo = "";
 
         private CreateIssueObject issue_object = null;
 
-        public CreateIssue(string github_username, string github_access_token, string github_repo,
+        public CreateIssue(string github_username, string github_access_token, string github_repo_owner, string github_repo,
             CreateIssueObject issue_object)
         {
             this.github_username = github_username;
             this.github_access_token = github_access_token;
+            this.github_repo_owner = github_repo_owner;
             this.github_repo = github_repo;
             this.issue_object = issue_object;
         }
@@ -50,7 +52,7 @@ namespace Fast.Github
             RestClient client = new RestClient("https://api.github.com/");
             client.Authenticator = new HttpBasicAuthenticator(github_username, github_access_token);
 
-            string url = "/repos/" + github_username.ToLower() + "/" + github_repo.ToLower() + "/issues";
+            string url = "/repos/" + github_repo_owner + "/" + github_repo.ToLower() + "/issues";
 
             RestRequest request = new RestRequest(url, Method.POST);
             request.AddHeader("content-type", "application/vnd.github.symmetra-preview+json");

@@ -3,7 +3,10 @@ using System.Collections.Generic;
 
 namespace Fast.TimeSliced
 {
-    class TimeSlicedTask
+    /// <summary>
+    /// [For inheritance] Used for ocasions when a taks must be splited into different frames.
+    /// </summary>
+    public class TimeSlicedTask
     {
         private int weight = 0;
 
@@ -12,21 +15,33 @@ namespace Fast.TimeSliced
 
         private Callback on_finish = new Callback();
 
+        /// <summary>
+        /// Returns if the task has started and it's running.
+        /// </summary>
         public bool Running
         {
             get { return running; }
         }
 
+        /// <summary>
+        /// Returns if the task has started and has finished.
+        /// </summary>
         public bool Finished
         {
             get { return finished; }
         }
 
+        /// <summary>
+        /// Invoked when the task finishes.
+        /// </summary>
         public Callback OnFinish
         {
             get { return on_finish; }
         }
 
+        /// <summary>
+        /// [Internal, don't use] Sets the task as started and calls OnStartInternal().
+        /// </summary>
         public void Start()
         {
             if(!running)
@@ -37,6 +52,9 @@ namespace Fast.TimeSliced
             }
         }
 
+        /// <summary>
+        /// [Internal, don't use] Updates the task by calling OnUpdateInternal().
+        /// </summary>
         public void Update()
         {
             if(running && !finished)
@@ -45,6 +63,9 @@ namespace Fast.TimeSliced
             }
         }
 
+        /// <summary>
+        /// Function that needs to be called to mark the end of the task. Calls OnFinishInternal().
+        /// </summary>
         public void Finish()
         {
             if(running && !finished)
@@ -59,16 +80,25 @@ namespace Fast.TimeSliced
             }
         }
 
+        /// <summary>
+        /// Called when the task is started.
+        /// </summary>
         public virtual void OnStartInternal()
         {
 
         }
 
+        /// <summary>
+        /// Called once the task is starded and needs to update the progress.
+        /// </summary>
         public virtual void OnUpdateInternal()
         {
 
         }
 
+        /// <summary>
+        /// Called when the task is finished.
+        /// </summary>
         public virtual void OnFinishInternal()
         {
 

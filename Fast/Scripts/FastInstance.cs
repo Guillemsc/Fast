@@ -17,6 +17,7 @@ namespace Fast
 
         private Fast.Modules.FlowModule flow_module = null;
         private Fast.Modules.LogicModule logic_module = null;
+        private Fast.Modules.TurnLogicActionModule turn_logic_action_module = null;
 
         private List<Modules.Module> all_modules = new List<Modules.Module>();
         private List<Modules.UpdatableModule> updatable_modules = new List<Modules.UpdatableModule>();
@@ -35,6 +36,7 @@ namespace Fast
 
             flow_module = (Modules.FlowModule)AddUpdatableModule(new Modules.FlowModule());
             logic_module = (Modules.LogicModule)AddUpdatableModule(new Modules.LogicModule());
+            turn_logic_action_module = (Modules.TurnLogicActionModule)AddUpdatableModule(new Modules.TurnLogicActionModule());
         }
 
         private void Start()
@@ -152,6 +154,11 @@ namespace Fast
         public Fast.Modules.LogicModule MLogic
         {
             get { return logic_module; }
+        }
+
+        public Fast.Modules.TurnLogicActionModule MTurnLogicAction
+        {
+            get { return turn_logic_action_module; }
         }
     }
 }

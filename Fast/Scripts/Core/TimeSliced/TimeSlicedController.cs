@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Fast.TimeSliced
 {
+    /// <summary>
+    /// Controller of the time sliced tasks.
+    /// </summary>
     class TimeSlicedController
     {
         private Fast.Containers.PriorityQueue<TimeSlicedTask> tasks_queue

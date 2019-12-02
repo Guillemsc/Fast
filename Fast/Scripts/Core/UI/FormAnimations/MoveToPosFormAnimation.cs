@@ -1,0 +1,90 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using UnityEngine;
+using DG.Tweening;
+
+namespace Fast.UI
+{
+    [Sirenix.OdinInspector.HideMonoScript]
+    class MoveToPosFormAnimation : Fast.UI.FormAnimation
+    {
+        [System.Serializable]
+        protected class MoveToPosData
+        {
+            [Sirenix.OdinInspector.LabelText("To move")]
+            public List<GameObject> to_move = new List<GameObject>();
+
+            [Sirenix.OdinInspector.LabelText("Start position")]
+            public GameObject start_pos = null;
+
+            [Sirenix.OdinInspector.LabelText("End position")]
+            public GameObject end_pos = null;
+        }
+
+        [Sirenix.OdinInspector.Title("To move", "All the game objects that need to move, with the start and ending position")]
+        [SerializeField] private List<MoveToPosData> data_to_move = new List<MoveToPosData>();
+
+        private MoveToPosFormAnimation() : base("MoveToPos")
+        {
+
+        }
+
+        protected override void OnAnimateForwardInternal()
+        {
+            Sequence sequence = DOTween.Sequence();
+
+            for (int i = 0; i < data_to_move.Count; ++i)
+            {
+                MoveToPosData curr_data = data_to_move[i];
+
+                List<GameObject> to_move = curr_data.to_move;
+
+                for (int y = 0; y < to_move.Count; ++y)
+                {
+                    GameObject curr_go = to_move[y];
+
+                    curr_go.gameObject.SetActive(true);
+
+                    Fast.Animations.MoveAnimation move_anim
+                        = new Fast.Animations.MoveAnimation(curr_go, 0.4f, curr_data.start_pos.transform.localPosition,
+                        curr_data.end_pos.transform.localPosition, ForceStartingValues);
+
+                    sequence.Join(move_anim.AnimateForward());
+                }
+            }
+
+            sequence.OnComplete(Finish);
+            sequence.Play();
+        }
+
+        protected override void OnAnimateBackwardInternal()
+        {
+            Sequence sequence = DOTween.Sequence();
+
+            for (int i = 0; i < data_to_move.Count; ++i)
+            {
+                MoveToPosData curr_data = data_to_move[i];
+
+                List<GameObject> to_move = curr_data.to_move;
+
+                for (int y = 0; y < to_move.Count; ++y)
+                {
+                    GameObject curr_go = to_move[y];
+
+                    curr_go.gameObject.SetActive(true);
+
+                    Fast.Animations.MoveAnimation move_anim
+                        = new Fast.Animations.MoveAnimation(curr_go, 0.4f, curr_data.start_pos.transform.position,
+                        curr_data.end_pos.transform.position, ForceStartingValues);
+
+                    sequence.Join(move_anim.AnimateForward());
+                }
+            }
+
+            sequence.OnComplete(Finish);
+            sequence.Play();
+        }
+    }
+}

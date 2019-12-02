@@ -61,6 +61,16 @@ namespace Fast.Modules
             set { Screen.fullScreenMode = value; }
         }
 
+        public SystemLanguage SystemLanguage
+        {
+            get { return Application.systemLanguage; }
+        }
+
+        public string SaveDataDir
+        {
+            get { return Application.persistentDataPath; }
+        }
+
         public void Quit()
         {
 
@@ -73,16 +83,6 @@ namespace Fast.Modules
 
 #endif
 
-        }
-
-        public SystemLanguage SystemLanguage
-        {
-            get { return Application.systemLanguage; }
-        }
-
-        public string SaveDataDir 
-            {
-            get { return Application.persistentDataPath; }
         }
     }
 }

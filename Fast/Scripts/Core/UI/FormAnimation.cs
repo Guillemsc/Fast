@@ -4,11 +4,15 @@ using UnityEngine;
 
 namespace Fast.UI
 {
+    /// <summary>
+    /// [For inheritance] Animation used in conjunction with a UI form, to automate UI animations
+    /// </summary>
     public class FormAnimation : MonoBehaviour
     {
         [Sirenix.OdinInspector.ShowInInspector]
         [Sirenix.OdinInspector.HideLabel]
-        [Sirenix.OdinInspector.Title("Animation name")]
+        [Sirenix.OdinInspector.Title("Animation name", "(This name is set on the constructor of " +
+            "the animation and can't be set here)")]
         [Sirenix.OdinInspector.ReadOnly]
         private string animation_name = "";
 
@@ -17,22 +21,33 @@ namespace Fast.UI
 
         private Callback on_finish = new Callback();
 
+        /// <param name="animation_name"> A unique name for the animation.</param>
         public FormAnimation(string animation_name)
         {
             this.animation_name = animation_name;
         }
 
+        /// <summary>
+        /// [Internal, don't use] The unique name set to the animation.
+        /// </summary>
         public string AnimationName
         {
             get { return animation_name; }
         }
 
+        /// <summary>
+        /// [Internal, don't use] Defines if the animation must use it's starting values once the animation is started.
+        /// </summary>
         public bool ForceStartingValues
         {
             get { return force_starting_values; }
             set { force_starting_values = value; }
         }
 
+        /// <summary>
+        /// [Internal, don't use] Starts the animation on the forward direction, and marks the animation 
+        /// as started. Calls OnAnimateForwardInternal().
+        /// </summary>
         public void AnimateForward()
         {
             if (!running)
@@ -43,6 +58,10 @@ namespace Fast.UI
             }
         }
 
+        /// <summary>
+        /// [Internal, don't use] Starts the animation on the backwards direction, and marks the animation 
+        /// as started. Calls OnAnimateBackwardInternal().
+        /// </summary>
         public void AnimateBackward()
         {
             if (!running)
@@ -53,6 +72,9 @@ namespace Fast.UI
             }
         }
 
+        /// <summary>
+        /// Function that needs to be called to mark the end of the animation. Calls OnFinishInternal().
+        /// </summary>
         public void Finish()
         {
             if (running)
@@ -66,21 +88,33 @@ namespace Fast.UI
             }
         }
 
+        /// <summary>
+        /// Invoked at the end of the animation.
+        /// </summary>
         public Callback OnFinish
         {
             get { return on_finish; }
         }
 
+        /// <summary>
+        /// Called once the animation is started in the forward direction.
+        /// </summary>
         protected virtual void OnAnimateForwardInternal()
         {
 
         }
 
+        /// <summary>
+        /// Called once the animation is started in the backwards direction.
+        /// </summary>
         protected virtual void OnAnimateBackwardInternal()
         {
 
         }
 
+        /// <summary>
+        /// Called once the animation is finished.
+        /// </summary>
         protected virtual void OnFinishInternal()
         {
 
