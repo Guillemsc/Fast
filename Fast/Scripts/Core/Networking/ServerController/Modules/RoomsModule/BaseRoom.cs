@@ -43,12 +43,12 @@ namespace Fast.Networking
             return true;
         }
 
-        public bool _Updatable
+        public bool Updatable
         {
             get { return settings.Updatable; }
         }
 
-        public bool _FinishedUpdating
+        public bool FinishedUpdating
         {
             get { return finished_updating; }
         }

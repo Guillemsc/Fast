@@ -232,9 +232,9 @@ namespace Fast.Networking
             {
                 BaseRoom curr_room = rooms[i];
 
-                if (curr_room._Updatable)
+                if (curr_room.Updatable)
                 {
-                    if (curr_room._FinishedUpdating)
+                    if (curr_room.FinishedUpdating)
                     {
                         curr_room.Update();
                     }
