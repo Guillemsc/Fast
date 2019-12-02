@@ -33,7 +33,7 @@ namespace Fast.Networking
         {
             if (room != null)
             {
-                string log = "[Fast.Networking] ROOM " + room.ToString() + " " + to_log;
+                string log = "[Fast.Networking] ROOM: " + room.ToString() + " " + to_log;
 
                 UnityEngine.Debug.Log(log);
             }

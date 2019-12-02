@@ -8,7 +8,7 @@ namespace Fast.Networking
 {
     /// <summary>
     /// This server abstraction now only holds TCP connections with Telepathy, 
-    /// but in the future could also hold other types of conneciton
+    /// but in the future could also hold other types of connections.
     /// </summary>
     public class Server 
     {
@@ -27,9 +27,11 @@ namespace Fast.Networking
             this.port = port;
         }
 
-        public void Start()
+        public void Start(int send_timeout_ms)
         {
             server.Start(port);
+
+            server.SendTimeout = send_timeout_ms;
 
             started = true;
         }

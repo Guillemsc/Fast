@@ -75,6 +75,11 @@ namespace Fast.Networking
             Logger.ServerLogInfo(log_rooms);
         }
 
+        public override void OnPlayerDisconnected(Player player)
+        {
+            PlayerLeaveRoom(player, PlayerLeaveRoomCause.CLIENT_DISCONNECTED);
+        }
+
         public override void OnMessageReceived(Player player, ServerControllerMessage message)
         {
             switch(message.Type)

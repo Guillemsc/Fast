@@ -251,7 +251,23 @@ namespace Fast.Networking
 
             if (room_player != null)
             {
-                Task.Factory.StartNew(() => OnMessageReceived(room_player, message_obj));
+                Task.Factory.StartNew(() => OnMessageReceived(room_player, message_obj)).
+                ContinueWith(delegate (Task update_task)
+                {
+                    if (update_task.IsFaulted || update_task.IsCanceled)
+                    {
+                        if (update_task.Exception != null)
+                        {
+                            Logger.ServerLogError(ToString() + " OnMessageReceived(): " + update_task.Exception);
+                        }
+                        else
+                        {
+                            Logger.ServerLogError(ToString() + " OnMessageReceived(): " + "Task faulted or cancelled");
+                        }
+                    }
+
+                    finished_updating = true;
+                }); ;
             }
         }
 
