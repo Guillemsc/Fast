@@ -144,6 +144,13 @@ namespace Fast.Networking
                         break;
                     }
 
+                case ServerControllerMessageType.RETRIEVE_ROOMS_LIST:
+                    {
+
+
+                        break;
+                    }
+
                 case ServerControllerMessageType.ROOM_MESSAGE:
                     {
                         RoomMessage room_message = (RoomMessage)message;
@@ -444,5 +451,7 @@ namespace Fast.Networking
                 }
             }
         }
+
+
     }
 }

@@ -39,6 +39,11 @@ namespace Fast.Networking
             server.Start(send_timeout_ms);
         }
 
+        public void Stop()
+        {
+            server.Stop();
+        }
+
         public void Update()
         {
             server.ReadMessages();

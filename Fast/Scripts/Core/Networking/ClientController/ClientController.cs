@@ -42,6 +42,15 @@ namespace Fast.Networking
             client.Connect();
         }
 
+        public void Disconnect()
+        {
+            join_data = null;
+
+            connected = false;
+
+            client.Disconnect();
+        }
+
         public void Update()
         {
             client.ReadMessages();

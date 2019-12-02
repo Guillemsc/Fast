@@ -20,7 +20,7 @@ namespace Fast.Networking
             this.join_data = join_data;
         }
 
-        public Player Player
+        public Player ServerPlayer
         {
             get { return player; }
         }

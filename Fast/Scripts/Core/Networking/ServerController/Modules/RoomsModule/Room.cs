@@ -175,7 +175,7 @@ namespace Fast.Networking
                 {
                     P curr_player = connected_players[i];
 
-                    if(curr_player.Player.ClientId == player.ClientId)
+                    if(curr_player.ServerPlayer.ClientId == player.ClientId)
                     {
                         connected_players.RemoveAt(i);
 
@@ -281,7 +281,7 @@ namespace Fast.Networking
                 {
                     P curr_player = connected_players[i];
 
-                    if (curr_player.Player.ClientId == player.ClientId)
+                    if (curr_player.ServerPlayer.ClientId == player.ClientId)
                     {
                         ret = curr_player;
 
