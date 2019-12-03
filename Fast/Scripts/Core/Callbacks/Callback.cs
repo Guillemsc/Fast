@@ -3,6 +3,67 @@ using System.Collections.Generic;
 
 namespace Fast
 {
+    public class Callback<T1, T2>
+    {
+        private List<Action<T1, T2>> actions = new List<Action<T1, T2>>();
+
+        public void Invoke(T1 obj, T2 obj2)
+        {
+            List<Action<T1, T2>> to_invoke = new List<Action<T1,T2>>(actions);
+
+            for (int i = 0; i < to_invoke.Count; ++i)
+            {
+                Action<T1,T2> curr_action = to_invoke[i];
+
+                curr_action.Invoke(obj,obj2);
+            }
+        }
+
+        public void Subscribe(Action<T1,T2> action)
+        {
+            bool already_added = false;
+
+            for (int i = 0; i < actions.Count; ++i)
+            {
+                Action<T1,T2> curr_action = actions[i];
+
+                if (curr_action == action)
+                {
+                    already_added = true;
+
+                    break;
+                }
+            }
+
+            if (!already_added)
+            {
+                actions.Add(action);
+            }
+        }
+
+        public void UnSubscribe(Action<T1,T2> action)
+        {
+            for (int i = 0; i < actions.Count;)
+            {
+                Action<T1,T2> curr_action = actions[i];
+
+                if (curr_action == action)
+                {
+                    actions.RemoveAt(i);
+                }
+                else
+                {
+                    ++i;
+                }
+            }
+        }
+
+        public void UnSubscribeAll()
+        {
+            actions.Clear();
+        }
+    }
+
     public class Callback<T>
     {
         private List<Action<T>> actions = new List<Action<T>>();
