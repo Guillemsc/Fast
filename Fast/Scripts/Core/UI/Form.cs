@@ -65,9 +65,16 @@ namespace Fast.UI
             {
                 FormAnimation curr_animation = animations[i];
 
-                if (curr_animation.AnimationName == animation_name)
+                if (curr_animation != null)
                 {
-                    ret = curr_animation;
+                    if (curr_animation.AnimationName == animation_name)
+                    {
+                        ret = curr_animation;
+                    }
+                }
+                else
+                {
+                    Debug.LogError("[Fast.Form.GetAnimation] There is a null animation on the form animations list");
                 }
             }
 
