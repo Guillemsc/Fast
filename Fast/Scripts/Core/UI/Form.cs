@@ -94,7 +94,7 @@ namespace Fast.UI
         {
             if (showing)
             {
-                OnShowInternal();
+                OnHideInternal();
 
                 showing = false;
             }
