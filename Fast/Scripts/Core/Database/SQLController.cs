@@ -55,7 +55,12 @@ namespace Fast.Database
 
                 connection.OpenAsync().ContinueWith(delegate (Task task)
                 {
-                    if (task.IsCompleted)
+                    string error_msg = "";
+                    Exception exception = null;
+
+                    bool has_errors = task.HasErrors(out error_msg, out exception);
+
+                    if(!has_errors)
                     {
                         if (connection.State == System.Data.ConnectionState.Open)
                         {
@@ -66,26 +71,28 @@ namespace Fast.Database
                         }
                         else
                         {
+                            SQLError ret = new SQLError();
+                            ret.ErrorMessage = error_msg;
+                            ret.ErrorException = exception;
 
+                            if (on_fail != null)
+                                on_fail.Invoke(ret);
                         }
                     }
                     else
                     {
-                        if(task.IsFaulted)
-                        {
+                        SQLError ret = new SQLError();
+                        ret.ErrorMessage = error_msg;
+                        ret.ErrorException = exception;
 
-                        }
-                        else if(task.IsCanceled)
-                        {
-
-                        }
+                        if (on_fail != null)
+                            on_fail.Invoke(ret);
                     }
-
                 });
             }
         }
 
-        public void Disconect()
+        public void Disconnect()
         {
             if (connection != null)
             {
