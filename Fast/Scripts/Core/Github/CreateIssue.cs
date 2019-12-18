@@ -60,25 +60,12 @@ namespace Fast.Github
 
             client.ExecuteTaskAsync(request).ContinueWith(response =>
             {
-                if (response.IsCanceled)
-                {
-                    CreateIssueErrorObject ret = new CreateIssueErrorObject();
-                    ret.ErrorMessage = "Add issue task canceled";
-                    ret.ErrorException = response.Exception;
+                string error_msg = "";
+                Exception exception = null;
 
-                    if (on_fail != null)
-                        on_fail.Invoke(ret);
-                }
-                else if (response.IsFaulted)
-                {
-                    CreateIssueErrorObject ret = new CreateIssueErrorObject();
-                    ret.ErrorMessage = "Add issue task faulted";
-                    ret.ErrorException = response.Exception;
+                bool has_errors = response.HasErrors(out error_msg, out exception);
 
-                    if (on_fail != null)
-                        on_fail.Invoke(ret);
-                }
-                else
+                if(!has_errors)
                 {
                     if (response.Result.IsSuccessful)
                     {
@@ -96,6 +83,15 @@ namespace Fast.Github
                         if (on_fail != null)
                             on_fail.Invoke(ret);
                     }
+                }
+                else
+                {
+                    CreateIssueErrorObject ret = new CreateIssueErrorObject();
+                    ret.ErrorMessage = error_msg;
+                    ret.ErrorException = exception;
+
+                    if (on_fail != null)
+                        on_fail.Invoke(ret);
                 }
             }, TaskScheduler.FromCurrentSynchronizationContext());
         }

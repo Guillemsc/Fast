@@ -4,20 +4,32 @@ using UnityEngine;
 
 namespace Fast
 {
+    [System.Serializable]
     public class LogicObject : MonoBehaviour
     {
-        private int object_type = 0;
-        private int object_uid = 0;
+        protected int object_type = 0;
+        protected int object_type_variation = 0;
+        protected int object_uid = 0;
         
-        public void SetObjectData(int object_type, int object_uid)
+        public LogicObject(int object_type)
         {
             this.object_type = object_type;
+        }
+
+        public void SetObjectData(int object_uid)
+        {
             this.object_uid = object_uid;
         }
 
         public int ObjectType
         {
             get { return object_type; }
+        }
+
+        public int ObjectTypeVariation
+        {
+            get { return object_type_variation; }
+            set { object_type_variation = value; }
         }
 
         public int ObjectUID

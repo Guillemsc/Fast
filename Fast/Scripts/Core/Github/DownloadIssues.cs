@@ -58,25 +58,12 @@ namespace Fast.Github
 
             client.ExecuteTaskAsync(request).ContinueWith(response =>
             {
-                if (response.IsCanceled)
-                {
-                    DownloadIssuesErrorObject ret = new DownloadIssuesErrorObject();
-                    ret.ErrorMessage = "Add issue task canceled";
-                    ret.ErrorException = response.Exception;
+                string error_msg = "";
+                Exception exception = null;
 
-                    if (on_fail != null)
-                        on_fail.Invoke(ret);
-                }
-                else if (response.IsFaulted)
-                {
-                    DownloadIssuesErrorObject ret = new DownloadIssuesErrorObject();
-                    ret.ErrorMessage = "Add issue task faulted";
-                    ret.ErrorException = response.Exception;
+                bool has_errors = response.HasErrors(out error_msg, out exception);
 
-                    if (on_fail != null)
-                        on_fail.Invoke(ret);
-                }
-                else
+                if(!has_errors)
                 {
                     if (response.Result.IsSuccessful)
                     {
@@ -90,7 +77,7 @@ namespace Fast.Github
 
                         Newtonsoft.Json.Linq.JToken token = array.First;
 
-                        while(token != null)
+                        while (token != null)
                         {
                             DownloadIssuesObject curr_obj = new DownloadIssuesObject();
 
@@ -127,6 +114,15 @@ namespace Fast.Github
                         if (on_fail != null)
                             on_fail.Invoke(ret);
                     }
+                }
+                else
+                {
+                    DownloadIssuesErrorObject ret = new DownloadIssuesErrorObject();
+                    ret.ErrorMessage = error_msg;
+                    ret.ErrorException = exception;
+
+                    if (on_fail != null)
+                        on_fail.Invoke(ret);
                 }
             }, TaskScheduler.FromCurrentSynchronizationContext());
         }

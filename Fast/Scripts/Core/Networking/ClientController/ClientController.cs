@@ -130,6 +130,11 @@ namespace Fast.Networking
             }
         }
 
+        public bool Connected
+        {
+            get { return connected; }
+        }
+
         public RoomsClientModule MRooms
         {
             get { return rooms_module; }

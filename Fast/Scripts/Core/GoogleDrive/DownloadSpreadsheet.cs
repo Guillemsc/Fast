@@ -56,25 +56,12 @@ namespace Fast.GoogleDrive
             GoogleWebAuthorizationBroker.AuthorizeAsync(secrets, scopes, "user", CancellationToken.None)
                 .ContinueWith(delegate(Task<UserCredential> user_credential_task)
                 {
-                    if (user_credential_task.IsCanceled)
-                    {
-                        DownloadSpreadsheetErrorObject ret = new DownloadSpreadsheetErrorObject();
-                        ret.ErrorException = user_credential_task.Exception;
-                        ret.ErrorMessage = "Credentials tasks canceled";
+                    string error_msg = "";
+                    Exception exception = null;
 
-                        if (on_fail != null)
-                            on_fail.Invoke(ret);
-                    }
-                    else if (user_credential_task.IsFaulted)
-                    {
-                        DownloadSpreadsheetErrorObject ret = new DownloadSpreadsheetErrorObject();
-                        ret.ErrorException = user_credential_task.Exception;
-                        ret.ErrorMessage = "Credentials tasks faulted";
+                    bool has_errors = user_credential_task.HasErrors(out error_msg, out exception);
 
-                        if (on_fail != null)
-                            on_fail.Invoke(ret);
-                    }
-                    else
+                    if(!has_errors)
                     {
                         if (user_credential_task.Result != null)
                         {
@@ -119,7 +106,7 @@ namespace Fast.GoogleDrive
 
                                         List<IList<object>> values_data_list = values_data.ToList();
 
-                                        for(int i = 0; i < values_data_list.Count; ++i)
+                                        for (int i = 0; i < values_data_list.Count; ++i)
                                         {
                                             List<object> data_row = values_data_list[i].ToList();
 
@@ -154,6 +141,15 @@ namespace Fast.GoogleDrive
                             if (on_fail != null)
                                 on_fail.Invoke(ret);
                         }
+                    }
+                    else
+                    {
+                        DownloadSpreadsheetErrorObject ret = new DownloadSpreadsheetErrorObject();
+                        ret.ErrorMessage = error_msg;
+                        ret.ErrorException = exception;
+
+                        if (on_fail != null)
+                            on_fail.Invoke(ret);
                     }
 
                 }, TaskScheduler.FromCurrentSynchronizationContext());
