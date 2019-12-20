@@ -29,6 +29,8 @@ namespace Fast.Networking
 
         public void Start(int send_timeout_ms)
         {
+            server.MaxMessageSize = 104857; // 0.1mb
+
             server.Start(port);
 
             server.SendTimeout = send_timeout_ms;

@@ -1,38 +1,46 @@
 ﻿using System;
-using System.Threading.Tasks;
-using System.Timers;
+using System.Diagnostics;
+using UnityEngine;
 
 namespace Fast.Networking
 {
-    class Timer
+    public class Timer
     {
-        private System.Timers.Timer timer = null;
+        private Stopwatch stopwatch = new Stopwatch();
+        bool started = false;
 
-        private Callback<Timer> on_elapsed = new Callback<Timer>();
-
-        public void Start(float time, bool auto_reset, Action<Timer> on_tick = null)
+        public void Start()
         {
-            time = time * 1000.0f; // seconds to ms
+            stopwatch.Start();
 
-            timer = new System.Timers.Timer(time);
-
-            on_elapsed.UnSubscribeAll();
-            on_elapsed.Subscribe(on_tick);
-
-            timer.Elapsed += OnTimedEvent;
-            timer.AutoReset = auto_reset;
-
-            timer.Start();
+            started = true;
         }
 
-        public void Stop()
+        public void Reset()
         {
-            timer.Stop();
+            started = false;
+
+            stopwatch = new Stopwatch();
         }
 
-        private void OnTimedEvent(Object source, ElapsedEventArgs e)
+        public float ReadTime()
         {
-            on_elapsed.Invoke(this);
+            float ret = 0.0f;
+
+            if (started)
+            {
+                TimeSpan ts = stopwatch.Elapsed;
+
+                ret = ts.Seconds;
+            }
+
+            return ret;
+        }
+
+        public bool Started
+        {
+            get { return started; }
         }
     }
 }
+

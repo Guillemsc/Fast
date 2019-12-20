@@ -16,9 +16,10 @@ namespace Fast
             this.object_type = object_type;
         }
 
-        public void SetObjectData(int object_uid)
+        public void SetObjectData(int object_uid, int object_type_variation)
         {
             this.object_uid = object_uid;
+            this.object_type_variation = object_type_variation;
         }
 
         public int ObjectType
@@ -29,7 +30,6 @@ namespace Fast
         public int ObjectTypeVariation
         {
             get { return object_type_variation; }
-            set { object_type_variation = value; }
         }
 
         public int ObjectUID

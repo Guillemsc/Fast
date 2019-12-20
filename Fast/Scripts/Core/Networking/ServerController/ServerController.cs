@@ -61,7 +61,7 @@ namespace Fast.Networking
 
         private void OnClientConnected(int client_id)
         {
-            int i = 0;
+            
         }
 
         private void OnClientDisconnected(int client_id)

@@ -27,6 +27,8 @@ namespace Fast.Networking
 
         public void Connect()
         {
+            client.MaxMessageSize = 104857; // 0.1mb
+
             client.Connect(ip, port);
         }
 
