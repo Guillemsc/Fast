@@ -11,6 +11,8 @@ namespace Fast.Networking
 
         public void Start()
         {
+            Reset();
+
             stopwatch.Start();
 
             started = true;
