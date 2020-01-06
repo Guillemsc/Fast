@@ -19,6 +19,7 @@ namespace Fast.Testing
         public int clients = 1;
         public bool rebuild_server = false;
         public bool rebuild_client = false;
+        public bool mac_build = false;
     }
 
     class ServerClientTestingWindow : Fast.EditorTools.SerializableEditorWindow<ServerClientTestingWindowData>
@@ -160,17 +161,28 @@ namespace Fast.Testing
             }
             EditorGUILayout.EndHorizontal();
 
+            EditorGUILayout.BeginHorizontal();
+            {
+                EditorGUILayout.LabelField("Build for Mac", GUILayout.MaxWidth(105));
+
+                serialized_data.mac_build = EditorGUILayout.Toggle(serialized_data.mac_build);
+            }
+            EditorGUILayout.EndHorizontal();
+
             if (GUILayout.Button("Start"))
             {
                 server_build_filepath = serialized_data.build_folder + "/Server/" + serialized_data.build_name + ".exe";
                 client_build_filepath = serialized_data.build_folder + "/Client/" + serialized_data.build_name + ".exe";
 
                 UnityEditor.Build.Reporting.BuildReport ret = null;
+                BuildTarget build_target = BuildTarget.StandaloneWindows;
+                if(serialized_data.mac_build)
+                    build_target = BuildTarget.StandaloneOSX;
 
                 if (serialized_data.rebuild_server)
                 {
                     ret = BuildPipeline.BuildPlayer(EditorBuildSettings.scenes, server_build_filepath,
-                        BuildTarget.StandaloneWindows, BuildOptions.EnableHeadlessMode);
+                        build_target, BuildOptions.EnableHeadlessMode);
                 }
 
                 if(serialized_data.rebuild_client)
@@ -181,7 +193,7 @@ namespace Fast.Testing
                         PlayerSettings.fullScreenMode = FullScreenMode.Windowed;
 
                         ret = BuildPipeline.BuildPlayer(EditorBuildSettings.scenes, client_build_filepath,
-                            BuildTarget.StandaloneWindows, BuildOptions.Development);
+                            build_target, BuildOptions.Development);
                     }
                 }
 
