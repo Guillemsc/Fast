@@ -42,10 +42,7 @@ namespace Fast.Networking
 
         public void AddAction(DatabaseAction action)
         {
-            lock (actions)
-            {
-                actions.Add(action.ActionType, action);
-            }
+            actions.Add(action.ActionType, action);
         }
 
         public override void OnMessageReceived(Player player, ServerControllerMessage server_message)
