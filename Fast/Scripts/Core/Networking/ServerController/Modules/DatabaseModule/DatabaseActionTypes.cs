@@ -10,7 +10,7 @@ namespace Fast.Networking
     {
         DB_Null,
         DB_RegisterUser,
-        DB_ValidUser,
+        DB_ValidateUser,
         DB_InitializeTable,
         DB_AddColumn,
     }
