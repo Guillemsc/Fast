@@ -106,13 +106,18 @@ namespace Fast.Database
             }
         }
 
-        public void ExecuteGetQuery(string sql_query, Action<Data.GridData> on_success = null, Action<SQLError> on_fail = null)
+        public void ExecuteGetQuery(SQLQuery sql_query, Action<Data.GridData> on_success = null, Action<SQLError> on_fail = null)
         {
-            if (connection != null)
+            if (connection != null && sql_query != null)
             {
                 if (connected)
                 {
-                    MySqlCommand adapter = new MySqlCommand(sql_query, connection);
+                    MySqlCommand adapter = new MySqlCommand(sql_query.Query, connection);
+
+                    foreach (KeyValuePair<string, object> entry in sql_query.Parameters)
+                    {
+                        adapter.Parameters.AddWithValue(entry.Key, entry.Value);
+                    }
 
                     adapter.ExecuteReaderAsync().ContinueWith(delegate (Task<DbDataReader> task)
                     {
@@ -165,13 +170,18 @@ namespace Fast.Database
             }
         }
 
-        public void ExecutePostQuery(string sql_query, Action on_success = null, Action<SQLError> on_fail = null)
+        public void ExecutePostQuery(SQLQuery sql_query, Action on_success = null, Action<SQLError> on_fail = null)
         {
             if (connection != null)
             {
-                if (connected)
+                if (connected && sql_query != null)
                 {
-                    MySqlCommand adapter = new MySqlCommand(sql_query, connection);
+                    MySqlCommand adapter = new MySqlCommand(sql_query.Query, connection);
+
+                    foreach (KeyValuePair<string, object> entry in sql_query.Parameters)
+                    {
+                        adapter.Parameters.AddWithValue(entry.Key, entry.Value);
+                    }
 
                     adapter.ExecuteNonQueryAsync().ContinueWith(delegate (Task task)
                     {
