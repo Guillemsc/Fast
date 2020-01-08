@@ -7,20 +7,20 @@ using MySql.Data.MySqlClient;
 
 namespace Fast.Networking
 {
-    public enum DatabaseActionExecutetype
+    public enum DatabaseActionExecuteType
     {
         DBA_Post,
         DBA_Get,
     }
 
-    public abstract class DatabaseAction
+    public class DatabaseAction
     {
         private DatabaseActionTypes type;
         private Database.SQLQuery query;
-        private DatabaseActionExecutetype execute_type;
+        private DatabaseActionExecuteType execute_type;
         private bool requires_userID;
 
-        public DatabaseAction(DatabaseActionTypes type, DatabaseActionExecutetype execute_type, Database.SQLQuery query, bool requires_userID = true)
+        public DatabaseAction(DatabaseActionTypes type, DatabaseActionExecuteType execute_type, Database.SQLQuery query, bool requires_userID = true)
         {
             this.query = query;
             this.type = type;
@@ -43,6 +43,24 @@ namespace Fast.Networking
             get { return requires_userID; }
         }
 
-        public abstract void Execute(Database.SQLController connection, Dictionary<string, object> parameters);
+        public DatabaseActionExecuteType ExecuteType
+        {
+            get { return execute_type; }
+        }
+
+        public void Execute(Database.SQLController connection, Dictionary<string, object> parameters)
+        {
+            foreach(KeyValuePair<string,object> param in parameters)
+            {
+                query.AddParameter(param.Key, param.Value);
+            }
+
+            ExecuteInternal();
+        }
+
+        protected virtual void ExecuteInternal()
+        {
+
+        }
     }
 }
