@@ -15,15 +15,13 @@ namespace Fast.Networking
 
     public class DatabaseAction
     {
-        private DatabaseActionTypes type;
         private Database.SQLQuery query;
         private DatabaseActionExecuteType execute_type;
         private bool requires_userID;
 
-        public DatabaseAction(DatabaseActionTypes type, DatabaseActionExecuteType execute_type, Database.SQLQuery query, bool requires_userID = true)
+        public DatabaseAction(Database.SQLQuery query, DatabaseActionExecuteType execute_type, bool requires_userID = true)
         {
             this.query = query;
-            this.type = type;
             this.execute_type = execute_type;
             this.requires_userID = requires_userID;
         }
@@ -31,11 +29,6 @@ namespace Fast.Networking
         public Database.SQLQuery Query
         {
             get { return query; }
-        }
-
-        public DatabaseActionTypes ActionType
-        {
-            get { return type; }
         }
 
         public bool RequiresUserID
