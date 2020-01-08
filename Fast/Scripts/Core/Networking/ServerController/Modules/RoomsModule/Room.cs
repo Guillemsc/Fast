@@ -268,7 +268,7 @@ namespace Fast.Networking
                     }
 
                     finished_updating = true;
-                }); ;
+                }); 
             }
         }
 

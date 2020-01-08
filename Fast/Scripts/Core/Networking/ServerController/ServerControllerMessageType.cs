@@ -28,5 +28,7 @@ namespace Fast.Networking
 
         RETRIEVE_ROOMS_LIST,
         RETURNED_ROOM_LIST,
+
+        DATABASE_REQUEST
     }
 }

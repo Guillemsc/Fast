@@ -15,6 +15,8 @@ namespace Fast.Networking
         private bool connected_to_room = false;
         private string room_id = "";
 
+        private long db_id = -1;
+
         public Player(int client_id, object join_data)
         {
             this.client_id = client_id;
@@ -41,6 +43,12 @@ namespace Fast.Networking
         {
             get { return room_id; }
             set { room_id = value; }
+        }
+
+        public long DatabaseID
+        {
+            get { return db_id; }
+            set { db_id = value; }
         }
     }
 }

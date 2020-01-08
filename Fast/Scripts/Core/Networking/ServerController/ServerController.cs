@@ -16,17 +16,21 @@ namespace Fast.Networking
 
         private List<Player> players = new List<Player>();
 
-        public ServerController(int server_port, string player_cluster_name)
+        private Database.SQLConnectObject sql_info;
+
+        public ServerController(int server_port, string player_cluster_name, Database.SQLConnectObject sql_info)
         {
             Logger.ServerLogInfo("Starting server with port: " + server_port + " and player cluster: " + player_cluster_name);
 
             server = new Server(server_port);
+            this.sql_info = sql_info;
 
             server.OnClientConnected.Subscribe(OnClientConnected);
             server.OnClientDisconnected.Subscribe(OnClientDisconnected);
             server.OnMessageReceived.Subscribe(OnMessageReceived);
 
             AddModule(new RoomsServerModule(this));
+            AddModule(new DatabaseServerModule(this));
 
             for (int i = 0; i < modules.Count; ++i)
             {
@@ -176,6 +180,11 @@ namespace Fast.Networking
             byte[] message_data = Parsers.ByteParser.ComposeObject(message_obj);
 
             server.SendMessage(player.ClientId, message_data);
+        }
+
+        public Database.SQLConnectObject SQLInfo
+        {
+            get { return sql_info; }
         }
     }
 }

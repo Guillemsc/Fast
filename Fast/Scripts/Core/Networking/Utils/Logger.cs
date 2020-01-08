@@ -10,21 +10,21 @@ namespace Fast.Networking
     {
         public static void ServerLogInfo(string to_log)
         {
-            string log = "[Fast.Networking] SERVER INFO: " + to_log;
+            string log = DateTime.Now.ToString("{0:s}") + " [Fast.Networking] SERVER INFO: " + to_log;
 
             UnityEngine.Debug.Log(log);
         }
 
         public static void ServerLogError(string to_log)
         {
-            string log = "[Fast.Networking] SERVER ERROR: " + to_log;
+            string log = DateTime.Now.ToString("{0:s}") +  "[Fast.Networking] SERVER ERROR: " + to_log;
 
             UnityEngine.Debug.Log(log);
         }
 
         public static void ClientLogInfo(string to_log)
         {
-            string log = "[Fast.Networking] CLIENT: " + to_log;
+            string log = DateTime.Now.ToString("{0:s}") +  "[Fast.Networking] CLIENT: " + to_log;
 ;
             UnityEngine.Debug.Log(log);
         }
@@ -33,7 +33,7 @@ namespace Fast.Networking
         {
             if (room != null)
             {
-                string log = "[Fast.Networking] ROOM: " + room.ToString() + " " + to_log;
+                string log = DateTime.Now.ToString("{0:s}") +  "[Fast.Networking] ROOM: " + room.ToString() + " " + to_log;
 
                 UnityEngine.Debug.Log(log);
             }
