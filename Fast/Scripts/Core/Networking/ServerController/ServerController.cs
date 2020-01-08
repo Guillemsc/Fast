@@ -104,13 +104,16 @@ namespace Fast.Networking
                     }
             }
 
-            Player player = GetPlayer(server_message.ClientId);
-
-            if (player != null)
+            if (message.Type != ServerControllerMessageType.CREATE_PLAYER)
             {
-                for (int i = 0; i < modules.Count; ++i)
+                Player player = GetPlayer(server_message.ClientId);
+
+                if (player != null)
                 {
-                    modules[i].OnMessageReceived(player, message);
+                    for (int i = 0; i < modules.Count; ++i)
+                    {
+                        modules[i].OnMessageReceived(player, message);
+                    }
                 }
             }
         }
