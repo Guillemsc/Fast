@@ -8,10 +8,10 @@ namespace Fast.Networking
 {
     class DatabaseServerModule : ServerModule
     {
-        Dictionary<DatabaseActionTypes, DatabaseAction> actions;
-        private Fast.Database.SQLController sql_controller;
+        private Dictionary<DatabaseActionTypes, DatabaseAction> actions = new Dictionary<DatabaseActionTypes, DatabaseAction>();
+        private Fast.Database.SQLController sql_controller = null;
 
-        bool allow_execute = false;
+        private bool allow_execute = false;
 
         public DatabaseServerModule(ServerController serverController) : base(serverController)
         {
@@ -21,7 +21,18 @@ namespace Fast.Networking
         public override void Start()
         {
             AddActions();
-            sql_controller.Connect(ServerController.SQLInfo, OnConnectionSuccess, OnConnectionFail);
+
+            sql_controller.Connect(ServerController.SQLInfo, 
+            delegate()
+            {
+                allow_execute = true;
+
+                Logger.ServerLogInfo(ToString() + "Successfully connected to the Database!");
+            }
+            , delegate(Database.SQLError error)
+            {
+                Logger.ServerLogError(ToString() + "Error connectiong to SQL Database: " + error.ErrorMessage);
+            });
         }
 
         private void AddActions()
@@ -37,25 +48,17 @@ namespace Fast.Networking
             }
         }
 
-        private void OnConnectionSuccess()
-        {
-            allow_execute = true;
-            Logger.ServerLogInfo(ToString() + "Successfully connected to the Database!");
-        }
-
-        private void OnConnectionFail(Database.SQLError error)
-        {
-            Logger.ServerLogError(ToString() + "Error connectiong to SQL Database");
-        }
-
         public override void OnMessageReceived(Player player, ServerControllerMessage server_message)
         {
             switch (server_message.Type)
             {
                 case ServerControllerMessageType.DATABASE_REQUEST:
-                    DatabaseRequestMessage msg = (DatabaseRequestMessage)server_message;
-                    ExecuteQuery(player, msg.Type, msg.Parameters);
-                    break;
+                    {
+                        DatabaseRequestMessage msg = (DatabaseRequestMessage)server_message;
+                        ExecuteQuery(player, msg.Type, msg.Parameters);
+
+                        break;
+                    }
                 default:
                     break;
             }
@@ -66,15 +69,20 @@ namespace Fast.Networking
             Task.Factory.StartNew(() => OnExecuteQuery(player, type, parameters)).
                 ContinueWith(delegate (Task execute_task)
                 {
-                    if (execute_task.IsFaulted || execute_task.IsCanceled)
+                    string error_msg = "";
+                    Exception exception = null;
+
+                    bool has_errors = execute_task.HasErrors(out error_msg, out exception);
+
+                    if (has_errors)
                     {
-                        if (execute_task.Exception != null)
+                        if (exception != null)
                         {
-                            Logger.ServerLogError(ToString() + "OnExecuteQuery(): " + execute_task.Exception);
+                            Logger.ServerLogError(ToString() + "OnExecuteQuery(): " + execute_task.Exception.Message);
                         }
                         else
                         {
-                            Logger.ServerLogError(ToString() + "OnExecuteQuery(): " + "Task faulted or cancelled");
+                            Logger.ServerLogError(ToString() + "OnExecuteQuery(): " + "Task has errors");
                         }
                     }
                 });
@@ -83,7 +91,10 @@ namespace Fast.Networking
         private void OnExecuteQuery(Player player, DatabaseActionTypes type, Dictionary<string,object> parameters)
         {
             if (actions[type].RequiresUserID)
+            {
                 parameters.Add("@userid", player.DatabaseID);
+            }
+
             actions[type].Execute(sql_controller, parameters);
         }
 
