@@ -9,8 +9,8 @@ namespace Fast.Networking
 {
     public enum DatabaseActionExecuteType
     {
-        DBA_Post,
-        DBA_Get,
+        POST,
+        GET,
     }
 
     public class DatabaseAction
@@ -50,7 +50,7 @@ namespace Fast.Networking
 
         public void Execute(Database.SQLController connection, Dictionary<string, object> parameters)
         {
-            foreach(KeyValuePair<string,object> param in parameters)
+            foreach(KeyValuePair<string, object> param in parameters)
             {
                 query.AddParameter(param.Key, param.Value);
             }

@@ -8,10 +8,10 @@ namespace Fast.Networking
 {
     public enum DatabaseActionTypes
     {
-        DB_Null,
-        DB_RegisterUser,
-        DB_ValidateUser,
-        DB_InitializeTable,
-        DB_AddColumn,
+        NULL,
+        REGISTER_USER,
+        VALIDATE_USER,
+        INITIALIZE_TABLE,
+        ADD_COLUMN,
     }
 }
