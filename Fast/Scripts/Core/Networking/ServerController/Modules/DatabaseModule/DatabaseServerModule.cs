@@ -8,9 +8,9 @@ namespace Fast.Networking
 {
     class DatabaseServerModule : ServerModule
     {
-        private Fast.Database.SQLController sql_controller;
+        private Fast.Database.SQLController sql_controller = null;
 
-        bool allow_execute = false;
+        private bool allow_execute = false;
 
         public DatabaseServerModule(ServerController serverController) : base(serverController)
         {
@@ -19,18 +19,17 @@ namespace Fast.Networking
 
         public override void Start()
         {
-            sql_controller.Connect(ServerController.SQLInfo, OnConnectionSuccess, OnConnectionFail);
-        }
+            sql_controller.Connect(ServerController.SQLInfo,
+            delegate ()
+            {
+                allow_execute = true;
 
-        private void OnConnectionSuccess()
-        {
-            allow_execute = true;
-            Logger.ServerLogInfo(ToString() + "Successfully connected to the Database!");
-        }
-
-        private void OnConnectionFail(Database.SQLError error)
-        {
-            Logger.ServerLogError(ToString() + "Error connectiong to SQL Database");
+                Logger.ServerLogInfo(ToString() + "Successfully connected to the Database!");
+            }
+            , delegate (Database.SQLError error)
+            {
+                Logger.ServerLogError(ToString() + "Error connectiong to SQL Database: " + error.ErrorMessage);
+            });
         }
 
         public void ExecuteQuery(Player player, DatabaseAction action, Dictionary<string, object> parameters)
@@ -38,15 +37,20 @@ namespace Fast.Networking
             Task.Factory.StartNew(() => OnExecuteQuery(player, action, parameters)).
                 ContinueWith(delegate (Task execute_task)
                 {
-                    if (execute_task.IsFaulted || execute_task.IsCanceled)
+                    string error_msg = "";
+                    Exception exception = null;
+
+                    bool has_errors = execute_task.HasErrors(out error_msg, out exception);
+
+                    if (has_errors)
                     {
-                        if (execute_task.Exception != null)
+                        if (exception != null)
                         {
-                            Logger.ServerLogError(ToString() + "OnExecuteQuery(): " + execute_task.Exception);
+                            Logger.ServerLogError(ToString() + "OnExecuteQuery(): " + execute_task.Exception.Message);
                         }
                         else
                         {
-                            Logger.ServerLogError(ToString() + "OnExecuteQuery(): " + "Task faulted or cancelled");
+                            Logger.ServerLogError(ToString() + "OnExecuteQuery(): " + "Task has errors");
                         }
                     }
                 });
@@ -54,6 +58,7 @@ namespace Fast.Networking
         
         private void OnExecuteQuery(Player player, DatabaseAction action, Dictionary<string,object> parameters)
         {
+
             if (action.RequiresUserID)
             {
                 parameters.Add("@userid", player.DatabaseID);
