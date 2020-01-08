@@ -7,23 +7,22 @@ using MySql.Data.MySqlClient;
 
 namespace Fast.Networking
 {
-    public enum DatabaseActionExecuteType
-    {
-        POST,
-        GET,
-    }
-
     public class DatabaseAction
     {
+        private string query_text = "";
         private Database.SQLQuery query = null;
-        private DatabaseActionExecuteType execute_type = new DatabaseActionExecuteType();
         private bool requires_userID = false;
 
-        public DatabaseAction(Database.SQLQuery query, DatabaseActionExecuteType execute_type, bool requires_userID = true)
+        public DatabaseAction(string query_text, bool requires_userID = true)
         {
-            this.query = query;
-            this.execute_type = execute_type;
+            this.query_text = query_text;
             this.requires_userID = requires_userID;
+        }
+        
+        public string QueryText
+        {
+            get { return query_text; }
+            set { query_text = value; }
         }
 
         public Database.SQLQuery Query
@@ -36,13 +35,10 @@ namespace Fast.Networking
             get { return requires_userID; }
         }
 
-        public DatabaseActionExecuteType ExecuteType
-        {
-            get { return execute_type; }
-        }
-
         public void Execute(Database.SQLController connection, Dictionary<string, object> parameters, Action<DatabaseAction> on_success, Action on_fail)
         {
+            query = new Database.SQLQuery(query_text);
+
             foreach(KeyValuePair<string, object> param in parameters)
             {
                 query.AddParameter(param.Key, param.Value);
