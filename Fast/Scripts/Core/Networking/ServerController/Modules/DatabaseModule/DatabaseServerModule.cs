@@ -32,9 +32,13 @@ namespace Fast.Networking
             });
         }
 
-        public void ExecuteQuery(Player player, DatabaseAction action, Dictionary<string, object> parameters)
+        public void ExecuteQuery(Player player, DatabaseAction action, Dictionary<string, object> parameters, Action<DatabaseAction> on_success, Action on_fail)
         {
-            Task.Factory.StartNew(() => OnExecuteQuery(player, action, parameters)).
+            if (action.RequiresUserID)
+            {
+                parameters.Add("@userid", player.DatabaseID);
+            }
+            Task.Factory.StartNew(() => action.Execute(sql_controller, parameters, on_success, on_fail)).
                 ContinueWith(delegate (Task execute_task)
                 {
                     string error_msg = "";
@@ -52,18 +56,10 @@ namespace Fast.Networking
                         {
                             Logger.ServerLogError(ToString() + "OnExecuteQuery(): " + "Task has errors");
                         }
+
+                        on_fail.Invoke();
                     }
                 });
-        }
-        
-        private void OnExecuteQuery(Player player, DatabaseAction action, Dictionary<string,object> parameters)
-        {
-
-            if (action.RequiresUserID)
-            {
-                parameters.Add("@userid", player.DatabaseID);
-            }
-            action.Execute(sql_controller, parameters);
         }
 
         public override string ToString()

@@ -42,7 +42,7 @@ namespace Fast.Networking
             get { return execute_type; }
         }
 
-        public void Execute(Database.SQLController connection, Dictionary<string, object> parameters)
+        public void Execute(Database.SQLController connection, Dictionary<string, object> parameters, Action<DatabaseAction> on_success, Action on_fail)
         {
             foreach(KeyValuePair<string, object> param in parameters)
             {
