@@ -44,10 +44,10 @@ namespace Fast.Networking
                 query.AddParameter(param.Key, param.Value);
             }
 
-            ExecuteInternal(on_success, on_fail);
+            ExecuteInternal(connection, on_success, on_fail);
         }
 
-        protected virtual void ExecuteInternal(Action<DatabaseAction> on_success, Action on_fail)
+        protected virtual void ExecuteInternal(Database.SQLController connection, Action<DatabaseAction> on_success, Action on_fail)
         {
 
         }
