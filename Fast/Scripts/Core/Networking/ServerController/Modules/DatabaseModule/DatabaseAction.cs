@@ -15,10 +15,9 @@ namespace Fast.Networking
 
     public class DatabaseAction
     {
-        private Database.SQLQuery query;
-        private DatabaseActionExecuteType execute_type;
-        private bool requires_userID;
-
+        private Database.SQLQuery query = null;
+        private DatabaseActionExecuteType execute_type = new DatabaseActionExecuteType();
+        private bool requires_userID = false;
 
         public DatabaseAction(Database.SQLQuery query, DatabaseActionExecuteType execute_type, bool requires_userID = true)
         {
@@ -49,10 +48,10 @@ namespace Fast.Networking
                 query.AddParameter(param.Key, param.Value);
             }
 
-            ExecuteInternal();
+            ExecuteInternal(on_success, on_fail);
         }
 
-        protected virtual void ExecuteInternal()
+        protected virtual void ExecuteInternal(Action<DatabaseAction> on_success, Action on_fail)
         {
 
         }

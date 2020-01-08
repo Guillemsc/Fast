@@ -38,6 +38,7 @@ namespace Fast.Networking
             {
                 parameters.Add("@userid", player.DatabaseID);
             }
+
             Task.Factory.StartNew(() => action.Execute(sql_controller, parameters, on_success, on_fail)).
                 ContinueWith(delegate (Task execute_task)
                 {
@@ -48,16 +49,10 @@ namespace Fast.Networking
 
                     if (has_errors)
                     {
-                        if (exception != null)
-                        {
-                            Logger.ServerLogError(ToString() + "OnExecuteQuery(): " + execute_task.Exception.Message);
-                        }
-                        else
-                        {
-                            Logger.ServerLogError(ToString() + "OnExecuteQuery(): " + "Task has errors");
-                        }
+                        Logger.ServerLogError(ToString() + "OnExecuteQuery(): " + error_msg);
 
-                        on_fail.Invoke();
+                        if(on_fail != null)
+                            on_fail.Invoke();
                     }
                 });
         }
