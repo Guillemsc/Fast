@@ -57,8 +57,12 @@ namespace Fast.Networking
                     Task.Factory.StartNew(() => OnPlayerWantsToConnect(room_player, join_data)).
                     ContinueWith(delegate (Task<bool> player_wants_to_connect_task)
                     {
-                        if (player_wants_to_connect_task.IsCompleted && !player_wants_to_connect_task.IsFaulted &&
-                        !player_wants_to_connect_task.IsCanceled)
+                        string error_msg = "";
+                        Exception exception = null;
+
+                        bool has_errors = player_wants_to_connect_task.HasErrors(out error_msg, out exception);
+
+                        if (!has_errors)
                         {
                             if (player_wants_to_connect_task.Result)
                             {
@@ -67,7 +71,9 @@ namespace Fast.Networking
                                     Task.Factory.StartNew(() => OnRoomOpened()).
                                     ContinueWith(delegate (Task room_opened_task)
                                     {
-                                        if (room_opened_task.IsCompleted && !room_opened_task.IsFaulted && !room_opened_task.IsCanceled)
+                                        has_errors = room_opened_task.HasErrors(out error_msg, out exception);
+
+                                        if (!has_errors)
                                         {
                                             connected_players.Add(room_player);
 
@@ -79,30 +85,17 @@ namespace Fast.Networking
                                             Task.Factory.StartNew(() => OnPlayerConnected(room_player, join_data)).
                                             ContinueWith(delegate (Task player_connected_task)
                                             {
-                                                if (player_connected_task.IsFaulted || player_connected_task.IsCanceled)
-                                                {
-                                                    if (player_connected_task.Exception != null)
-                                                    {
-                                                        Logger.ServerLogError(ToString() + " OnPlayerConnected(): " + player_connected_task.Exception);
+                                                has_errors = player_connected_task.HasErrors(out error_msg, out exception);
 
-                                                    }
-                                                    else
-                                                    {
-                                                        Logger.ServerLogError(ToString() + " OnPlayerConnected(): " + "Task faulted or cancelled");
-                                                    }
+                                                if (has_errors)
+                                                {
+                                                    Logger.ServerLogError(ToString() + " OnPlayerConnected(): " + exception);
                                                 }
                                             });
                                         }
                                         else
                                         {
-                                            if (room_opened_task.Exception != null)
-                                            {
-                                                Logger.ServerLogError(ToString() + " OnRoomOpened(): " + room_opened_task.Exception);
-                                            }
-                                            else
-                                            {
-                                                Logger.ServerLogError(ToString() + " OnRoomOpened(): " + "Task faulted or cancelled");
-                                            }
+                                            Logger.ServerLogError(ToString() + " OnRoomOpened(): " + error_msg);
 
                                             if (on_error != null)
                                                 on_error.Invoke(ServerControllerError.ROOM_EXCEPTION);
@@ -121,16 +114,11 @@ namespace Fast.Networking
                                     Task.Factory.StartNew(() => OnPlayerConnected(room_player, join_data)).
                                     ContinueWith(delegate (Task player_connected_task)
                                     {
-                                        if (player_connected_task.IsFaulted || player_connected_task.IsCanceled)
+                                        has_errors = player_connected_task.HasErrors(out error_msg, out exception);
+
+                                        if (has_errors)
                                         {
-                                            if (player_connected_task.Exception != null)
-                                            {
-                                                Logger.ServerLogError(ToString() + " OnPlayerConnected(): " + player_connected_task.Exception);
-                                            }
-                                            else
-                                            {
-                                                Logger.ServerLogError(ToString() + " OnPlayerConnected(): " + "Task faulted or cancelled");
-                                            }
+                                            Logger.ServerLogError(ToString() + " OnPlayerConnected(): " + error_msg);
 
                                             if (on_error != null)
                                                 on_error.Invoke(ServerControllerError.ROOM_EXCEPTION);
@@ -146,14 +134,7 @@ namespace Fast.Networking
                         }
                         else
                         {
-                            if (player_wants_to_connect_task.Exception != null)
-                            {
-                                Logger.ServerLogError(ToString() + " OnPlayerWantsToConnect(): " + player_wants_to_connect_task.Exception);
-                            }
-                            else
-                            {
-                                Logger.ServerLogError(ToString() + " OnPlayerWantsToConnect(): " + "Task faulted or cancelled");
-                            }
+                            Logger.ServerLogError(ToString() + " OnPlayerWantsToConnect(): " + error_msg);
 
                             if (on_error != null)
                                 on_error.Invoke(ServerControllerError.ROOM_EXCEPTION);
@@ -185,16 +166,14 @@ namespace Fast.Networking
                         Task.Factory.StartNew(() => OnPlayerDisconnected(curr_player)).
                         ContinueWith(delegate (Task player_disconnected_task)
                         {
-                            if(player_disconnected_task.IsFaulted || player_disconnected_task.IsCanceled)
+                            string error_msg = "";
+                            Exception exception = null;
+
+                            bool has_errors = player_disconnected_task.HasErrors(out error_msg, out exception);
+
+                            if (has_errors)
                             {
-                                if(player_disconnected_task.Exception != null)
-                                {
-                                    Logger.ServerLogError(ToString() + " OnPlayerDisconnected(): " + player_disconnected_task.Exception);
-                                }
-                                else
-                                {
-                                    Logger.ServerLogError(ToString() + " OnPlayerDisconnected(): " + "Task faulted or cancelled");
-                                }
+                                Logger.ServerLogError(ToString() + " OnPlayerDisconnected(): " + error_msg);
                             }
                         }); 
 
@@ -207,16 +186,14 @@ namespace Fast.Networking
                     Task.Factory.StartNew(() => OnRoomClosed())
                     .ContinueWith(delegate(Task room_closed_task)
                     {
-                        if (room_closed_task.IsFaulted || room_closed_task.IsCanceled)
+                        string error_msg = "";
+                        Exception exception = null;
+
+                        bool has_errors = room_closed_task.HasErrors(out error_msg, out exception);
+
+                        if (has_errors)
                         {
-                            if (room_closed_task.Exception != null)
-                            {
-                                Logger.ServerLogError(ToString() + " OnRoomClosed(): " + room_closed_task.Exception);
-                            }
-                            else
-                            {
-                                Logger.ServerLogError(ToString() + " OnRoomClosed(): " + "Task faulted or cancelled");
-                            }
+                            Logger.ServerLogError(ToString() + " OnRoomClosed(): " + error_msg);
                         }
                     });
                 }
@@ -230,16 +207,14 @@ namespace Fast.Networking
             Task.Factory.StartNew(() => OnUpdate()).
             ContinueWith(delegate (Task update_task)
             {
-                if (update_task.IsFaulted || update_task.IsCanceled)
+                string error_msg = "";
+                Exception exception = null;
+
+                bool has_errors = update_task.HasErrors(out error_msg, out exception);
+
+                if (has_errors)
                 {
-                    if (update_task.Exception != null)
-                    {
-                        Logger.ServerLogError(ToString() + " OnUpdate(): " + update_task.Exception);
-                    }
-                    else
-                    {
-                        Logger.ServerLogError(ToString() + " OnUpdate(): " + "Task faulted or cancelled");
-                    }
+                    Logger.ServerLogError(ToString() + " OnUpdate(): " + error_msg);
                 }
 
                 finished_updating = true;
@@ -253,18 +228,16 @@ namespace Fast.Networking
             if (room_player != null)
             {
                 Task.Factory.StartNew(() => OnMessageReceived(room_player, message_obj)).
-                ContinueWith(delegate (Task update_task)
+                ContinueWith(delegate (Task message_received_task)
                 {
-                    if (update_task.IsFaulted || update_task.IsCanceled)
+                    string error_msg = "";
+                    Exception exception = null;
+
+                    bool has_errors = message_received_task.HasErrors(out error_msg, out exception);
+
+                    if (has_errors)
                     {
-                        if (update_task.Exception != null)
-                        {
-                            Logger.ServerLogError(ToString() + " OnMessageReceived(): " + update_task.Exception);
-                        }
-                        else
-                        {
-                            Logger.ServerLogError(ToString() + " OnMessageReceived(): " + "Task faulted or cancelled");
-                        }
+                        Logger.ServerLogError(ToString() + " OnMessageReceived(): " + error_msg);
                     }
 
                     finished_updating = true;
