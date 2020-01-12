@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Fast.Networking
 {
-    class ClientController
+    public class ClientController
     {
         private Client client = null;
 
@@ -11,12 +11,15 @@ namespace Fast.Networking
 
         private bool connected = false;
 
+        private int client_id = 0;
+
         private object join_data = null;
 
         private Callback on_connect_to_server_success = new Callback();
         private Callback on_connect_to_server_fail = new Callback();
 
         private RoomsClientModule rooms_module = null;
+        private MatchmakingClientModule matchmaking_module = null;
 
         public ClientController(string server_ip, int server_port)
         {
@@ -27,6 +30,7 @@ namespace Fast.Networking
             client.OnMessageReceived.Subscribe(OnMessageReceived);
 
             rooms_module = (RoomsClientModule)AddModule(new RoomsClientModule(this));
+            matchmaking_module = (MatchmakingClientModule)AddModule(new MatchmakingClientModule(this));
         }
 
         public void Connect(object join_data = null, Action on_connect_success = null, Action on_connect_fail = null)
@@ -92,6 +96,8 @@ namespace Fast.Networking
 
                         if(response_message.Success)
                         {
+                            client_id = response_message.ClientId;
+
                             connected = true;
 
                             for (int i = 0; i < modules.Count; ++i)
@@ -104,6 +110,8 @@ namespace Fast.Networking
                         else
                         {
                             connected = false;
+
+                            client_id = -1;
 
                             client.Disconnect();
 
@@ -135,9 +143,19 @@ namespace Fast.Networking
             get { return connected; }
         }
 
+        public int ClientId
+        {
+            get { return client_id; }
+        }
+
         public RoomsClientModule MRooms
         {
             get { return rooms_module; }
+        }
+
+        public MatchmakingClientModule MMatchmaking
+        {
+            get { return matchmaking_module; }
         }
     }
 }

@@ -19,17 +19,20 @@ namespace Fast.Networking
 
         public override void Start()
         {
-            sql_controller.Connect(ServerController.SQLInfo,
-            delegate ()
+            if (ServerController.SQLInfo != null)
             {
-                allow_execute = true;
+                sql_controller.Connect(ServerController.SQLInfo,
+                delegate ()
+                {
+                    allow_execute = true;
 
-                Logger.ServerLogInfo(ToString() + "Successfully connected to the Database!");
+                    Logger.ServerLogInfo(ToString() + "Successfully connected to the Database!");
+                }
+                , delegate (Database.SQLError error)
+                {
+                    Logger.ServerLogError(ToString() + "Error connectiong to SQL Database: " + error.ErrorMessage);
+                });
             }
-            , delegate (Database.SQLError error)
-            {
-                Logger.ServerLogError(ToString() + "Error connectiong to SQL Database: " + error.ErrorMessage);
-            });
         }
 
         public void ExecuteQuery(Player player, DatabaseAction action, Dictionary<string, object> parameters, Action<DatabaseAction> on_success, Action on_fail)

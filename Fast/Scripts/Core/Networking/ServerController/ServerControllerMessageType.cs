@@ -29,6 +29,9 @@ namespace Fast.Networking
         RETRIEVE_ROOMS_LIST,
         RETURNED_ROOM_LIST,
 
-        DATABASE_REQUEST
+        DATABASE_REQUEST,
+
+        START_MATCHMAKING,
+        MATCHMAKING_FINISHED,
     }
 }

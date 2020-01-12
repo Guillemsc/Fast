@@ -17,6 +17,8 @@ namespace Fast.Networking
 
         private long db_id = -1;
 
+        private bool on_matchmaking = false;
+
         public Player(int client_id, object join_data)
         {
             this.client_id = client_id;
@@ -49,6 +51,12 @@ namespace Fast.Networking
         {
             get { return db_id; }
             set { db_id = value; }
+        }
+
+        public bool OnMatchmaking
+        {
+            get { return on_matchmaking; }
+            set { on_matchmaking = value; }
         }
     }
 }

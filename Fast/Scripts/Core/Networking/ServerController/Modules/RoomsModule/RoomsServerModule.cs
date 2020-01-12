@@ -250,8 +250,6 @@ namespace Fast.Networking
                     {
                         curr_room.Update();
                     }
-
-                    break;
                 }
             }
         }
@@ -451,7 +449,5 @@ namespace Fast.Networking
                 }
             }
         }
-
-
     }
 }

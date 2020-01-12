@@ -16,7 +16,7 @@ namespace Fast.Networking
 
         private List<Player> players = new List<Player>();
 
-        private Database.SQLConnectObject sql_info;
+        private Database.SQLConnectObject sql_info = null;
 
         public ServerController(int server_port, string player_cluster_name, Database.SQLConnectObject sql_info)
         {
@@ -31,6 +31,7 @@ namespace Fast.Networking
 
             AddModule(new RoomsServerModule(this));
             AddModule(new DatabaseServerModule(this));
+            AddModule(new MatchmakingServerModule(this));
 
             for (int i = 0; i < modules.Count; ++i)
             {
@@ -58,9 +59,11 @@ namespace Fast.Networking
             }
         }
 
-        private void AddModule(ServerModule module)
+        private ServerModule AddModule(ServerModule module)
         {
             modules.Add(module);
+
+            return module;
         }
 
         private void OnClientConnected(int client_id)
@@ -96,7 +99,7 @@ namespace Fast.Networking
                         Player new_player = CreatePlayer(server_message.ClientId, create_player_message.JoinData);
 
                         bool success = new_player != null;
-                        byte[] data = Parsers.ByteParser.ComposeObject(new CreatePlayerResponseMessage(success));
+                        byte[] data = Parsers.ByteParser.ComposeObject(new CreatePlayerResponseMessage(success, server_message.ClientId));
                         server.SendMessage(server_message.ClientId, data);
 
                         for (int i = 0; i < modules.Count; ++i)
@@ -161,7 +164,7 @@ namespace Fast.Networking
             }
         }
 
-        private Player GetPlayer(int client_id)
+        public Player GetPlayer(int client_id)
         {
             Player ret = null;
 

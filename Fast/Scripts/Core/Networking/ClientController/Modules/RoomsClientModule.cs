@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Fast.Networking
 {
-    class RoomsClientModule : ClientModule
+    public class RoomsClientModule : ClientModule
     {
         private Callback on_join_room_success = new Callback();
         private Callback<ServerControllerError> on_join_room_fail = new Callback<ServerControllerError>();

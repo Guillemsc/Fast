@@ -51,38 +51,39 @@ namespace Fast.Networking
             {
                 P room_player = new P();
                 room_player.Init(RoomsServerModule, player, join_data);
-
-                lock (connected_players)
+                
+                if (connected_players.Count == 0)
                 {
-                    Task.Factory.StartNew(() => OnPlayerWantsToConnect(room_player, join_data)).
-                    ContinueWith(delegate (Task<bool> player_wants_to_connect_task)
+                    Task.Factory.StartNew(() => LockedOnRoomOpened()).
+                    ContinueWith(delegate (Task room_opened_task)
                     {
                         string error_msg = "";
                         Exception exception = null;
 
-                        bool has_errors = player_wants_to_connect_task.HasErrors(out error_msg, out exception);
+                        bool has_errors = room_opened_task.HasErrors(out error_msg, out exception);
 
                         if (!has_errors)
                         {
-                            if (player_wants_to_connect_task.Result)
+                            Task.Factory.StartNew(() => LockedOnPlayerWantsToConnect(room_player, join_data)).
+                            ContinueWith(delegate (Task<bool> player_wants_to_connect_task)
                             {
-                                if (connected_players.Count == 0)
+                                error_msg = "";
+                                exception = null;
+
+                                has_errors = player_wants_to_connect_task.HasErrors(out error_msg, out exception);
+
+                                if (!has_errors)
                                 {
-                                    Task.Factory.StartNew(() => OnRoomOpened()).
-                                    ContinueWith(delegate (Task room_opened_task)
+                                    if (player_wants_to_connect_task.Result)
                                     {
-                                        has_errors = room_opened_task.HasErrors(out error_msg, out exception);
-
-                                        if (!has_errors)
+                                        lock (connected_players)
                                         {
-                                            connected_players.Add(room_player);
-
                                             Logger.ServerLogInfo(ToString() + ": Player with id: " + player.ClientId + " connected");
 
                                             if (on_success != null)
                                                 on_success.Invoke();
 
-                                            Task.Factory.StartNew(() => OnPlayerConnected(room_player, join_data)).
+                                            Task.Factory.StartNew(() => LockedOnPlayerConnected(room_player, join_data)).
                                             ContinueWith(delegate (Task player_connected_task)
                                             {
                                                 has_errors = player_connected_task.HasErrors(out error_msg, out exception);
@@ -93,48 +94,25 @@ namespace Fast.Networking
                                                 }
                                             });
                                         }
-                                        else
-                                        {
-                                            Logger.ServerLogError(ToString() + " OnRoomOpened(): " + error_msg);
-
-                                            if (on_error != null)
-                                                on_error.Invoke(ServerControllerError.ROOM_EXCEPTION);
-                                        }
-                                    });
+                                    }
+                                    else
+                                    {
+                                        if (on_error != null)
+                                            on_error.Invoke(ServerControllerError.CONNECTION_TO_ROOM_DENIED);
+                                    }
                                 }
                                 else
                                 {
-                                    connected_players.Add(room_player);
+                                    Logger.ServerLogError(ToString() + " OnPlayerWantsToConnect(): " + error_msg);
 
-                                    Logger.ServerLogInfo(ToString() + ": Player with id: " + player.ClientId + " connected");
-
-                                    if (on_success != null)
-                                        on_success.Invoke();
-
-                                    Task.Factory.StartNew(() => OnPlayerConnected(room_player, join_data)).
-                                    ContinueWith(delegate (Task player_connected_task)
-                                    {
-                                        has_errors = player_connected_task.HasErrors(out error_msg, out exception);
-
-                                        if (has_errors)
-                                        {
-                                            Logger.ServerLogError(ToString() + " OnPlayerConnected(): " + error_msg);
-
-                                            if (on_error != null)
-                                                on_error.Invoke(ServerControllerError.ROOM_EXCEPTION);
-                                        }
-                                    });
+                                    if (on_error != null)
+                                        on_error.Invoke(ServerControllerError.ROOM_EXCEPTION);
                                 }
-                            }
-                            else
-                            {
-                                if (on_error != null)
-                                    on_error.Invoke(ServerControllerError.CONNECTION_TO_ROOM_DENIED);
-                            }
+                            });
                         }
                         else
                         {
-                            Logger.ServerLogError(ToString() + " OnPlayerWantsToConnect(): " + error_msg);
+                            Logger.ServerLogError(ToString() + " OnRoomOpened(): " + error_msg);
 
                             if (on_error != null)
                                 on_error.Invoke(ServerControllerError.ROOM_EXCEPTION);
@@ -157,13 +135,13 @@ namespace Fast.Networking
                 {
                     P curr_player = connected_players[i];
 
-                    if(curr_player.ServerClientId == player.ClientId)
+                    if (curr_player.ServerClientId == player.ClientId)
                     {
                         connected_players.RemoveAt(i);
 
                         Logger.ServerLogInfo(ToString() + ": Player with id: " + player.ClientId + " disconnected");
 
-                        Task.Factory.StartNew(() => OnPlayerDisconnected(curr_player)).
+                        Task.Factory.StartNew(() => LockedOnPlayerDisconnected(curr_player)).
                         ContinueWith(delegate (Task player_disconnected_task)
                         {
                             string error_msg = "";
@@ -175,16 +153,16 @@ namespace Fast.Networking
                             {
                                 Logger.ServerLogError(ToString() + " OnPlayerDisconnected(): " + error_msg);
                             }
-                        }); 
+                        });
 
                         break;
                     }
                 }
 
-                if(connected_players.Count == 0)
+                if (connected_players.Count == 0)
                 {
-                    Task.Factory.StartNew(() => OnRoomClosed())
-                    .ContinueWith(delegate(Task room_closed_task)
+                    Task.Factory.StartNew(() => LockedOnRoomClosed())
+                    .ContinueWith(delegate (Task room_closed_task)
                     {
                         string error_msg = "";
                         Exception exception = null;
@@ -290,6 +268,52 @@ namespace Fast.Networking
                 {
                     connected_players[i].SendMessage(message_obj);
                 }
+            }
+        }
+
+        private void LockedOnRoomOpened()
+        {
+            lock (connected_players)
+            {
+                OnRoomOpened();
+            }
+        }
+
+        private bool LockedOnPlayerWantsToConnect(P player, object join_data)
+        {
+            bool ret = false;
+
+            lock (connected_players)
+            {
+                ret = OnPlayerWantsToConnect(player, join_data);
+            }
+
+            return ret;
+        }
+
+        private void LockedOnPlayerConnected(P player, object join_data)
+        {
+            lock (connected_players)
+            {
+                connected_players.Add(player);
+
+                OnPlayerConnected(player, join_data);
+            }
+        }
+
+        private void LockedOnPlayerDisconnected(P player)
+        {
+            lock (connected_players)
+            {
+                OnPlayerDisconnected(player);
+            }
+        }
+
+        private void LockedOnRoomClosed()
+        {
+            lock (connected_players)
+            {
+                OnRoomClosed();
             }
         }
 

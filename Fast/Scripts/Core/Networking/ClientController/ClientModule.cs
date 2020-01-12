@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Fast.Networking
 {
-    class ClientModule
+    public class ClientModule
     {
         private ClientController client_controller = null;
 
