@@ -201,6 +201,23 @@ namespace Fast.Networking
             return ret;
         }
 
+        private void ThreadedRemoveRoom(string room_id)
+        {
+            Task.Factory.StartNew(() => RemoveRoom(room_id)).
+            ContinueWith(delegate (Task remove_room_task)
+            {
+                string error_msg = "";
+                Exception exception = null;
+
+                bool has_errors = remove_room_task.HasErrors(out error_msg, out exception);
+
+                if (has_errors)
+                {
+                    Logger.ServerLogError("RemoveRoom(): " + error_msg);
+                }
+            });
+        }
+
         private void RemoveRoom(string room_id)
         {
             lock (rooms)
@@ -286,7 +303,7 @@ namespace Fast.Networking
 
                         if (room.IsEmpty())
                         {
-                            RemoveRoom(room.RoomId);
+                            ThreadedRemoveRoom(room.RoomId);
                         }
 
                         if (on_fail != null)
@@ -333,7 +350,7 @@ namespace Fast.Networking
 
                     if (room.IsEmpty())
                     {
-                        RemoveRoom(room.RoomId);
+                        ThreadedRemoveRoom(room.RoomId);
                     }
 
                     if (on_fail != null)
@@ -384,7 +401,7 @@ namespace Fast.Networking
 
                     if (room.IsEmpty())
                     {
-                        RemoveRoom(room.RoomId);
+                        ThreadedRemoveRoom(room.RoomId);
                     }
 
                     if (on_fail != null)
@@ -423,7 +440,7 @@ namespace Fast.Networking
 
                     if (room.IsEmpty())
                     {
-                        RemoveRoom(room.RoomId);
+                        ThreadedRemoveRoom(room.RoomId);
                     }
                 }
             }

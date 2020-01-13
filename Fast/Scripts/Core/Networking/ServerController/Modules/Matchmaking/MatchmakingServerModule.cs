@@ -38,7 +38,7 @@ namespace Fast.Networking
 
         public override void OnPlayerDisconnected(Player player)
         {
-            RemoveCluster(player);
+            ThreadedRemoveCluster(player);
         }
 
         private void GetGameModeSettings()
@@ -79,13 +79,15 @@ namespace Fast.Networking
                 case ServerControllerMessageType.START_MATCHMAKING:
                     {
                         StartMatchmakingMessage mes = (StartMatchmakingMessage)server_message;
-                        
-                        bool can_add = AddCluster(player, mes.MatchmakingData);
 
-                        if (!can_add)
+                        ThreadedAddCluster(player, mes.MatchmakingData,
+                        delegate (bool can_add)
                         {
-                            ServerController.SendMessage(player, new MatchmakingFinishedMessage(false));
-                        }
+                            if (!can_add)
+                            {
+                                ServerController.SendMessage(player, new MatchmakingFinishedMessage(false));
+                            }
+                        });
 
                         break;
                     }
@@ -111,6 +113,26 @@ namespace Fast.Networking
             return ret;
         }
 
+        private void ThreadedAddCluster(Player player, MatchmakingData data, Action<bool> on_finish)
+        {
+            Task.Factory.StartNew(() => AddCluster(player, data)).
+            ContinueWith(delegate (Task<bool> update_task)
+            {
+                string error_msg = "";
+                Exception exception = null;
+
+                bool has_errors = update_task.HasErrors(out error_msg, out exception);
+
+                if (has_errors)
+                {
+                    Logger.ServerLogError(ToString() + " RemoveCluster(): " + error_msg);
+                }
+
+                if (on_finish != null)
+                    on_finish.Invoke(update_task.Result);
+            });
+        }
+
         private bool AddCluster(Player player, MatchmakingData data)
         {
             bool ret = true;
@@ -119,29 +141,38 @@ namespace Fast.Networking
 
             if(settings != null)
             {
+                RemoveDuplicateIds(ref data);
+
                 MatchmakingPlayer party_owner = new MatchmakingPlayer(player);
 
                 MatchmakingParty matchmaking_party = new MatchmakingParty(party_owner, settings);
 
-                for(int i = 0; i < data.ClientsId.Count; ++i)
+                if (data.ClientsId.Count > 0)
                 {
-                    int client_id = data.ClientsId[i];
-
-                    Player curr_player = ServerController.GetPlayer(client_id);
-
-                    if (curr_player != null)
+                    for (int i = 0; i < data.ClientsId.Count; ++i)
                     {
-                        if (!curr_player.OnMatchmaking)
-                        {
-                            if (curr_player.ClientId != player.ClientId)
-                            {
-                                MatchmakingPlayer matchmaking_player = new MatchmakingPlayer(player);
+                        int client_id = data.ClientsId[i];
 
-                                matchmaking_party.AddPlayer(matchmaking_player);
+                        Player curr_player = ServerController.GetPlayer(client_id);
+
+                        if (curr_player != null)
+                        {
+                            if (!curr_player.OnMatchmaking)
+                            {
+                                if (curr_player.ClientId != player.ClientId)
+                                {
+                                    MatchmakingPlayer matchmaking_player = new MatchmakingPlayer(player);
+
+                                    matchmaking_party.AddPlayer(matchmaking_player);
+                                }
+                                else
+                                {
+                                    matchmaking_party.AddPlayer(party_owner);
+                                }
                             }
                             else
                             {
-                                matchmaking_party.AddPlayer(party_owner);
+                                ret = false;
                             }
                         }
                         else
@@ -149,10 +180,10 @@ namespace Fast.Networking
                             ret = false;
                         }
                     }
-                    else
-                    {
-                        ret = false;
-                    }
+                }
+                else
+                {
+                    ret = false;
                 }
 
                 if (ret)
@@ -195,13 +226,30 @@ namespace Fast.Networking
 
                         mode_to_add.AddCluster(matchmaking_cluster);
 
-                        Logger.ServerLogInfo("Player with id: " + player.ClientId + "started matchmaking " +
+                        Logger.ServerLogInfo("Player with id: " + player.ClientId + " started matchmaking " +
                             "| Party count: " + matchmaking_party.MatchmakingPlayers.Count);
                     }
                 }
             }
 
             return ret;
+        }
+
+        public void ThreadedRemoveCluster(Player player)
+        {
+            Task.Factory.StartNew(() => RemoveCluster(player)).
+            ContinueWith(delegate (Task update_task)
+            {
+                string error_msg = "";
+                Exception exception = null;
+            
+                bool has_errors = update_task.HasErrors(out error_msg, out exception);
+            
+                if (has_errors)
+                {
+                    Logger.ServerLogError(ToString() + " RemoveCluster(): " + error_msg);
+                }
+            });
         }
 
         private void RemoveCluster(Player player)
@@ -274,7 +322,10 @@ namespace Fast.Networking
                             curr_player.Player.OnMatchmaking = false;
                         }
 
-                        Logger.ServerLogInfo("Player stoped matchmaking: " + player.ClientId + " | Party count: " + found_party.MatchmakingPlayers.Count);
+                        ServerController.SendMessage(found_party.PartyOwner.Player, new MatchmakingFinishedMessage(false));
+
+                        Logger.ServerLogInfo("Player stoped matchmaking: " + player.ClientId + " | Party players count: " + 
+                            found_party.MatchmakingPlayers.Count);
                     }
                 }
             }
@@ -293,24 +344,33 @@ namespace Fast.Networking
 
                         finished_matchmaking = false;
 
-                        Task.Factory.StartNew(() => PerformMatchmaking()).
-                        ContinueWith(delegate (Task update_task)
+                        ThreadedPerformMatchmaking(delegate ()
                         {
-                            string error_msg = "";
-                            Exception exception = null;
-
-                            bool has_errors = update_task.HasErrors(out error_msg, out exception);
-
-                            if (has_errors)
-                            {
-                                Logger.ServerLogError(ToString() + " PerformMatchmaking(): " + error_msg);
-                            }
-
                             finished_matchmaking = true;
                         });
                     }
                 }
             }
+        }
+
+        private void ThreadedPerformMatchmaking(Action on_finish)
+        {
+            Task.Factory.StartNew(() => PerformMatchmaking()).
+            ContinueWith(delegate (Task update_task)
+            {
+                string error_msg = "";
+                Exception exception = null;
+
+                bool has_errors = update_task.HasErrors(out error_msg, out exception);
+
+                if (has_errors)
+                {
+                    Logger.ServerLogError(ToString() + " PerformMatchmaking(): " + error_msg);
+                }
+
+                if (on_finish != null)
+                    on_finish.Invoke();
+            });
         }
 
         private void PerformMatchmaking()
@@ -390,6 +450,41 @@ namespace Fast.Networking
                     MatchmakingCluster curr_cluster = complete_clusters[i];
 
                     FinishClusterMatchmaking(curr_cluster);
+                }
+            }
+        }
+
+        public void RemoveDuplicateIds(ref MatchmakingData data)
+        {
+            List<int> ids_to_check = new List<int>(data.ClientsId);
+
+            while (ids_to_check.Count > 0)
+            {
+                int checking_id = ids_to_check[0];
+
+                ids_to_check.RemoveAt(0);
+
+                int duplicates_ammount = 0;
+
+                for (int i = 0; i < data.ClientsId.Count;)
+                {
+                    if (data.ClientsId[i] == checking_id)
+                    {
+                        ++duplicates_ammount;
+
+                        if (duplicates_ammount > 1)
+                        {
+                            data.ClientsId.RemoveAt(i);
+                        }
+                        else
+                        {
+                            ++i;
+                        }
+                    }
+                    else
+                    {
+                        ++i;
+                    }
                 }
             }
         }
