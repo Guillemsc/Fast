@@ -14,6 +14,7 @@ namespace Fast
         private Fast.Modules.PlatformModule platform_module = null;
         private Fast.Modules.LocalizationModule localization_module = null;
         private Fast.Modules.EventModule event_module = null;
+        private Fast.Modules.FirebaseModule firebase_module = null;
 
         private Fast.Modules.FlowModule flow_module = null;
         private Fast.Modules.LogicModule logic_module = null;
@@ -33,6 +34,7 @@ namespace Fast
             platform_module = (Modules.PlatformModule)AddModule(new Modules.PlatformModule());
             localization_module = (Modules.LocalizationModule)AddModule(new Modules.LocalizationModule());
             event_module = (Modules.EventModule)AddModule(new Modules.EventModule());
+            firebase_module = (Modules.FirebaseModule)AddModule(new Modules.FirebaseModule());
 
             flow_module = (Modules.FlowModule)AddUpdatableModule(new Modules.FlowModule());
             logic_module = (Modules.LogicModule)AddUpdatableModule(new Modules.LogicModule());
@@ -144,6 +146,11 @@ namespace Fast
         public Fast.Modules.EventModule MEvent
         {
             get { return event_module; }
+        }
+
+        public Fast.Modules.FirebaseModule MFirebase
+        {
+            get { return firebase_module; }
         }
 
         public Fast.Modules.FlowModule MFlow

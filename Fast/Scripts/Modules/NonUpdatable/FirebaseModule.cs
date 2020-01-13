@@ -1,33 +1,25 @@
-﻿using System;
+﻿#define USING_EASY_MOBILE
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.GameCenter;
 
 // To use this, go to Unity Project Settings -> Other settings -> Scripting Define Simbols
-// and add the two preprocessor directives when necessary
+// and add the preprocessor directives when necessary:
 // USING_FIREBASE
 // USING_GOOGLE_PLAY_SERVICES
-
-#if USING_FIREBASE
-
-using Firebase.Auth;
-
-#endif
-
-#if USING_GOOGLE_PLAY_SERVICES
-
-using GooglePlayGames;
-
-#endif
 
 namespace Fast.Modules
 {
     public enum FirebaseAuthType
     {
         EMAIL_PASSWORD,
-        GOOGLE_PLAY,
+        GOOGLE_PLAY_GAMES,
+        APPLE_GAME_CENTER,
     }
 
     public class FirebaseLoginObj
@@ -67,12 +59,13 @@ namespace Fast.Modules
         public override void Awake()
         {
 
+            ChooseAuthType();
+
 #if USING_FIREBASE
 
             auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
 
 #endif
-
         }
 
         private void ChooseAuthType()
@@ -108,7 +101,8 @@ namespace Fast.Modules
 
         }
 
-        public void LoginEmailPassword(string email, string password, Action<FirebaseLoginObj> on_success, Action<string> on_fail)
+        // Requieres USING_FIREBASE
+        public void LoginEmailPassword(string email, string password, Action<FirebaseLoginObj> on_success, Action<GoogleFirebase.FirebaseErrorType> on_fail)
         {
 
 #if USING_FIREBASE && !UNITY_WEBGL
@@ -123,18 +117,20 @@ namespace Fast.Modules
                 if (on_success != null)
                     on_success.Invoke(ret);
             }
-            , delegate ()
-            {
-                if (on_fail != null)
-                    on_fail.Invoke("");
-            });
+            , on_fail);
+
+#else
+
+            if (on_fail != null)
+                on_fail.Invoke(GoogleFirebase.FirebaseErrorType.UNDEFINED);
 
 #endif
 
         }
 
-        public void LoginGooglePlay(Action<FirebaseLoginObj> on_success, Action<string> on_google_play_fail,
-            Action<string> on_fail)
+        // Requieres USING_FIREBASE, USING_GOOGLE_PLAY_SERVICES 
+        public void LoginGooglePlayGames(Action<FirebaseLoginObj> on_success, Action<string> on_google_play_fail,
+            Action<GoogleFirebase.FirebaseErrorType> on_fail)
         {
 
 #if UNITY_ANDROID && USING_FIREBASE && USING_GOOGLE_PLAY_SERVICES
@@ -143,25 +139,21 @@ namespace Fast.Modules
             {
                 if (google_play_success)
                 {
-                    PlayGamesLocalUser user = (PlayGamesLocalUser)Social.Active.localUser;
+                    GooglePlayGames.PlayGamesLocalUser user = (GooglePlayGames.PlayGamesLocalUser)Social.Active.localUser;
 
-                    string google_play_auth_code = PlayGamesPlatform.Instance.GetServerAuthCode();
+                    string google_play_auth_code = GooglePlayGames.PlayGamesPlatform.Instance.GetServerAuthCode();
 
                     Firebase.Auth.Credential credential = Firebase.Auth.PlayGamesAuthProvider.GetCredential(google_play_auth_code);
 
                     LoginWithCredentials(credential,
                     delegate (string user_id)
                     {
-                        FirebaseLoginObj ret = new FirebaseLoginObj(FirebaseAuthType.GOOGLE_PLAY, user_id);
+                        FirebaseLoginObj ret = new FirebaseLoginObj(FirebaseAuthType.GOOGLE_PLAY_GAMES, user_id);
 
                         if (on_success != null)
                             on_success.Invoke(ret);
                     }
-                    , delegate ()
-                    {
-                        if (on_fail != null)
-                            on_fail.Invoke("");
-                    });
+                    , on_fail);
                 }
                 else
                 {
@@ -170,52 +162,94 @@ namespace Fast.Modules
                 }
             });
 
+#else
+
+            if (on_fail != null)
+                on_fail.Invoke(GoogleFirebase.FirebaseErrorType.UNDEFINED);
+
 #endif
 
         }
 
-        public void LoginIOS(Action<FirebaseLoginObj> on_success, Action<string> on_google_play_fail,
-            Action<string> on_fail)
+        public void LoginGameCenter(Action<FirebaseLoginObj> on_success, Action<string> on_game_center_fail,
+            Action<GoogleFirebase.FirebaseErrorType> on_fail)
         {
 
-//#if UNITY_ANDROID && USING_FIREBASE && USING_GOOGLE_PLAY_SERVICES
+#if UNITY_ANDROID && USING_FIREBASE
 
-//            UnityEngine.Social.Active.localUser.Authenticate(delegate (bool google_play_success, string google_play_error)
-//            {
-//                if (google_play_success)
-//                {
-//                    PlayGamesLocalUser user = (PlayGamesLocalUser)Social.Active.localUser;
+            UnityEngine.Social.Active.localUser.Authenticate(delegate (bool game_center_success, string game_center_error)
+            {
+                if (game_center_success)
+                {
+                    Firebase.Auth.GameCenterAuthProvider.GetCredentialAsync().ContinueWith(
+                    delegate (Task<Firebase.Auth.Credential> task)
+                    {
+                        string error_msg = "";
+                        Exception exception = null;
 
-//                    string google_play_auth_code = PlayGamesPlatform.Instance.GetServerAuthCode();
+                        bool has_errors = task.HasErrors(out error_msg, out exception);
 
-//                    Firebase.Auth.Credential credential = Firebase.Auth.PlayGamesAuthProvider.GetCredential(google_play_auth_code);
+                        if (!has_errors)
+                        {
+                            LoginWithCredentials(task.Result,
+                            delegate (string user_id)
+                            {
+                                FirebaseLoginObj ret = new FirebaseLoginObj(FirebaseAuthType.APPLE_GAME_CENTER, user_id);
 
-//                    LoginWithCredentials(credential,
-//                    delegate (string user_id)
-//                    {
-//                        FirebaseLoginObj ret = new FirebaseLoginObj(FirebaseAuthType.GOOGLE_PLAY, user_id);
+                                if (on_success != null)
+                                    on_success.Invoke(ret);
+                            }
+                            , on_fail);
+                        }
+                        else
+                        {
+                            Firebase.FirebaseException firebase_exception = exception as Firebase.FirebaseException;
+                            GoogleFirebase.FirebaseErrorType error = GoogleFirebase.FirebaseExceptionToFirebaseError.Get(firebase_exception);
 
-//                        if (on_success != null)
-//                            on_success.Invoke(ret);
-//                    }
-//                    , delegate ()
-//                    {
-//                        if (on_fail != null)
-//                            on_fail.Invoke("");
-//                    });
-//                }
-//                else
-//                {
-//                    if (on_google_play_fail != null)
-//                        on_google_play_fail.Invoke(google_play_error);
-//                }
-//            });
+                            if (on_fail != null)
+                                on_fail.Invoke(error);
+                        }
+                    });
+                }
+                else
+                {
+                    if (game_center_error != null)
+                        on_game_center_fail.Invoke(game_center_error);
+                }
+            });
 
-//#endif
+#else
+
+            if (on_fail != null)
+                on_fail.Invoke(GoogleFirebase.FirebaseErrorType.UNDEFINED);
+
+#endif
 
         }
 
-        private void LoginWithCredentials(Firebase.Auth.Credential credential, Action<string> on_success, Action on_fail)
+        public void LoginMobile(Action<FirebaseLoginObj> on_success, Action<string> on_service_fail,
+            Action<GoogleFirebase.FirebaseErrorType> on_fail)
+        {
+
+#if UNITY_ANDROID && USING_FIREBASE
+
+            LoginGooglePlayGames(on_success, on_service_fail, on_fail);
+
+#elif UNITY_IOS && USING_FIREBASE
+
+            LoginGameCenter(on_success, on_service_fail, on_fail)
+
+#else
+
+            if (on_fail != null)
+                on_fail.Invoke(GoogleFirebase.FirebaseErrorType.UNDEFINED);
+
+#endif
+
+        }
+
+        // Requieres USING_FIREBASE
+        private void LoginWithCredentials(Firebase.Auth.Credential credential, Action<string> on_success, Action<GoogleFirebase.FirebaseErrorType> on_fail)
         {
 
 #if USING_FIREBASE && !UNITY_WEBGL
@@ -249,26 +283,38 @@ namespace Fast.Modules
                         }
                         else
                         {
+                            Firebase.FirebaseException firebase_exception = exception as Firebase.FirebaseException;
+                            GoogleFirebase.FirebaseErrorType error = GoogleFirebase.FirebaseExceptionToFirebaseError.Get(firebase_exception);
+
                             if (on_fail != null)
-                                on_fail.Invoke();
+                                on_fail.Invoke(error);
                         }
 
                     }, TaskScheduler.FromCurrentSynchronizationContext());
                 }
                 else
                 {
+                    Firebase.FirebaseException firebase_exception = exception as Firebase.FirebaseException;
+                    GoogleFirebase.FirebaseErrorType error = GoogleFirebase.FirebaseExceptionToFirebaseError.Get(firebase_exception);
+
                     if (on_fail != null)
-                        on_fail.Invoke();
+                        on_fail.Invoke(error);
                 }
             }
             , TaskScheduler.FromCurrentSynchronizationContext());
+
+#else
+
+            if (on_fail != null)
+                on_fail.Invoke(GoogleFirebase.FirebaseErrorType.UNDEFINED);
 
 #endif
 
         }
 
+        // Requieres USING_FIREBASE
         public void RegisterEmailPassword(string username, string email, string password, string password_conf,
-            Action on_success, Action<string> on_fail)
+            Action on_success, Action<GoogleFirebase.FirebaseErrorType> on_fail)
         {
 
 #if USING_FIREBASE && !UNITY_WEBGL
@@ -290,20 +336,22 @@ namespace Fast.Modules
                         if (on_success != null)
                             on_success.Invoke();
                     }
-                    , delegate(string err)
-                    {
-                        if (on_fail != null)
-                            on_fail.Invoke(err);
-                    });
+                    , on_fail);
                 }
 
             }, TaskScheduler.FromCurrentSynchronizationContext());
+
+#else
+
+            if (on_fail != null)
+                on_fail.Invoke(GoogleFirebase.FirebaseErrorType.UNDEFINED);
 
 #endif
 
         }
 
-        public void UpdateDisplayName(string display_name, Action on_success, Action<string> on_fail)
+        // Requieres USING_FIREBASE
+        public void UpdateDisplayName(string display_name, Action on_success, Action<GoogleFirebase.FirebaseErrorType> on_fail)
         {
 
 #if USING_FIREBASE && !UNITY_WEBGL
@@ -327,11 +375,19 @@ namespace Fast.Modules
                 }
                 else
                 {
+                    Firebase.FirebaseException firebase_exception = exception as Firebase.FirebaseException;
+                    GoogleFirebase.FirebaseErrorType error = GoogleFirebase.FirebaseExceptionToFirebaseError.Get(firebase_exception);
+
                     if (on_fail != null)
-                        on_fail.Invoke("");
+                        on_fail.Invoke(error);
                 }
 
             }, TaskScheduler.FromCurrentSynchronizationContext());
+
+#else
+
+            if (on_fail != null)
+                on_fail.Invoke(GoogleFirebase.FirebaseErrorType.UNDEFINED);
 
 #endif
 
