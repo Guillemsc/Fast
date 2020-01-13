@@ -31,12 +31,6 @@ namespace Fast.Networking
             get { return total_players; }
         }
 
-        public bool Complete
-        {
-            get { return complete; }
-            set { complete = value; }
-        }
-
         public void AddParties(List<MatchmakingParty> parties)
         {
             for(int i = 0; i < parties.Count; ++i)

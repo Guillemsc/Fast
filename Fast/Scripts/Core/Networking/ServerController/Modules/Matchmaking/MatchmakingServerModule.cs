@@ -388,56 +388,49 @@ namespace Fast.Networking
                     while (clusters_to_check.Count > 0)
                     {
                         MatchmakingCluster curr_cluster = clusters_to_check[0];
+                        
+                        clusters_to_check.RemoveAt(0);
 
-                        if (!curr_cluster.Complete)
+                        for (int y = 0; y < clusters_to_check.Count;)
                         {
-                            clusters_to_check.RemoveAt(0);
+                            MatchmakingCluster curr_checking_cluster = clusters_to_check[y];
+                            
+                            bool equal = GameModeSettingsEqual(curr_cluster.MatchmakingGameModeSettings,
+                                curr_checking_cluster.MatchmakingGameModeSettings);
 
-                            for (int y = 0; y < clusters_to_check.Count;)
+                            if (equal)
                             {
-                                MatchmakingCluster curr_checking_cluster = clusters_to_check[y];
+                                bool can_merge = ClustersCanMerge(curr_cluster, curr_checking_cluster);
 
-                                if (!curr_checking_cluster.Complete)
+                                if (can_merge)
                                 {
-                                    bool equal = GameModeSettingsEqual(curr_cluster.MatchmakingGameModeSettings,
-                                        curr_checking_cluster.MatchmakingGameModeSettings);
+                                    curr_mode.MergeClusters(curr_cluster, curr_checking_cluster);
 
-                                    if (equal)
+                                    clusters_to_check.RemoveAt(y);
+
+                                    bool merge_completes = IsClusterComplete(curr_cluster);
+
+                                    if (merge_completes)
                                     {
-                                        bool can_merge = ClustersCanMerge(curr_cluster, curr_checking_cluster);
-
-                                        if (can_merge)
-                                        {
-                                            curr_mode.MergeClusters(curr_cluster, curr_checking_cluster);
-
-                                            clusters_to_check.RemoveAt(y);
-
-                                            bool merge_completes = IsClusterComplete(curr_cluster);
-
-                                            if (merge_completes)
-                                            {
-                                                break;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            ++y;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        ++y;
+                                        break;
                                     }
                                 }
+                                else
+                                {
+                                    ++y;
+                                }
                             }
+                            else
+                            {
+                                ++y;
+                            }
+                            
                         }
-
+                        
                         bool complete = IsClusterComplete(curr_cluster);
 
                         if (complete)
                         {
-                            curr_cluster.Complete = true;
-
                             curr_mode.RemoveCluster(curr_cluster);
 
                             complete_clusters.Add(curr_cluster);
@@ -533,23 +526,26 @@ namespace Fast.Networking
 
         private void FinishClusterMatchmaking(MatchmakingCluster cluster)
         {
-            string random_id = random_generator.GetInt().ToString();
-
-            for (int i = 0; i < cluster.Parties.Count; ++i)
+            lock (random_generator)
             {
-                MatchmakingParty curr_party = cluster.Parties[i];
+                string random_id = random_generator.GetInt().ToString();
 
-                for(int y = 0; y < curr_party.MatchmakingPlayers.Count; ++y)
+                for (int i = 0; i < cluster.Parties.Count; ++i)
                 {
-                    MatchmakingPlayer curr_player = curr_party.MatchmakingPlayers[y];
+                    MatchmakingParty curr_party = cluster.Parties[i];
 
-                    curr_player.Player.OnMatchmaking = false;
+                    for (int y = 0; y < curr_party.MatchmakingPlayers.Count; ++y)
+                    {
+                        MatchmakingPlayer curr_player = curr_party.MatchmakingPlayers[y];
+
+                        curr_player.Player.OnMatchmaking = false;
+                    }
+
+                    ServerController.SendMessage(curr_party.PartyOwner.Player, new MatchmakingFinishedMessage(true, random_id));
                 }
 
-                ServerController.SendMessage(curr_party.PartyOwner.Player, new MatchmakingFinishedMessage(true, random_id));
+                Logger.ServerLogInfo("Matchmaking success | Players count: " + cluster.TotalPlayers + " | Return id: " + random_id);
             }
-
-            Logger.ServerLogInfo("Matchmaking success | Players count: " + cluster.TotalPlayers + " | Return id: " + random_id);
         }
     }
 }
