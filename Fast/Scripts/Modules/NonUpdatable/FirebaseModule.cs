@@ -1,6 +1,4 @@
-﻿#define USING_EASY_MOBILE
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +8,8 @@ using UnityEngine.SocialPlatforms.GameCenter;
 
 // To use this, go to Unity Project Settings -> Other settings -> Scripting Define Simbols
 // and add the preprocessor directives when necessary:
-// USING_FIREBASE
+// USING_FIREBASE_AUTH
+// USING_FIREBASE_ANALYTICS
 // USING_GOOGLE_PLAY_SERVICES
 
 namespace Fast.Modules
@@ -48,7 +47,7 @@ namespace Fast.Modules
     {
         private FirebaseAuthType auth_to_use = new FirebaseAuthType();
 
-#if USING_FIREBASE && !UNITY_WEBGL
+#if USING_FIREBASE_AUTH && !UNITY_WEBGL
 
         private Firebase.Auth.FirebaseAuth auth = null;
 
@@ -61,7 +60,7 @@ namespace Fast.Modules
 
             ChooseAuthType();
 
-#if USING_FIREBASE
+#if USING_FIREBASE_AUTH
 
             auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
 
@@ -88,7 +87,7 @@ namespace Fast.Modules
         public void LogOut()
         {
 
-#if USING_FIREBASE && !UNITY_WEBGL
+#if USING_FIREBASE_AUTH && !UNITY_WEBGL
 
             if (user != null)
             {
@@ -101,11 +100,13 @@ namespace Fast.Modules
 
         }
 
-        // Requieres USING_FIREBASE
-        public void LoginEmailPassword(string email, string password, Action<FirebaseLoginObj> on_success, Action<GoogleFirebase.FirebaseErrorType> on_fail)
+        /// <summary>
+        /// Requieres USING_FIREBASE_AUTH 
+        /// </summary>
+        public void LoginEmailPassword(string email, string password, Action<FirebaseLoginObj> on_success, Action<FastErrorType> on_fail)
         {
 
-#if USING_FIREBASE && !UNITY_WEBGL
+#if USING_FIREBASE_AUTH && !UNITY_WEBGL
 
             Firebase.Auth.Credential credential = Firebase.Auth.EmailAuthProvider.GetCredential(email, password);
 
@@ -128,12 +129,14 @@ namespace Fast.Modules
 
         }
 
-        // Requieres USING_FIREBASE, USING_GOOGLE_PLAY_SERVICES 
+        /// <summary>
+        /// Requieres USING_FIREBASE_AUTH and USING_GOOGLE_PLAY_SERVICES
+        /// </summary>
         public void LoginGooglePlayGames(Action<FirebaseLoginObj> on_success, Action<string> on_google_play_fail,
-            Action<GoogleFirebase.FirebaseErrorType> on_fail)
+            Action<FastErrorType> on_fail)
         {
 
-#if UNITY_ANDROID && USING_FIREBASE && USING_GOOGLE_PLAY_SERVICES
+#if UNITY_ANDROID && USING_FIREBASE_AUTH && USING_GOOGLE_PLAY_SERVICES
 
             UnityEngine.Social.Active.localUser.Authenticate(delegate(bool google_play_success, string google_play_error)
             {
@@ -171,11 +174,14 @@ namespace Fast.Modules
 
         }
 
+        /// <summary>
+        /// Requieres USING_FIREBASE_AUTH
+        /// </summary>
         public void LoginGameCenter(Action<FirebaseLoginObj> on_success, Action<string> on_game_center_fail,
-            Action<GoogleFirebase.FirebaseErrorType> on_fail)
+            Action<FastErrorType> on_fail)
         {
 
-#if UNITY_ANDROID && USING_FIREBASE
+#if UNITY_ANDROID && USING_FIREBASE_AUTH
 
             UnityEngine.Social.Active.localUser.Authenticate(delegate (bool game_center_success, string game_center_error)
             {
@@ -204,7 +210,7 @@ namespace Fast.Modules
                         else
                         {
                             Firebase.FirebaseException firebase_exception = exception as Firebase.FirebaseException;
-                            GoogleFirebase.FirebaseErrorType error = GoogleFirebase.FirebaseExceptionToFirebaseError.Get(firebase_exception);
+                            FastErrorType error = GoogleFirebase.FirebaseExceptionToFastError.GetError(firebase_exception);
 
                             if (on_fail != null)
                                 on_fail.Invoke(error);
@@ -221,21 +227,21 @@ namespace Fast.Modules
 #else
 
             if (on_fail != null)
-                on_fail.Invoke(GoogleFirebase.FirebaseErrorType.UNDEFINED);
+                on_fail.Invoke(FastErrorType.UNDEFINED);
 
 #endif
 
         }
 
         public void LoginMobile(Action<FirebaseLoginObj> on_success, Action<string> on_service_fail,
-            Action<GoogleFirebase.FirebaseErrorType> on_fail)
+            Action<FastErrorType> on_fail)
         {
 
-#if UNITY_ANDROID && USING_FIREBASE
+#if UNITY_ANDROID && USING_FIREBASE_AUTH
 
             LoginGooglePlayGames(on_success, on_service_fail, on_fail);
 
-#elif UNITY_IOS && USING_FIREBASE
+#elif UNITY_IOS && USING_FIREBASE_AUTH
 
             LoginGameCenter(on_success, on_service_fail, on_fail)
 
@@ -248,11 +254,13 @@ namespace Fast.Modules
 
         }
 
-        // Requieres USING_FIREBASE
-        private void LoginWithCredentials(Firebase.Auth.Credential credential, Action<string> on_success, Action<GoogleFirebase.FirebaseErrorType> on_fail)
+        /// <summary>
+        /// Requieres USING_FIREBASE_AUTH
+        /// </summary>
+        private void LoginWithCredentials(Firebase.Auth.Credential credential, Action<string> on_success, Action<FastErrorType> on_fail)
         {
 
-#if USING_FIREBASE && !UNITY_WEBGL
+#if USING_FIREBASE_AUTH && !UNITY_WEBGL
 
             if (user != null)
             {
@@ -284,7 +292,7 @@ namespace Fast.Modules
                         else
                         {
                             Firebase.FirebaseException firebase_exception = exception as Firebase.FirebaseException;
-                            GoogleFirebase.FirebaseErrorType error = GoogleFirebase.FirebaseExceptionToFirebaseError.Get(firebase_exception);
+                            FastErrorType error = GoogleFirebase.FirebaseExceptionToFastError.GetError(firebase_exception);
 
                             if (on_fail != null)
                                 on_fail.Invoke(error);
@@ -295,7 +303,7 @@ namespace Fast.Modules
                 else
                 {
                     Firebase.FirebaseException firebase_exception = exception as Firebase.FirebaseException;
-                    GoogleFirebase.FirebaseErrorType error = GoogleFirebase.FirebaseExceptionToFirebaseError.Get(firebase_exception);
+                    FastErrorType error = GoogleFirebase.FirebaseExceptionToFastError.GetError(firebase_exception);
 
                     if (on_fail != null)
                         on_fail.Invoke(error);
@@ -312,35 +320,49 @@ namespace Fast.Modules
 
         }
 
-        // Requieres USING_FIREBASE
+        /// <summary>
+        /// Requieres USING_FIREBASE_AUTH
+        /// </summary>
         public void RegisterEmailPassword(string username, string email, string password, string password_conf,
-            Action on_success, Action<GoogleFirebase.FirebaseErrorType> on_fail)
+            Action on_success, Action<FastErrorType> on_fail)
         {
 
-#if USING_FIREBASE && !UNITY_WEBGL
+#if USING_FIREBASE_AUTH && !UNITY_WEBGL
 
-            auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWith(task =>
+            FastErrorType error_type = FastErrorType.UNDEFINED;
+
+            bool error = Authentication.AuthenticationDataToFastError.GetRegistrationError(username, email, password, 
+                password_conf, out error_type);
+
+            if (!error)
             {
-                string error_msg = "";
-                Exception exception = null;
-
-                bool has_errors = task.HasErrors(out error_msg, out exception);
-
-                if (!has_errors)
+                auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWith(task =>
                 {
-                    UpdateDisplayName(username,
-                    delegate ()
+                    string error_msg = "";
+                    Exception exception = null;
+
+                    bool has_errors = task.HasErrors(out error_msg, out exception);
+
+                    if (!has_errors)
                     {
-                        user = task.Result;
+                        UpdateDisplayName(username,
+                        delegate ()
+                        {
+                            user = task.Result;
 
-                        if (on_success != null)
-                            on_success.Invoke();
+                            if (on_success != null)
+                                on_success.Invoke();
+                        }
+                        , on_fail);
                     }
-                    , on_fail);
-                }
 
-            }, TaskScheduler.FromCurrentSynchronizationContext());
-
+                }, TaskScheduler.FromCurrentSynchronizationContext());
+            }
+            else
+            {
+                if (on_fail != null)
+                    on_fail.Invoke(error_type);
+            }
 #else
 
             if (on_fail != null)
@@ -350,11 +372,13 @@ namespace Fast.Modules
 
         }
 
-        // Requieres USING_FIREBASE
-        public void UpdateDisplayName(string display_name, Action on_success, Action<GoogleFirebase.FirebaseErrorType> on_fail)
+        /// <summary>
+        /// Requieres USING_FIREBASE_AUTH
+        /// </summary>
+        public void UpdateDisplayName(string display_name, Action on_success, Action<FastErrorType> on_fail)
         {
 
-#if USING_FIREBASE && !UNITY_WEBGL
+#if USING_FIREBASE_AUTH && !UNITY_WEBGL
 
             Firebase.Auth.UserProfile profile = new Firebase.Auth.UserProfile
             {
@@ -376,7 +400,7 @@ namespace Fast.Modules
                 else
                 {
                     Firebase.FirebaseException firebase_exception = exception as Firebase.FirebaseException;
-                    GoogleFirebase.FirebaseErrorType error = GoogleFirebase.FirebaseExceptionToFirebaseError.Get(firebase_exception);
+                    FastErrorType error = GoogleFirebase.FirebaseExceptionToFastError.GetError(firebase_exception);
 
                     if (on_fail != null)
                         on_fail.Invoke(error);
@@ -388,6 +412,53 @@ namespace Fast.Modules
 
             if (on_fail != null)
                 on_fail.Invoke(GoogleFirebase.FirebaseErrorType.UNDEFINED);
+
+#endif
+
+        }
+
+        /// <summary>
+        /// Name of the event to log.
+        /// Parameter type supplies information that contextualize analytics events.
+        /// Requieres USING_FIREBASE_ANALYTICS
+        /// </summary>
+        public void SendAnalytics(string name, string parameter_type, string parameter_value)
+        {
+
+#if USING_FIREBASE_ANALYTICS && !UNITY_WEBGL
+
+            Firebase.Analytics.FirebaseAnalytics.LogEvent(name, parameter_type, parameter_value);
+
+#endif
+
+        }
+
+        /// <summary>
+        /// Name of the event to log.
+        /// Parameter type supplies information that contextualize analytics events.
+        /// Requieres USING_FIREBASE_ANALYTICS
+        /// </summary>
+        public void SendAnalytics(string name, string parameter_type, int parameter_value)
+        {
+
+#if USING_FIREBASE_ANALYTICS && !UNITY_WEBGL
+
+            Firebase.Analytics.FirebaseAnalytics.LogEvent(name, parameter_type, parameter_value);
+
+#endif
+
+        }
+
+        /// <summary>
+        /// Name of the event to log.
+        /// Parameter type supplies information that contextualize analytics events.
+        /// </summary>
+        public void SendAnalytics(string name, string parameter_type, float parameter_value)
+        {
+
+#if USING_FIREBASE_ANALYTICS && !UNITY_WEBGL
+
+            Firebase.Analytics.FirebaseAnalytics.LogEvent(name, parameter_type, parameter_value);
 
 #endif
 

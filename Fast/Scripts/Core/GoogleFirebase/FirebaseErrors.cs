@@ -2,26 +2,14 @@
 
 namespace Fast.GoogleFirebase
 {
-    public enum FirebaseErrorType
-    {
-        UNDEFINED,
-
-        EMAIL_ALREADY_IN_USE,
-        ACCOUNT_ALREADY_EXISTS,
-        INVALID_EMAIL,
-        WRONG_CREDENTIALS,
-        WEAK_PASSWORD,
-        NETWORK_ERROR,
-    }
-
-    public class FirebaseExceptionToFirebaseError
+    public class FirebaseExceptionToFastError
     {
 
-#if USING_FIREBASE
+#if USING_FIREBASE_AUTH || USING_FIREBASE_ANALYTICS
 
-        public static FirebaseErrorType Get(Firebase.FirebaseException exception)
+        public static FastErrorType GetError(Firebase.FirebaseException exception)
         {
-            FirebaseErrorType ret = FirebaseErrorType.UNDEFINED;
+            FastErrorType ret = FastErrorType.UNDEFINED;
 
             if (exception != null)
             {
@@ -31,45 +19,45 @@ namespace Fast.GoogleFirebase
                 {
                     case Firebase.Auth.AuthError.EmailAlreadyInUse:
                         {
-                            ret = FirebaseErrorType.EMAIL_ALREADY_IN_USE;
+                            ret = FastErrorType.EMAIL_ALREADY_IN_USE;
                             break;
                         }
 
                     case Firebase.Auth.AuthError.AccountExistsWithDifferentCredentials:
                         {
-                            ret = FirebaseErrorType.ACCOUNT_ALREADY_EXISTS;
+                            ret = FastErrorType.ACCOUNT_ALREADY_EXISTS;
                             break;
                         }
 
                     case Firebase.Auth.AuthError.InvalidEmail:
                         {
-                            ret = FirebaseErrorType.INVALID_EMAIL;
+                            ret = FastErrorType.INVALID_EMAIL;
                             break;
                         }
 
                     case Firebase.Auth.AuthError.WrongPassword:
                     case Firebase.Auth.AuthError.InvalidCredential:
                         {
-                            ret = FirebaseErrorType.WRONG_CREDENTIALS;
+                            ret = FastErrorType.WRONG_CREDENTIALS;
                             break;
                         }
 
                     case Firebase.Auth.AuthError.WeakPassword:
                         {
-                            ret = FirebaseErrorType.WEAK_PASSWORD;
+                            ret = FastErrorType.WEAK_PASSWORD;
                             break;
                         }
 
                     case Firebase.Auth.AuthError.NetworkRequestFailed:
                     case Firebase.Auth.AuthError.WebInternalError:
                         {
-                            ret = FirebaseErrorType.NETWORK_ERROR;
+                            ret = FastErrorType.NETWORK_ERROR;
                             break;
                         }
 
                     default:
                         {
-                            ret = ret = FirebaseErrorType.UNDEFINED;
+                            ret = ret = FastErrorType.UNDEFINED;
                             break;
                         }
                 }
