@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.SocialPlatforms.GameCenter;
 
 // To use this, go to Unity Project Settings -> Other settings -> Scripting Define Simbols
 // and add the preprocessor directives when necessary:
@@ -73,13 +72,13 @@ namespace Fast.Modules
 
 #if UNITY_ANDROID && !UNITY_EDITOR
 
-            auth_type = AuthType.GOOGLE_PLAY;
+            auth_to_use = FirebaseAuthType.GOOGLE_PLAY_GAMES;
 
 #endif
 
 #if UNITY_IOS && !UNITY_EDITOR
 
-            auth_type = AuthType.GOOGLE;
+            auth_to_use = FirebaseAuthType.APPLE_GAME_CENTER;
 
 #endif
         }
@@ -209,7 +208,8 @@ namespace Fast.Modules
                         }
                         else
                         {
-                            Firebase.FirebaseException firebase_exception = exception as Firebase.FirebaseException;
+                            Firebase.FirebaseException firebase_exception = GoogleFirebase.FirebaseExceptionToFastError.
+                                GetFirebaseExceptionFromException(exception);
                             FastErrorType error = GoogleFirebase.FirebaseExceptionToFastError.GetError(firebase_exception);
 
                             if (on_fail != null)
@@ -302,7 +302,8 @@ namespace Fast.Modules
                 }
                 else
                 {
-                    Firebase.FirebaseException firebase_exception = exception as Firebase.FirebaseException;
+                    Firebase.FirebaseException firebase_exception = GoogleFirebase.FirebaseExceptionToFastError.
+                        GetFirebaseExceptionFromException(exception);
                     FastErrorType error = GoogleFirebase.FirebaseExceptionToFastError.GetError(firebase_exception);
 
                     if (on_fail != null)
@@ -331,10 +332,10 @@ namespace Fast.Modules
 
             FastErrorType error_type = FastErrorType.UNDEFINED;
 
-            bool error = Authentication.AuthenticationDataToFastError.GetRegistrationError(username, email, password, 
+            bool registration_error = Authentication.AuthenticationDataToFastError.GetRegistrationError(username, email, password, 
                 password_conf, out error_type);
 
-            if (!error)
+            if (!registration_error)
             {
                 auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWith(task =>
                 {
@@ -354,6 +355,15 @@ namespace Fast.Modules
                                 on_success.Invoke();
                         }
                         , on_fail);
+                    }
+                    else
+                    {
+                        Firebase.FirebaseException firebase_exception = GoogleFirebase.FirebaseExceptionToFastError.
+                            GetFirebaseExceptionFromException(exception);
+                        FastErrorType error = GoogleFirebase.FirebaseExceptionToFastError.GetError(firebase_exception);
+                        
+                        if (on_fail != null)
+                            on_fail.Invoke(error);
                     }
 
                 }, TaskScheduler.FromCurrentSynchronizationContext());
@@ -399,7 +409,8 @@ namespace Fast.Modules
                 }
                 else
                 {
-                    Firebase.FirebaseException firebase_exception = exception as Firebase.FirebaseException;
+                    Firebase.FirebaseException firebase_exception = GoogleFirebase.FirebaseExceptionToFastError.
+                        GetFirebaseExceptionFromException(exception);
                     FastErrorType error = GoogleFirebase.FirebaseExceptionToFastError.GetError(firebase_exception);
 
                     if (on_fail != null)

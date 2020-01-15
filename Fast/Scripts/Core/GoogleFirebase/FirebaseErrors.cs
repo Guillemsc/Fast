@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Fast.GoogleFirebase
 {
@@ -6,6 +8,38 @@ namespace Fast.GoogleFirebase
     {
 
 #if USING_FIREBASE_AUTH || USING_FIREBASE_ANALYTICS
+
+        public static Firebase.FirebaseException GetFirebaseExceptionFromException(Exception ex)
+        {
+            Firebase.FirebaseException ret = null;
+
+            if(ex != null)
+            {
+                ret = ex as Firebase.FirebaseException;
+
+                if (ret == null)
+                {
+                    AggregateException ag_ex = ex as AggregateException;
+
+                    if (ag_ex != null)
+                    {
+                        List<Exception> exceptions = ag_ex.InnerExceptions.ToList();
+
+                        for (int i = 0; i < exceptions.Count; ++i)
+                        {
+                            ret = exceptions[i].InnerException as Firebase.FirebaseException;
+
+                            if (ret != null)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return ret;
+        }
 
         public static FastErrorType GetError(Firebase.FirebaseException exception)
         {
