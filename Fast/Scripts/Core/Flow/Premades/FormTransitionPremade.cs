@@ -10,7 +10,6 @@ public static class FormTransitionPremade
         string to_deactivate_transition, bool to_deactivate_transition_backward, bool transiton_start_together, Fast.UI.Form to_activate,
         string to_activate_transition, bool to_activate_transition_backward, out Fast.Flow.FlowNode mid_node)
     {
-
         container.FlowAllSubFormsPlayDefaultBackwardAnimation();
 
         if (to_deactivate_transition_backward)
@@ -90,6 +89,22 @@ public static class FormTransitionPremade
     {
         return PremadeFormTransitionEx(container, to_deactivate_transition, to_deactivate_transition_backward, true,
                                         to_activate, to_activate_transition, to_activate_transition_backward, out mid_node);
+    }
+
+    public static Fast.Flow.FlowContainer PremadeShowForm(this Fast.Flow.FlowContainer container,
+        Fast.UI.Form to_activate)
+    {
+        container
+            .FlowNextStartWithLast().FlowAllSubFormsHide()
+            .FlowNextStartWithLast().FlowAllSubFormsSetActive(false)
+            .FlowNextStartWithLast().FlowRemoveAllSubForms()
+            .FlowNextStartWithLast().FlowCurrFormHide()
+            .FlowNextStartWithLast().FlowCurrFormSetActive(false)
+            .FlowSetCurrForm(to_activate)
+            .FlowNextStartWithLast().FlowCurrFormShow()
+            .FlowNextStartWithLast().FlowCurrFormSetActive(true);
+
+        return container;
     }
 
     public static Fast.Flow.FlowContainer PremadeOpenSubFormTransition(this Fast.Flow.FlowContainer container,

@@ -25,6 +25,8 @@ namespace Fast.UI
 
         [Sirenix.OdinInspector.Title("To move", "All the game objects that need to move, with the start and ending position")]
         [SerializeField] private List<MoveToPosData> data_to_move = new List<MoveToPosData>();
+        [SerializeField] private Ease to_move_forward_ease = Ease.InOutQuad;
+        [SerializeField] private Ease to_move_backwards_ease = Ease.InOutQuad;
 
         private MoveToPosFormAnimation() : base("MoveToPos")
         {
@@ -55,6 +57,7 @@ namespace Fast.UI
                 }
             }
 
+            sequence.SetEase(to_move_forward_ease);
             sequence.OnComplete(Finish);
             sequence.Play();
         }
@@ -83,6 +86,7 @@ namespace Fast.UI
                 }
             }
 
+            sequence.SetEase(to_move_backwards_ease);
             sequence.OnComplete(Finish);
             sequence.Play();
         }

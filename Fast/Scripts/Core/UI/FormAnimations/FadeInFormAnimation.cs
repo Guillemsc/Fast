@@ -13,6 +13,8 @@ namespace Fast.UI
         [Sirenix.OdinInspector.HideLabel]
         [Sirenix.OdinInspector.Title("To fade", "All the game objects that need to fade in")]
         [SerializeField] private List<GameObject> to_fade = new List<GameObject>();
+        [SerializeField] private Ease to_fade_forward_ease = Ease.InOutQuad;
+        [SerializeField] private Ease to_fade_backwards_ease = Ease.InOutQuad;
 
         private FadeInFormAnimation() : base("FadeIn")
         {
@@ -37,6 +39,7 @@ namespace Fast.UI
                 sequence.Join(fade_in_anim.AnimateForward());
             }
 
+            sequence.SetEase(to_fade_forward_ease);
             sequence.OnComplete(Finish);
             sequence.Play();
         }
@@ -59,6 +62,7 @@ namespace Fast.UI
                 sequence.Join(fade_in_anim.AnimateBackward());
             }
 
+            sequence.SetEase(to_fade_backwards_ease);
             sequence.OnComplete(Finish);
             sequence.Play();
         }

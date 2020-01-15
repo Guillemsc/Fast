@@ -8,45 +8,65 @@ namespace Fast.Modules
 {
     class FlowModule : UpdatableModule
     {
-        private Fast.Flow.FlowController flow_controller = new Flow.FlowController();
+        private List<Fast.Flow.FlowController> flow_controller = new List<Flow.FlowController>();
+
+        public Fast.Flow.FlowController CreateController()
+        {
+            Fast.Flow.FlowController ret = new Flow.FlowController();
+
+            flow_controller.Add(ret);
+
+            return ret;
+        }
 
         public override void Update()
         {
-            flow_controller.Update();
-        }
-
-        public void RunContainer(int identifier_id, Action on_finish = null)
-        {
-            Flow.FlowContainer container = null;
-
-            bool could_run = flow_controller.RunContainer(identifier_id, out container);
-
-            if(could_run)
+            for (int i = 0; i < flow_controller.Count; ++i)
             {
-                container.OnFinish.UnSubscribeAll();
-                container.OnFinish.Subscribe(on_finish);
+                Fast.Flow.FlowController curr_controller = flow_controller[i];
+
+                curr_controller.Update();
             }
         }
 
-        public void PushRunContainer(int identifier_id, Action on_start = null, Action on_finish = null)
+        public void RunContainer(Fast.Flow.FlowController controller, int identifier_id, Action on_finish = null)
         {
             Flow.FlowContainer container = null;
 
-            bool could_run = flow_controller.PushRunContainer(identifier_id, out container);
-
-            if (could_run)
+            if (controller != null)
             {
-                container.OnStart.UnSubscribeAll();
-                container.OnStart.Subscribe(on_start);
+                bool could_run = controller.RunContainer(identifier_id, out container);
 
-                container.OnFinish.UnSubscribeAll();
-                container.OnFinish.Subscribe(on_finish);
+                if (could_run)
+                {
+                    container.OnFinish.UnSubscribeAll();
+                    container.OnFinish.Subscribe(on_finish);
+                }
             }
         }
 
-        public Flow.FlowContainer CreateContainer(int identifier_id)
+        public void PushRunContainer(Fast.Flow.FlowController controller, int identifier_id, Action on_start = null, Action on_finish = null)
         {
-            return flow_controller.CreateContainer(identifier_id);
+            Flow.FlowContainer container = null;
+
+            if (controller != null)
+            {
+                bool could_run = controller.PushRunContainer(identifier_id, out container);
+
+                if (could_run)
+                {
+                    container.OnStart.UnSubscribeAll();
+                    container.OnStart.Subscribe(on_start);
+
+                    container.OnFinish.UnSubscribeAll();
+                    container.OnFinish.Subscribe(on_finish);
+                }
+            }
+        }
+
+        public Flow.FlowContainer CreateContainer(Fast.Flow.FlowController controller, int identifier_id)
+        {
+            return controller.CreateContainer(identifier_id);
         }
     }
 }
