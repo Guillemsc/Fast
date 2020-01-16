@@ -56,14 +56,27 @@ namespace Fast.Modules
 
         public override void Awake()
         {
-
             ChooseAuthType();
 
-#if USING_FIREBASE_AUTH
+#if USING_FIREBASE_AUTH && !UNITY_WEBGL
 
             auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
 
 #endif
+
+#if UNITY_ANDROID && USING_GOOGLE_PLAY_SERVICES
+
+            GooglePlayGames.BasicApi.PlayGamesClientConfiguration config = new GooglePlayGames.BasicApi.PlayGamesClientConfiguration.Builder()
+            .RequestServerAuthCode(false /* Don't force refresh */)
+            .Build();
+
+            GooglePlayGames.PlayGamesPlatform.InitializeInstance(config);
+            GooglePlayGames.PlayGamesPlatform.DebugLogEnabled = true;
+
+            GooglePlayGames.PlayGamesPlatform.Activate();
+
+#endif
+
         }
 
         private void ChooseAuthType()
@@ -137,32 +150,45 @@ namespace Fast.Modules
 
 #if UNITY_ANDROID && USING_FIREBASE_AUTH && USING_GOOGLE_PLAY_SERVICES
 
-            UnityEngine.Social.Active.localUser.Authenticate(delegate(bool google_play_success, string google_play_error)
+            try
             {
-                if (google_play_success)
+                GooglePlayGames.PlayGamesPlatform.Instance.Authenticate(delegate(bool google_play_success, string google_play_error)
                 {
-                    GooglePlayGames.PlayGamesLocalUser user = (GooglePlayGames.PlayGamesLocalUser)Social.Active.localUser;
-
-                    string google_play_auth_code = GooglePlayGames.PlayGamesPlatform.Instance.GetServerAuthCode();
-
-                    Firebase.Auth.Credential credential = Firebase.Auth.PlayGamesAuthProvider.GetCredential(google_play_auth_code);
-
-                    LoginWithCredentials(credential,
-                    delegate (string user_id)
+                    if (google_play_success)
                     {
-                        FirebaseLoginObj ret = new FirebaseLoginObj(FirebaseAuthType.GOOGLE_PLAY_GAMES, user_id);
+                        GooglePlayGames.PlayGamesLocalUser user = (GooglePlayGames.PlayGamesLocalUser)Social.Active.localUser;
 
-                        if (on_success != null)
-                            on_success.Invoke(ret);
+                        string google_play_auth_code = GooglePlayGames.PlayGamesPlatform.Instance.GetServerAuthCode();
+
+                        Firebase.Auth.Credential credential = Firebase.Auth.PlayGamesAuthProvider.GetCredential(google_play_auth_code);
+
+                        LoginWithCredentials(credential,
+                        delegate (string user_id)
+                        {
+                            FirebaseLoginObj ret = new FirebaseLoginObj(FirebaseAuthType.GOOGLE_PLAY_GAMES, user_id);
+
+                            if (on_success != null)
+                                on_success.Invoke(ret);
+                        }
+                        , on_fail);
                     }
-                    , on_fail);
-                }
-                else
+                    else
+                    {
+                        if (on_google_play_fail != null)
+                            on_google_play_fail.Invoke(google_play_error);
+                    }
+                });
+            }
+            catch(Exception exception)
+            {
+                if(exception != null)
                 {
                     if (on_google_play_fail != null)
-                        on_google_play_fail.Invoke(google_play_error);
+                        on_google_play_fail.Invoke(exception.StackTrace);
+
+                    UnityEngine.Debug.LogError(exception.StackTrace);
                 }
-            });
+            }
 
 #else
 
