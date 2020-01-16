@@ -152,7 +152,8 @@ namespace Fast.Modules
 
             try
             {
-                GooglePlayGames.PlayGamesPlatform.Instance.Authenticate(delegate(bool google_play_success, string google_play_error)
+                GooglePlayGames.PlayGamesPlatform.Instance.Authenticate(
+                delegate(bool google_play_success, string google_play_error)
                 {
                     if (google_play_success)
                     {
@@ -293,7 +294,8 @@ namespace Fast.Modules
                 LogOut();
             }
 
-            auth.SignInWithCredentialAsync(credential).ContinueWith(task =>
+            auth.SignInWithCredentialAsync(credential).ContinueWith(
+            delegate (Task task)
             {
                 string error_msg = "";
                 Exception exception = null;
@@ -363,7 +365,8 @@ namespace Fast.Modules
 
             if (!registration_error)
             {
-                auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWith(task =>
+                auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWith(
+                delegate(Task task)
                 {
                     string error_msg = "";
                     Exception exception = null;
@@ -372,15 +375,8 @@ namespace Fast.Modules
 
                     if (!has_errors)
                     {
-                        UpdateDisplayName(username,
-                        delegate ()
-                        {
-                            user = task.Result;
-
-                            if (on_success != null)
-                                on_success.Invoke();
-                        }
-                        , on_fail);
+                        if (on_success != null)
+                            on_success.Invoke();
                     }
                     else
                     {
@@ -421,7 +417,8 @@ namespace Fast.Modules
                 DisplayName = display_name,
             };
 
-            user.UpdateUserProfileAsync(profile).ContinueWith(update_task =>
+            user.UpdateUserProfileAsync(profile).ContinueWith(
+            delegate (Task update_task)
             {
                 string error_msg = "";
                 Exception exception = null;
