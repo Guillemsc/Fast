@@ -7,6 +7,7 @@ using UnityEngine;
 
 // To use this, go to Unity Project Settings -> Other settings -> Scripting Define Simbols
 // and add the preprocessor directives when necessary:
+// (keep in mind you have to do this for every platform)
 // USING_FIREBASE_AUTH
 // USING_FIREBASE_ANALYTICS
 // USING_GOOGLE_PLAY_SERVICES
@@ -319,7 +320,8 @@ namespace Fast.Modules
                         }
                         else
                         {
-                            Firebase.FirebaseException firebase_exception = exception as Firebase.FirebaseException;
+                            Firebase.FirebaseException firebase_exception = GoogleFirebase.FirebaseExceptionToFastError.
+                                GetFirebaseExceptionFromException(exception);
                             FastErrorType error = GoogleFirebase.FirebaseExceptionToFastError.GetError(firebase_exception);
 
                             if (on_fail != null)
