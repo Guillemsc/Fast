@@ -135,7 +135,7 @@ namespace Fast.Modules
 #else
 
             if (on_fail != null)
-                on_fail.Invoke(GoogleFirebase.FirebaseErrorType.UNDEFINED);
+                on_fail.Invoke(FastErrorType.UNDEFINED);
 
 #endif
 
@@ -194,7 +194,7 @@ namespace Fast.Modules
 #else
 
             if (on_fail != null)
-                on_fail.Invoke(GoogleFirebase.FirebaseErrorType.UNDEFINED);
+                on_fail.Invoke(FastErrorType.UNDEFINED);
 
 #endif
 
@@ -275,7 +275,7 @@ namespace Fast.Modules
 #else
 
             if (on_fail != null)
-                on_fail.Invoke(GoogleFirebase.FirebaseErrorType.UNDEFINED);
+                on_fail.Invoke(FastErrorType.UNDEFINED);
 
 #endif
 
@@ -343,7 +343,7 @@ namespace Fast.Modules
 #else
 
             if (on_fail != null)
-                on_fail.Invoke(GoogleFirebase.FirebaseErrorType.UNDEFINED);
+                on_fail.Invoke(FastErrorType.UNDEFINED);
 
 #endif
 
@@ -398,7 +398,7 @@ namespace Fast.Modules
 #else
 
             if (on_fail != null)
-                on_fail.Invoke(GoogleFirebase.FirebaseErrorType.UNDEFINED);
+                on_fail.Invoke(FastErrorType.UNDEFINED);
 
 #endif
 
@@ -445,7 +445,7 @@ namespace Fast.Modules
 #else
 
             if (on_fail != null)
-                on_fail.Invoke(GoogleFirebase.FirebaseErrorType.UNDEFINED);
+                on_fail.Invoke(FastErrorType.UNDEFINED);
 
 #endif
 
