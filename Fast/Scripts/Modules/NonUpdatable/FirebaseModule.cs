@@ -295,7 +295,7 @@ namespace Fast.Modules
             }
 
             auth.SignInWithCredentialAsync(credential).ContinueWith(
-            delegate (Task task)
+            delegate (Task<Firebase.Auth.FirebaseUser> task)
             {
                 string error_msg = "";
                 Exception exception = null;
