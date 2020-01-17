@@ -71,9 +71,14 @@ namespace Fast.GoogleFirebase
 
                     case Firebase.Auth.AuthError.UserNotFound:
                     case Firebase.Auth.AuthError.WrongPassword:
-                    case Firebase.Auth.AuthError.InvalidCredential:
                         {
                             ret = FastErrorType.WRONG_CREDENTIALS;
+                            break;
+                        }
+
+                    case Firebase.Auth.AuthError.InvalidCredential:
+                        {
+                            ret = FastErrorType.INVALID_CREDENTIAL;
                             break;
                         }
 

@@ -19,6 +19,7 @@ namespace Fast
         USERNAME_TOO_LONG,
         ACCOUNT_ALREADY_EXISTS,
         WRONG_CREDENTIALS,
+        INVALID_CREDENTIAL,
         NETWORK_ERROR,
     }
 }

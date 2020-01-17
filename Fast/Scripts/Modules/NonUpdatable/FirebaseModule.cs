@@ -179,7 +179,7 @@ namespace Fast.Modules
                         if (on_google_play_fail != null)
                             on_google_play_fail.Invoke(google_play_error);
                     }
-                });
+                }, false);
             }
             catch(Exception exception)
             {
