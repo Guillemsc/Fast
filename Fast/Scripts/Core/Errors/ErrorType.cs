@@ -7,6 +7,8 @@ namespace Fast
     {
         UNDEFINED,
 
+        FIREBASE_NOT_READY,
+
         EMPTY_USERNAME,
         EMPTY_EMAIL,
         EMPTY_PASSWORD,

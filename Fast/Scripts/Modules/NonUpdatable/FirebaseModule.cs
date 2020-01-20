@@ -49,6 +49,8 @@ namespace Fast.Modules
 
 #if USING_FIREBASE_AUTH && !UNITY_WEBGL
 
+        private Firebase.FirebaseApp app = null;
+
         private Firebase.Auth.FirebaseAuth auth = null;
 
         private Firebase.Auth.FirebaseUser user = null;
@@ -58,23 +60,41 @@ namespace Fast.Modules
         public override void Awake()
         {
             ChooseAuthType();
+        }
 
-#if USING_FIREBASE_AUTH && !UNITY_WEBGL
-
-            auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
-
-#endif
+        public override void Start()
+        {
 
 #if UNITY_ANDROID && USING_GOOGLE_PLAY_SERVICES
 
             GooglePlayGames.BasicApi.PlayGamesClientConfiguration config = new GooglePlayGames.BasicApi.PlayGamesClientConfiguration.Builder()
-            .RequestServerAuthCode(false /* Don't force refresh */)
+            .RequestServerAuthCode(false)
             .Build();
 
             GooglePlayGames.PlayGamesPlatform.InitializeInstance(config);
             GooglePlayGames.PlayGamesPlatform.DebugLogEnabled = true;
 
             GooglePlayGames.PlayGamesPlatform.Activate();
+
+#endif
+
+#if USING_FIREBASE_AUTH && !UNITY_WEBGL
+
+            Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task => {
+                var dependencyStatus = task.Result;
+
+                if (dependencyStatus == Firebase.DependencyStatus.Available)
+                {
+                    Firebase.FirebaseApp app = Firebase.FirebaseApp.DefaultInstance;
+
+                    auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
+                }
+                else
+                {
+                    UnityEngine.Debug.LogError(System.String.Format(
+                      "Could not resolve all Firebase dependencies: {0}", dependencyStatus));
+                }
+            });
 
 #endif
 
@@ -153,7 +173,7 @@ namespace Fast.Modules
 
             try
             {
-                GooglePlayGames.PlayGamesPlatform.Instance.Authenticate(
+                UnityEngine.Social.Active.localUser.Authenticate(
                 delegate(bool google_play_success, string google_play_error)
                 {
                     if (google_play_success)
@@ -162,7 +182,11 @@ namespace Fast.Modules
 
                         string google_play_auth_code = GooglePlayGames.PlayGamesPlatform.Instance.GetServerAuthCode();
 
+                        Debug.Log("Login google play auth code: " + google_play_auth_code);
+
                         Firebase.Auth.Credential credential = Firebase.Auth.PlayGamesAuthProvider.GetCredential(google_play_auth_code);
+
+                        Debug.Log("Login in with credentials 1");
 
                         LoginWithCredentials(credential,
                         delegate (string user_id)
@@ -179,16 +203,16 @@ namespace Fast.Modules
                         if (on_google_play_fail != null)
                             on_google_play_fail.Invoke(google_play_error);
                     }
-                }, false);
+                });
             }
             catch(Exception exception)
             {
                 if(exception != null)
                 {
                     if (on_google_play_fail != null)
-                        on_google_play_fail.Invoke(exception.StackTrace);
+                        on_google_play_fail.Invoke("LoginGooglePlayGames exception:" + exception.StackTrace);
 
-                    UnityEngine.Debug.LogError(exception.StackTrace);
+                    Debug.LogError(exception.StackTrace);
                 }
             }
 
@@ -282,41 +306,106 @@ namespace Fast.Modules
 
         }
 
+#if USING_FIREBASE_AUTH && !UNITY_WEBGL
+
         /// <summary>
         /// Requieres USING_FIREBASE_AUTH
         /// </summary>
         private void LoginWithCredentials(Firebase.Auth.Credential credential, Action<string> on_success, Action<FastErrorType> on_fail)
         {
-
-#if USING_FIREBASE_AUTH && !UNITY_WEBGL
-
             if (user != null)
             {
                 LogOut();
             }
 
-            auth.SignInWithCredentialAsync(credential).ContinueWith(
-            delegate (Task<Firebase.Auth.FirebaseUser> task)
+            if (auth != null)
             {
-                string error_msg = "";
-                Exception exception = null;
-
-                bool has_errors = task.HasErrors(out error_msg, out exception);
-
-                if (!has_errors)
+                auth.SignInWithCredentialAsync(credential).ContinueWith(
+                delegate (Task<Firebase.Auth.FirebaseUser> task)
                 {
-                    Firebase.Auth.FirebaseUser curr_user = task.Result;
+                    string error_msg = "";
+                    Exception exception = null;
 
-                    curr_user.TokenAsync(false).ContinueWith(token_task =>
+                    bool has_errors = task.HasErrors(out error_msg, out exception);
+
+                    if (!has_errors)
                     {
-                        has_errors = task.HasErrors(out error_msg, out exception);
+                        Firebase.Auth.FirebaseUser curr_user = task.Result;
+
+                        curr_user.TokenAsync(false).ContinueWith(token_task =>
+                        {
+                            has_errors = task.HasErrors(out error_msg, out exception);
+
+                            if (!has_errors)
+                            {
+                                user = curr_user;
+
+                                if (on_success != null)
+                                    on_success.Invoke(token_task.Result);
+                            }
+                            else
+                            {
+                                Firebase.FirebaseException firebase_exception = GoogleFirebase.FirebaseExceptionToFastError.
+                                    GetFirebaseExceptionFromException(exception);
+                                FastErrorType error = GoogleFirebase.FirebaseExceptionToFastError.GetError(firebase_exception);
+
+                                if (on_fail != null)
+                                    on_fail.Invoke(error);
+                            }
+
+                        }, TaskScheduler.FromCurrentSynchronizationContext());
+                    }
+                    else
+                    {
+                        Firebase.FirebaseException firebase_exception = GoogleFirebase.FirebaseExceptionToFastError.
+                            GetFirebaseExceptionFromException(exception);
+                        FastErrorType error = GoogleFirebase.FirebaseExceptionToFastError.GetError(firebase_exception);
+
+                        if (on_fail != null)
+                            on_fail.Invoke(error);
+                    }
+                }
+                , TaskScheduler.FromCurrentSynchronizationContext());
+            }
+            else
+            {
+                if (on_fail != null)
+                    on_fail.Invoke(FastErrorType.FIREBASE_NOT_READY);
+            }
+        }
+
+#endif
+
+    /// <summary>
+    /// Requieres USING_FIREBASE_AUTH
+    /// </summary>
+    public void RegisterEmailPassword(string username, string email, string password, string password_conf,
+            Action on_success, Action<FastErrorType> on_fail)
+        {
+
+#if USING_FIREBASE_AUTH && !UNITY_WEBGL
+
+            FastErrorType error_type = FastErrorType.UNDEFINED;
+
+            bool registration_error = Authentication.AuthenticationDataToFastError.GetRegistrationError(username, email, password, 
+                password_conf, out error_type);
+
+            if (!registration_error)
+            {
+                if (auth != null)
+                {
+                    auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWith(
+                    delegate (Task task)
+                    {
+                        string error_msg = "";
+                        Exception exception = null;
+
+                        bool has_errors = task.HasErrors(out error_msg, out exception);
 
                         if (!has_errors)
                         {
-                            user = curr_user;
-
                             if (on_success != null)
-                                on_success.Invoke(token_task.Result);
+                                on_success.Invoke();
                         }
                         else
                         {
@@ -332,65 +421,9 @@ namespace Fast.Modules
                 }
                 else
                 {
-                    Firebase.FirebaseException firebase_exception = GoogleFirebase.FirebaseExceptionToFastError.
-                        GetFirebaseExceptionFromException(exception);
-                    FastErrorType error = GoogleFirebase.FirebaseExceptionToFastError.GetError(firebase_exception);
-
                     if (on_fail != null)
-                        on_fail.Invoke(error);
+                        on_fail.Invoke(FastErrorType.FIREBASE_NOT_READY);
                 }
-            }
-            , TaskScheduler.FromCurrentSynchronizationContext());
-
-#else
-
-            if (on_fail != null)
-                on_fail.Invoke(FastErrorType.UNDEFINED);
-
-#endif
-
-        }
-
-        /// <summary>
-        /// Requieres USING_FIREBASE_AUTH
-        /// </summary>
-        public void RegisterEmailPassword(string username, string email, string password, string password_conf,
-            Action on_success, Action<FastErrorType> on_fail)
-        {
-
-#if USING_FIREBASE_AUTH && !UNITY_WEBGL
-
-            FastErrorType error_type = FastErrorType.UNDEFINED;
-
-            bool registration_error = Authentication.AuthenticationDataToFastError.GetRegistrationError(username, email, password, 
-                password_conf, out error_type);
-
-            if (!registration_error)
-            {
-                auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWith(
-                delegate(Task task)
-                {
-                    string error_msg = "";
-                    Exception exception = null;
-
-                    bool has_errors = task.HasErrors(out error_msg, out exception);
-
-                    if (!has_errors)
-                    {
-                        if (on_success != null)
-                            on_success.Invoke();
-                    }
-                    else
-                    {
-                        Firebase.FirebaseException firebase_exception = GoogleFirebase.FirebaseExceptionToFastError.
-                            GetFirebaseExceptionFromException(exception);
-                        FastErrorType error = GoogleFirebase.FirebaseExceptionToFastError.GetError(firebase_exception);
-                        
-                        if (on_fail != null)
-                            on_fail.Invoke(error);
-                    }
-
-                }, TaskScheduler.FromCurrentSynchronizationContext());
             }
             else
             {
