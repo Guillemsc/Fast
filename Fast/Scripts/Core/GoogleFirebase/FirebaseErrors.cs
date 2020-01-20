@@ -90,6 +90,7 @@ namespace Fast.GoogleFirebase
 
                     case Firebase.Auth.AuthError.NetworkRequestFailed:
                     case Firebase.Auth.AuthError.WebInternalError:
+                    case Firebase.Auth.AuthError.Failure:
                         {
                             ret = FastErrorType.NETWORK_ERROR;
                             break;
