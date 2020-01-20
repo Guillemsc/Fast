@@ -70,7 +70,6 @@ namespace Fast.Modules
 #if UNITY_ANDROID && USING_GOOGLE_PLAY_SERVICES
 
             GooglePlayGames.BasicApi.PlayGamesClientConfiguration config = new GooglePlayGames.BasicApi.PlayGamesClientConfiguration.Builder()
-            .RequestServerAuthCode(false)
             .Build();
 
             GooglePlayGames.PlayGamesPlatform.InitializeInstance(config);
@@ -124,11 +123,14 @@ namespace Fast.Modules
 
 #if USING_FIREBASE_AUTH && !UNITY_WEBGL
 
-            if (user != null)
+            if (auth != null)
             {
-                auth.SignOut();
+                if (user != null)
+                {
+                    auth.SignOut();
 
-                user = null;
+                    user = null;
+                }
             }
 
 #endif
@@ -182,23 +184,35 @@ namespace Fast.Modules
                     {
                         GooglePlayGames.PlayGamesLocalUser user = (GooglePlayGames.PlayGamesLocalUser)Social.Active.localUser;
 
-                        string google_play_auth_code = GooglePlayGames.PlayGamesPlatform.Instance.GetServerAuthCode();
+                        Debug.Log("GetAnotherServerAuthCode");
 
-                        Debug.Log("Login google play auth code: " + google_play_auth_code);
-
-                        Firebase.Auth.Credential credential = Firebase.Auth.PlayGamesAuthProvider.GetCredential(google_play_auth_code);
-
-                        Debug.Log("Login in with credentials 1");
-
-                        LoginWithCredentials(credential,
-                        delegate (string user_id)
+                        GooglePlayGames.PlayGamesPlatform.Instance.GetAnotherServerAuthCode(true, 
+                        delegate(string google_play_auth_code)
                         {
-                            FirebaseLoginObj ret = new FirebaseLoginObj(FirebaseAuthType.GOOGLE_PLAY_GAMES, user_id);
+                            if (!string.IsNullOrEmpty(google_play_auth_code))
+                            {
+                                Debug.Log("Login google play auth code: " + google_play_auth_code);
 
-                            if (on_success != null)
-                                on_success.Invoke(ret);
-                        }
-                        , on_fail);
+                                Firebase.Auth.Credential credential = Firebase.Auth.PlayGamesAuthProvider.GetCredential(google_play_auth_code);
+
+                                Debug.Log("Login in with credentials 1");
+
+                                LoginWithCredentials(credential,
+                                delegate (string user_id)
+                                {
+                                    FirebaseLoginObj ret = new FirebaseLoginObj(FirebaseAuthType.GOOGLE_PLAY_GAMES, user_id);
+
+                                    if (on_success != null)
+                                        on_success.Invoke(ret);
+                                }
+                                , on_fail);
+                            }
+                            else
+                            {
+                                if (on_fail != null)
+                                    on_fail.Invoke(FastErrorType.GOOGLE_PLAY_EMPTY_AUTH_TOKEN);
+                            }
+                        });
                     }
                     else
                     {
@@ -315,10 +329,7 @@ namespace Fast.Modules
         /// </summary>
         private void LoginWithCredentials(Firebase.Auth.Credential credential, Action<string> on_success, Action<FastErrorType> on_fail)
         {
-            if (user != null)
-            {
-                LogOut();
-            }
+            LogOut();
 
             if (auth != null)
             {

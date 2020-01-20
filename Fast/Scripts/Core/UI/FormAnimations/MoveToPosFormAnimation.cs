@@ -49,10 +49,13 @@ namespace Fast.UI
 
                     curr_go.gameObject.SetActive(true);
 
+                    Fast.Animations.FadeAnimation fade_anim = new Animations.FadeAnimation(curr_go, 0.0f, 1, 1, true);
+
                     Fast.Animations.MoveAnimation move_anim
                         = new Fast.Animations.MoveAnimation(curr_go, 0.4f, curr_data.start_pos.transform.localPosition,
                         curr_data.end_pos.transform.localPosition, ForceStartingValues);
 
+                    sequence.Join(fade_anim.AnimateForward());
                     sequence.Join(move_anim.AnimateForward());
                 }
             }
@@ -78,10 +81,13 @@ namespace Fast.UI
 
                     curr_go.gameObject.SetActive(true);
 
+                    Fast.Animations.FadeAnimation fade_anim = new Animations.FadeAnimation(curr_go, 0.0f, 1, 1, true);
+
                     Fast.Animations.MoveAnimation move_anim
                         = new Fast.Animations.MoveAnimation(curr_go, 0.4f, curr_data.start_pos.transform.position,
                         curr_data.end_pos.transform.position, ForceStartingValues);
 
+                    sequence.Join(fade_anim.AnimateForward());
                     sequence.Join(move_anim.AnimateForward());
                 }
             }

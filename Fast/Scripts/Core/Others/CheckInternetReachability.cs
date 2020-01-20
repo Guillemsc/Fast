@@ -21,24 +21,28 @@ namespace Fast.Others
     public class CheckInternetReachability : Request<CheckInternetReachabilitySuccessObject, CheckInternetReachabilityErrorObject>
     {
         private string web_to_test = "https://www.google.com";
+        private int timeout = 5;
 
-        UnityWebRequest webRequest = null;
+        private UnityWebRequest webRequest = null;
 
         public CheckInternetReachability()
         {
 
         }
 
-        public CheckInternetReachability(string web_to_test)
+        public CheckInternetReachability(string web_to_test, int timeout = 3)
         {
             this.web_to_test = web_to_test;
+            this.timeout = timeout;
         }
 
         protected override void RunRequestInternal(Action<CheckInternetReachabilitySuccessObject> on_success, 
             Action<CheckInternetReachabilityErrorObject> on_fail)
         {
             webRequest = new UnityWebRequest(web_to_test);
-            
+
+            webRequest.timeout = timeout;
+
             webRequest.SendWebRequest().completed += delegate (AsyncOperation operation)
             {
                 if(!webRequest.isNetworkError)

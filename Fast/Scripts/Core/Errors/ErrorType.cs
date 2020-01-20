@@ -8,6 +8,7 @@ namespace Fast
         UNDEFINED,
 
         FIREBASE_NOT_READY,
+        GOOGLE_PLAY_EMPTY_AUTH_TOKEN,
 
         EMPTY_USERNAME,
         EMPTY_EMAIL,
