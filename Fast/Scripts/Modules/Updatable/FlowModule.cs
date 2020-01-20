@@ -10,9 +10,11 @@ namespace Fast.Modules
     {
         private List<Fast.Flow.FlowController> flow_controller = new List<Flow.FlowController>();
 
-        public Fast.Flow.FlowController CreateController()
+        public Fast.Flow.FlowController CreateController(string default_animation_name = "default")
         {
             Fast.Flow.FlowController ret = new Flow.FlowController();
+
+            ret.DefaultAnimationName = default_animation_name;
 
             flow_controller.Add(ret);
 

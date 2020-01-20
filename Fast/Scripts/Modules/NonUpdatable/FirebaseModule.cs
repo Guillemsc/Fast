@@ -12,6 +12,8 @@ using UnityEngine;
 // USING_FIREBASE_ANALYTICS
 // USING_GOOGLE_PLAY_SERVICES
 
+// You can download old versions of firebase using (changing the {version}): https://dl.google.com/firebase/sdk/unity/firebase_unity_sdk_{version}.zip
+
 namespace Fast.Modules
 {
     public enum FirebaseAuthType

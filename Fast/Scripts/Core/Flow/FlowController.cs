@@ -9,12 +9,20 @@ namespace Fast.Flow
 {
     public class FlowController
     {
+        private string default_animation_name = "default";
+
         private List<FlowContainer> all_containers = new List<FlowContainer>();
 
         private List<FlowContainer> containers_to_play = new List<FlowContainer>();
         private FlowContainer container_playing = null;
 
         private FlowState flow_state = new FlowState();
+
+        public string DefaultAnimationName
+        {
+            get { return default_animation_name; }
+            set { default_animation_name = value; }
+        }
 
         public FlowState FlowState
         {

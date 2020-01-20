@@ -14,11 +14,25 @@ public static class FormTransitionPremade
 
         if (to_deactivate_transition_backward)
         {
-            container.FlowNextStartWithLast().FlowCurrFormPlayBackwardAnimation(to_deactivate_transition, false);
+            if (to_deactivate_transition != container.Controller.DefaultAnimationName)
+            {
+                container.FlowNextStartWithLast().FlowCurrFormPlayBackwardAnimation(to_deactivate_transition, false);
+            }
+            else
+            {
+                container.FlowNextStartWithLast().FlowCurrFormPlayDefaultBackwardAnimation(false);
+            }
         }
         else
         {
-            container.FlowNextStartWithLast().FlowCurrFormPlayForwardAnimation(to_deactivate_transition, false);
+            if (to_deactivate_transition != container.Controller.DefaultAnimationName)
+            {
+                container.FlowNextStartWithLast().FlowCurrFormPlayForwardAnimation(to_deactivate_transition, false);
+            }
+            else
+            {
+                container.FlowNextStartWithLast().FlowCurrFormPlayDefaultForwardAnimation(false);
+            }
         }
 
         if (transiton_start_together)
@@ -34,11 +48,25 @@ public static class FormTransitionPremade
 
         if (to_activate_transition_backward)
         {
-            container.FlowNextStartWithLast().FlowCurrFormPlayBackwardAnimation(to_activate_transition, true);
+            if (to_activate_transition != container.Controller.DefaultAnimationName)
+            {
+                container.FlowNextStartWithLast().FlowCurrFormPlayBackwardAnimation(to_activate_transition, true);
+            }
+            else
+            {
+                container.FlowNextStartWithLast().FlowCurrFormPlayDefaultBackwardAnimation(true);
+            }
         }
         else
         {
-            container.FlowNextStartWithLast().FlowCurrFormPlayForwardAnimation(to_activate_transition, true);
+            if (to_activate_transition != container.Controller.DefaultAnimationName)
+            {
+                container.FlowNextStartWithLast().FlowCurrFormPlayForwardAnimation(to_activate_transition, true);
+            }
+            else
+            {
+                container.FlowNextStartWithLast().FlowCurrFormPlayDefaultForwardAnimation(true);
+            }
         }
 
         container
