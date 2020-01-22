@@ -20,6 +20,7 @@ namespace Fast.Testing
         public bool rebuild_server = false;
         public bool rebuild_client = false;
         public bool mac_build = false;
+        public bool x86_64 = false;
     }
 
     class ServerClientTestingWindow : Fast.EditorTools.SerializableEditorWindow<ServerClientTestingWindowData>
@@ -169,6 +170,17 @@ namespace Fast.Testing
             }
             EditorGUILayout.EndHorizontal();
 
+            if(!serialized_data.mac_build)
+            {
+                EditorGUILayout.BeginHorizontal();
+                {
+                    EditorGUILayout.LabelField("Windows x86_64", GUILayout.MaxWidth(105));
+
+                    serialized_data.x86_64 = EditorGUILayout.Toggle(serialized_data.x86_64);
+                }
+                EditorGUILayout.EndHorizontal();
+            }
+
             if (GUILayout.Button("Start"))
             {
                 server_build_filepath = serialized_data.build_folder + "/Server/" + serialized_data.build_name + ".exe";
@@ -176,8 +188,18 @@ namespace Fast.Testing
 
                 UnityEditor.Build.Reporting.BuildReport ret = null;
                 BuildTarget build_target = BuildTarget.StandaloneWindows;
-                if(serialized_data.mac_build)
+
+                if (serialized_data.mac_build)
+                {
                     build_target = BuildTarget.StandaloneOSX;
+                }
+                else
+                {
+                    if (serialized_data.x86_64)
+                    {
+                        build_target = BuildTarget.StandaloneWindows64;
+                    }
+                }
 
                 if (serialized_data.rebuild_server)
                 {

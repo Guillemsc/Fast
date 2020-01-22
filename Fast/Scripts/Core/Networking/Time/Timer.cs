@@ -33,7 +33,7 @@ namespace Fast.Networking
             {
                 TimeSpan ts = stopwatch.Elapsed;
 
-                ret = ts.Seconds;
+                ret = (float)ts.TotalSeconds;
             }
 
             return ret;
