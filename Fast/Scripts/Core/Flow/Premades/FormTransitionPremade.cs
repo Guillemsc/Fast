@@ -157,9 +157,9 @@ public static class FormTransitionPremade
     }
 
     public static Fast.Flow.FlowContainer PremadeCloseSubFormTransition(this Fast.Flow.FlowContainer container,
-        Fast.UI.Form to_activate, string to_activate_animation, bool to_activate_animation_backward)
+        Fast.UI.Form to_close, string to_activate_animation, bool to_activate_animation_backward)
     {
-        container.FlowAddAndSetCurrSubForm(to_activate);
+        container.FlowAddAndSetCurrSubForm(to_close);
 
         if (to_activate_animation_backward)
         {

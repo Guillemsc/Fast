@@ -39,7 +39,7 @@ namespace Fast.Build
             else
             {
                 PlayerSettings.SetScriptingBackend(BuildTargetGroup.Android, ScriptingImplementation.Mono2x);
-                PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARMv7 | AndroidArchitecture.X86;
+                PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARMv7;
             }
 
             PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, settings.android_settings.package_name);

@@ -25,6 +25,8 @@ namespace Fast.Animations
         {
             Sequence ret = DOTween.Sequence();
 
+            CanvasGroup cg = go.GetOrAddComponent<CanvasGroup>();
+
             if (ForceStartValues)
             {
                 ret.Append(go.transform.DOScale(start_scale, 0.0f));
@@ -38,6 +40,8 @@ namespace Fast.Animations
         public override Sequence AnimateBackward()
         {
             Sequence ret = DOTween.Sequence();
+
+            CanvasGroup cg = go.GetOrAddComponent<CanvasGroup>();
 
             if (ForceStartValues)
             {

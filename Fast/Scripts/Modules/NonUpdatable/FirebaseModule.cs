@@ -18,6 +18,7 @@ namespace Fast.Modules
 {
     public enum FirebaseAuthType
     {
+        AS_GUEST,
         EMAIL_PASSWORD,
         GOOGLE_PLAY_GAMES,
         APPLE_GAME_CENTER,
@@ -132,6 +133,66 @@ namespace Fast.Modules
                     user = null;
                 }
             }
+
+#endif
+
+        }
+
+        public void LoginAsGuest(Action<FirebaseLoginObj> on_success, Action<FastErrorType> on_fail)
+        {
+
+#if USING_FIREBASE_AUTH && !UNITY_WEBGL
+
+            LogOut();
+
+            auth.SignInAnonymouslyAsync().ContinueWith(
+               delegate (Task<Firebase.Auth.FirebaseUser> task)
+               {
+                   string error_msg = "";
+                   Exception exception = null;
+
+                   bool has_errors = task.HasErrors(out error_msg, out exception);
+
+                   if (!has_errors)
+                   {
+                       Firebase.Auth.FirebaseUser curr_user = task.Result;
+
+                       curr_user.TokenAsync(false).ContinueWith(token_task =>
+                       {
+                           has_errors = task.HasErrors(out error_msg, out exception);
+
+                           if (!has_errors)
+                           {
+                               user = curr_user;
+
+                               FirebaseLoginObj ret = new FirebaseLoginObj(FirebaseAuthType.AS_GUEST, "guest");
+
+                               if (on_success != null)
+                                   on_success.Invoke(ret);
+                           }
+                           else
+                           {
+                               Firebase.FirebaseException firebase_exception = GoogleFirebase.FirebaseExceptionToFastError.
+                                   GetFirebaseExceptionFromException(exception);
+                               FastErrorType error = GoogleFirebase.FirebaseExceptionToFastError.GetError(firebase_exception);
+
+                               if (on_fail != null)
+                                   on_fail.Invoke(error);
+                           }
+
+                       }, TaskScheduler.FromCurrentSynchronizationContext());
+                   }
+                   else
+                   {
+                       Firebase.FirebaseException firebase_exception = GoogleFirebase.FirebaseExceptionToFastError.
+                           GetFirebaseExceptionFromException(exception);
+                       FastErrorType error = GoogleFirebase.FirebaseExceptionToFastError.GetError(firebase_exception);
+
+                       if (on_fail != null)
+                           on_fail.Invoke(error);
+                   }
+               }
+               , TaskScheduler.FromCurrentSynchronizationContext());
 
 #endif
 
