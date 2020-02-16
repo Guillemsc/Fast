@@ -47,20 +47,20 @@ namespace Fast.Modules
         {
             if (logic != null)
             {
-                for (int i = 0; i < game_logic_running.Count; ++i)
+                if (logic.Running)
                 {
-                    Logic.GameLogic curr_game_logic = game_logic_running[i];
+                    logic.Finish();
 
-                    if (curr_game_logic == logic)
+                    for (int i = 0; i < game_logic_running.Count; ++i)
                     {
-                        if (curr_game_logic.Running)
+                        Logic.GameLogic curr_game_logic = game_logic_running[i];
+
+                        if (curr_game_logic == logic)
                         {
-                            curr_game_logic.Finish();
+                            game_logic_running.RemoveAt(i);
+
+                            break;
                         }
-
-                        game_logic_running.RemoveAt(i);
-
-                        break;
                     }
                 }
             }
@@ -68,16 +68,23 @@ namespace Fast.Modules
 
         private void UpdateLogic()
         {
-            List<Logic.GameLogic> to_update = new List<Logic.GameLogic>(game_logic_running);
+            List<Logic.GameLogic> to_start = new List<Logic.GameLogic>(game_logic_running);
 
-            for (int i = 0; i < to_update.Count; ++i)
+            for (int i = 0; i < to_start.Count; ++i)
             {
-                Logic.GameLogic curr_game_logic = to_update[i];
+                Logic.GameLogic curr_game_logic = to_start[i];
 
                 if (!curr_game_logic.Running)
                 {
                     curr_game_logic.Start();
                 }
+            }
+
+            List<Logic.GameLogic> to_update = new List<Logic.GameLogic>(game_logic_running);
+
+            for (int i = 0; i < to_update.Count; ++i)
+            {
+                Logic.GameLogic curr_game_logic = to_update[i];
 
                 curr_game_logic.Update();
             }

@@ -10,10 +10,18 @@ namespace Fast.TimeSliced
     {
         private int weight = 0;
 
+        private int max_iterations_per_frame = 1;
+
         private bool running = false;
         private bool finished = false;
 
-        private Callback on_finish = new Callback();
+        private Callback<TimeSlicedTask> on_finish = new Callback<TimeSlicedTask>();
+
+        public int MaxIterationsPerFrame
+        {
+            get { return max_iterations_per_frame; }
+            set { max_iterations_per_frame = value; }
+        }
 
         /// <summary>
         /// Returns if the task has started and it's running.
@@ -34,7 +42,7 @@ namespace Fast.TimeSliced
         /// <summary>
         /// Invoked when the task finishes.
         /// </summary>
-        public Callback OnFinish
+        public Callback<TimeSlicedTask> OnFinish
         {
             get { return on_finish; }
         }
@@ -72,7 +80,7 @@ namespace Fast.TimeSliced
             {
                 OnFinishInternal();
 
-                on_finish.Invoke();
+                on_finish.Invoke(this);
                 on_finish.UnSubscribeAll();
 
                 running = false;

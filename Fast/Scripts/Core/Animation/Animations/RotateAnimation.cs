@@ -12,7 +12,7 @@ namespace Fast.Animations
         private Vector3 start_rotation = Vector3.zero;
         private Vector3 end_rotation = Vector3.zero;
 
-        public RotateAnimation(GameObject go, float time, Vector3 start_rotation, Vector3 end_rotation,
+        public RotateAnimation(GameObject go, Vector3 start_rotation, Vector3 end_rotation, float time = 1.0f,
             bool force_start_value = false) : base(force_start_value)
         {
             this.go = go;

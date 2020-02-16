@@ -62,18 +62,23 @@ namespace Fast.TimeSliced
                     curr_task.Start();
                 }
 
-                curr_task.Update();
-
-                if(curr_task.Finished)
+                for (int i = 0; i < curr_task.MaxIterationsPerFrame; ++i)
                 {
-                    for(int i = 0; i < tasks_queue.Count; ++i)
-                    {
-                        if(tasks_queue.At(i) == curr_task)
-                        {
-                            tasks_queue.RemoveAt(i);
+                    curr_task.Update();
 
-                            break;
+                    if (curr_task.Finished)
+                    {
+                        for (int y = 0; y < tasks_queue.Count; ++y)
+                        {
+                            if (tasks_queue.At(y) == curr_task)
+                            {
+                                tasks_queue.RemoveAt(y);
+
+                                break;
+                            }
                         }
+
+                        break;
                     }
                 }
             }

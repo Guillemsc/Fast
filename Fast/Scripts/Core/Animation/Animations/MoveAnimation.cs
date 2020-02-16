@@ -12,13 +12,25 @@ namespace Fast.Animations
         private Vector3 start_pos = Vector3.zero;
         private Vector3 end_pos = Vector3.zero;
 
-        public MoveAnimation(GameObject go, float time, Vector3 start_pos, Vector3 end_pos, 
+        private Ease ease = Ease.Linear;
+
+        public MoveAnimation(GameObject go, Vector3 start_pos, Vector3 end_pos, float time = 1.0f,
             bool force_start_value = false) : base(force_start_value)
         {
             this.go = go;
-            this.time = time;
             this.start_pos = start_pos;
             this.end_pos = end_pos;
+            this.time = time;
+        }
+
+        public void SetEase(Ease ease)
+        {
+            this.ease = ease;
+        }
+
+        public void SetTime(float time)
+        {
+            this.time = time;
         }
 
         public override Sequence AnimateForward()
@@ -32,7 +44,7 @@ namespace Fast.Animations
                 ret.Append(go.transform.DOLocalMove(start_pos, 0.0f));
             }
 
-            ret.Append(go.transform.DOLocalMove(end_pos, time).SetEase(Ease.InOutQuad));
+            ret.Append(go.transform.DOLocalMove(end_pos, time).SetEase(ease));
 
             return ret;
         }
@@ -48,7 +60,7 @@ namespace Fast.Animations
                 ret.Append(go.transform.DOLocalMove(end_pos, 0.0f));
             }
 
-            ret.Append(go.transform.DOLocalMove(start_pos, time).SetEase(Ease.InOutQuad));
+            ret.Append(go.transform.DOLocalMove(start_pos, time).SetEase(ease));
 
             return ret;
         }

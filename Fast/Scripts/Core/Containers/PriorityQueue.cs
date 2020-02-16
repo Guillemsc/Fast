@@ -31,7 +31,9 @@ namespace Fast.Containers
                 if (list[i].priority > priority)
                 {
                     list.Insert(i, new Item(element, priority));
+
                     added = true;
+
                     break;
                 }
             }
@@ -45,14 +47,18 @@ namespace Fast.Containers
         public T PopBack()
         {
             T ret = list[list.Count - 1].element;
+
             list.RemoveAt(list.Count - 1);
+
             return ret;
         }
 
         public T PopFront()
         {
             T ret = list[0].element;
+
             list.RemoveAt(0);
+
             return ret;
         }
 

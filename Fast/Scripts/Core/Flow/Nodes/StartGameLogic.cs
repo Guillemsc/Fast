@@ -29,6 +29,8 @@ namespace Fast.Flow
             if(logic != null)
             {
                 Fast.FastInstance.Instance.MLogic.StartLogic(logic);
+
+                Finish();
             }
         }
     }
