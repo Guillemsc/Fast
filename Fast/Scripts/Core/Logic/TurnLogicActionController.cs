@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Fast.Modules
+namespace Fast.Logic
 {
-    class TurnLogicActionModule : UpdatableModule
+    public class TurnLogicActionController
     {
         private List<Logic.LogicAction> actions_to_play = new List<Logic.LogicAction>();
 
         private Logic.LogicAction playing_action = null;
 
-        public override void Update()
+        public void Update()
         {
             UpdateLogic();
         }
@@ -33,11 +33,31 @@ namespace Fast.Modules
             }
         }
 
+        public void FinishCurrent()
+        {
+            if (playing_action != null)
+            {
+                playing_action.Finish();
+
+                UpdateLogic();
+            }
+        }
+
+        public void FinishAll()
+        {
+            while(actions_to_play.Count > 0)
+            {
+                FinishCurrent();
+
+                UpdateLogic();
+            }
+        }
+
         private void UpdateLogic()
         {
-            if(playing_action != null)
+            if (playing_action != null)
             {
-                if(playing_action.Finished)
+                if (playing_action.Finished)
                 {
                     playing_action = null;
 
@@ -46,7 +66,7 @@ namespace Fast.Modules
             }
             else
             {
-                if(actions_to_play.Count > 0)
+                if (actions_to_play.Count > 0)
                 {
                     playing_action = actions_to_play[0];
 
