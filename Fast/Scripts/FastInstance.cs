@@ -19,6 +19,7 @@ namespace Fast
         private Fast.Modules.FlowModule flow_module = null;
         private Fast.Modules.LogicModule logic_module = null;
         private Fast.Modules.TimeSlicedModule time_sliced_module = null;
+        private Fast.Modules.ParticlesModule particles_module = null; 
 
         private List<Modules.Module> all_modules = new List<Modules.Module>();
         private List<Modules.UpdatableModule> updatable_modules = new List<Modules.UpdatableModule>();
@@ -39,6 +40,7 @@ namespace Fast
             flow_module = (Modules.FlowModule)AddUpdatableModule(new Modules.FlowModule());
             logic_module = (Modules.LogicModule)AddUpdatableModule(new Modules.LogicModule());
             time_sliced_module = (Modules.TimeSlicedModule)AddUpdatableModule(new Modules.TimeSlicedModule());
+            particles_module = (Modules.ParticlesModule)AddUpdatableModule(new Modules.ParticlesModule());
         }
 
         private void Start()
@@ -166,6 +168,11 @@ namespace Fast
         public Modules.TimeSlicedModule MTimeSliced
         {
             get { return time_sliced_module; }
+        }
+
+        public Modules.ParticlesModule MParticles
+        {
+            get { return particles_module; }
         }
     }
 }
