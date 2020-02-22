@@ -8,28 +8,28 @@ namespace Fast.Logic
 {
     public class TurnLogicActionController
     {
-        private List<Logic.LogicAction> actions_to_play = new List<Logic.LogicAction>();
+        private List<LogicAction> actions_to_play = new List<LogicAction>();
 
-        private Logic.LogicAction playing_action = null;
+        private LogicAction playing_action = null;
 
         public void Update()
         {
-            UpdateLogic();
+            UpdateActions();
         }
 
-        public void PushBack(Logic.LogicAction logic)
+        public void PushBack(LogicAction action)
         {
-            if (logic != null)
+            if (action != null)
             {
-                actions_to_play.Add(logic);
+                actions_to_play.Add(action);
             }
         }
 
-        public void PushFront(Logic.LogicAction logic)
+        public void PushFront(LogicAction action)
         {
-            if (logic != null)
+            if (action != null)
             {
-                actions_to_play.Insert(0, logic);
+                actions_to_play.Insert(0, action);
             }
         }
 
@@ -39,7 +39,7 @@ namespace Fast.Logic
             {
                 playing_action.Finish();
 
-                UpdateLogic();
+                UpdateActions();
             }
         }
 
@@ -49,11 +49,11 @@ namespace Fast.Logic
             {
                 FinishCurrent();
 
-                UpdateLogic();
+                UpdateActions();
             }
         }
 
-        private void UpdateLogic()
+        private void UpdateActions()
         {
             if (playing_action != null)
             {
@@ -61,7 +61,7 @@ namespace Fast.Logic
                 {
                     playing_action = null;
 
-                    UpdateLogic();
+                    UpdateActions();
                 }
             }
             else

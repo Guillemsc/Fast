@@ -1,22 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fast.Logic
 {
-    public class LogicAction
+    public class GameLogic
     {
-        private bool started = false;
+        private bool running = false;
         private bool finished = false;
 
         private Callback on_start = new Callback();
         private Callback on_finish = new Callback();
 
-        public bool Started
+        public bool Running
         {
-            get { return started; }
+            get { return running; }
         }
 
         public bool Finished
@@ -26,10 +22,10 @@ namespace Fast.Logic
 
         public void Start()
         {
-            if(!started)
+            if (!running)
             {
-                started = true;
                 finished = false;
+                running = true;
 
                 on_start.Invoke();
 
@@ -37,15 +33,23 @@ namespace Fast.Logic
             }
         }
 
+        public void Update()
+        {
+            if(running && !finished)
+            {
+                OnUpdateInternal();
+            }
+        }
+
         public void Finish()
         {
-            if (started && !finished)
+            if (running && !finished)
             {
                 OnFinishInternal();
 
                 on_finish.Invoke();
 
-                started = false;
+                running = false;
                 finished = true;
             }
         }
@@ -61,6 +65,11 @@ namespace Fast.Logic
         }
 
         protected virtual void OnStartInternal()
+        {
+
+        }
+
+        protected virtual void OnUpdateInternal()
         {
 
         }
