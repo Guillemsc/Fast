@@ -1,46 +1,43 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Diagnostics;
+using UnityEngine;
 
 namespace Fast
 {
     public class Timer
     {
+        private Stopwatch stopwatch = new Stopwatch();
+
         bool started = false;
-        private float start_time = 0.0f;
-        private float start_unscaled_time = 0.0f;
 
         public void Start()
         {
+            Reset();
+
+            stopwatch.Start();
+
             started = true;
-            start_time = Time.timeSinceLevelLoad;
-            start_unscaled_time = Time.realtimeSinceStartup;
         }
 
         public void Reset()
         {
             started = false;
-            start_time = 0.0f;
-            start_unscaled_time = 0.0f;
+
+            stopwatch = new Stopwatch();
         }
 
         public float ReadTime()
         {
-            if (started)
-                return Time.timeSinceLevelLoad - start_time;
-            else
-                return 0.0f;
-        }
+            float ret = 0.0f;
 
-        public float ReadUnscaledTime()
-        {
             if (started)
-                return Time.realtimeSinceStartup - start_unscaled_time;
-            else
-                return 0.0f;
-        }
+            {
+                TimeSpan ts = stopwatch.Elapsed;
 
-        public void AddTime(float time)
-        {
-            start_time -= time;
+                ret = (float)ts.TotalSeconds;
+            }
+
+            return ret;
         }
 
         public bool Started

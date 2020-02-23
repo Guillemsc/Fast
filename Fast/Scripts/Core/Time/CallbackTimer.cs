@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using System.Timers;
 
-namespace Fast.Networking
+namespace Fast
 {
     class CallbackTimer
     {
@@ -10,7 +10,7 @@ namespace Fast.Networking
 
         private Callback<CallbackTimer> on_elapsed = new Callback<CallbackTimer>();
 
-        public void Start(float time, bool auto_reset, Action<CallbackTimer> on_tick = null)
+        public void Start(float time, bool auto_reset, Action<CallbackTimer> on_tick)
         {
             time = time * 1000.0f; // seconds to ms
 
