@@ -1,4 +1,5 @@
-﻿
+﻿using System;
+
 namespace Fast
 {
     public class Event
