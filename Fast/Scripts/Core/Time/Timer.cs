@@ -40,6 +40,20 @@ namespace Fast
             return ret;
         }
 
+        public float ReadTimeMs()
+        {
+            float ret = 0.0f;
+
+            if (started)
+            {
+                TimeSpan ts = stopwatch.Elapsed;
+
+                ret = (float)ts.TotalMilliseconds;
+            }
+
+            return ret;
+        }
+
         public bool Started
         {
             get { return started; }

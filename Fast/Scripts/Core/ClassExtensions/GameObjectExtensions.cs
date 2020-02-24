@@ -13,4 +13,9 @@ public static class GameObjectExtensions
 
         return ret;
     }
+
+    public static void SetParent(this GameObject go, GameObject parent)
+    {
+        go.transform.parent = parent.transform;
+    }
 }

@@ -28,7 +28,7 @@ namespace Fast.Audio
 
         private void Update()
         {
-            if (update_timer.ReadUnscaledTime() >= update_time)
+            if (update_timer.ReadTime() >= update_time)
             {
                 update_timer.Reset();
 

@@ -24,18 +24,26 @@ namespace Fast
 
         public float ReadTime()
         {
+            float ret = 0.0f;
+
             if (started)
-                return Time.timeSinceLevelLoad - start_time;
-            else
-                return 0.0f;
+            {
+                ret = Time.timeSinceLevelLoad - start_time;
+            }
+
+            return ret;
         }
 
         public float ReadUnscaledTime()
         {
+            float ret = 0.0f;
+
             if (started)
-                return Time.realtimeSinceStartup - start_unscaled_time;
-            else
-                return 0.0f;
+            {
+                ret = Time.realtimeSinceStartup - start_unscaled_time;
+            }
+
+            return ret;
         }
 
         public void AddTime(float time)

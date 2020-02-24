@@ -16,9 +16,15 @@ namespace Fast.Modules
             time_sliced_controller.Update();
         }
 
-        public void PushTask(Fast.TimeSliced.TimeSlicedTask task, int weight)
+        public float MaxTimeMsPerFrame
         {
-            time_sliced_controller.PushTask(task, weight);
+            get { return time_sliced_controller.MaxTimeMsPerFrame; }
+            set { time_sliced_controller.MaxTimeMsPerFrame = value; }
+        }
+
+        public void PushTask(Fast.TimeSliced.TimeSlicedTask task, int priority)
+        {
+            time_sliced_controller.PushTask(task, priority);
         }
 
         public void CancelTask(Fast.TimeSliced.TimeSlicedTask task)

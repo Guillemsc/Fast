@@ -11,12 +11,21 @@ namespace Fast.TimeSliced
         private Fast.Containers.PriorityQueue<TimeSlicedTask> tasks_queue
             = new Fast.Containers.PriorityQueue<TimeSlicedTask>();
 
+        private float max_time_ms_per_frame = 2.0f;
+        private Fast.Timer frame_timer = new Timer();
+
         public void Update()
         {
             UpdateTasks();
         }
 
-        public TimeSlicedTask PushTask(TimeSlicedTask task, int weight = 0)
+        public float MaxTimeMsPerFrame
+        {
+            get { return max_time_ms_per_frame; }
+            set { max_time_ms_per_frame = value; }
+        }
+
+        public TimeSlicedTask PushTask(TimeSlicedTask task, int priority = 0)
         {
             bool already_added = false;
 
@@ -32,7 +41,7 @@ namespace Fast.TimeSliced
 
             if (!already_added)
             {
-                tasks_queue.Add(task, weight);
+                tasks_queue.Add(task, priority);
             }
 
             return task;
@@ -53,17 +62,21 @@ namespace Fast.TimeSliced
 
         private void UpdateTasks()
         {
-            if(tasks_queue.Count > 0)
+            frame_timer.Start();
+
+            bool finish = false;
+
+            while (!finish)
             {
-                TimeSlicedTask curr_task = tasks_queue.At(0);
-
-                if(!curr_task.Running)
+                if (tasks_queue.Count > 0)
                 {
-                    curr_task.Start();
-                }
+                    TimeSlicedTask curr_task = tasks_queue.At(0);
 
-                for (int i = 0; i < curr_task.MaxIterationsPerFrame; ++i)
-                {
+                    if (!curr_task.Running)
+                    {
+                        curr_task.Start();
+                    }
+
                     curr_task.Update();
 
                     if (curr_task.Finished)
@@ -77,9 +90,16 @@ namespace Fast.TimeSliced
                                 break;
                             }
                         }
-
-                        break;
                     }
+                }
+                else
+                {
+                    finish = true;
+                }
+
+                if(frame_timer.ReadTimeMs() > max_time_ms_per_frame)
+                {
+                    finish = true;
                 }
             }
         }

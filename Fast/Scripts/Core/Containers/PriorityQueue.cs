@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fast.Containers
 {
     public class PriorityQueue<T>
     {
-        List<Item> list = new List<Item>();
+        private List<Item> list = new List<Item>();
 
         public class Item
         {
