@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
 
-namespace Fast.Instances
+namespace Fast.Presentation
 {
     public class ObjectsCategoryInstances
     {

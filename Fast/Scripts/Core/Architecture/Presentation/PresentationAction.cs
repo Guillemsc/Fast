@@ -20,10 +20,12 @@ namespace Fast.Presentation
             get { return finished; }
         }
 
-        public void Start()
+        public void Start(Action on_finish = null)
         {
             if(!started)
             {
+                this.on_finish.Subscribe(on_finish);
+
                 started = true;
                 finished = false;
 

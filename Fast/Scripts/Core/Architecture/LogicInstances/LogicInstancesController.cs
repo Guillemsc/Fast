@@ -1,30 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using UnityEngine;
 
-namespace Fast.Instances
+namespace Fast.Logic
 {
-    public class InstancesController
+    public class LogicInstancesController
     {
-        private List<ObjectsCategoryPrefabs> prefabs = new List<ObjectsCategoryPrefabs>();
+        private List<ObjectsCategoryClasses> classes = new List<ObjectsCategoryClasses>();
 
         private List<ObjectsCategoryInstances> instances = new List<ObjectsCategoryInstances>();
 
-        public void AddPrefabCategory(ObjectsCategoryPrefabs category)
+        public void AddClassCategory(ObjectsCategoryClasses category)
         {
-            prefabs.Add(category);
+            classes.Add(category);
         }
 
-        public ObjectsCategoryPrefabs GetPrefabsCategory(int category_index)
+        public ObjectsCategoryClasses GetClassCategory(int category_index)
         {
-            ObjectsCategoryPrefabs ret = null;
+            ObjectsCategoryClasses ret = null;
 
-            for(int i = 0; i < prefabs.Count; ++i)
+            for (int i = 0; i < classes.Count; ++i)
             {
-                ObjectsCategoryPrefabs curr_category = prefabs[i];
+                ObjectsCategoryClasses curr_category = classes[i];
 
-                if(curr_category.CategoryIndex == category_index)
+                if (curr_category.CategoryIndex == category_index)
                 {
                     ret = curr_category;
 
@@ -54,40 +53,35 @@ namespace Fast.Instances
             return ret;
         }
 
-        public T GetObjectPrefab<T>(int category_index, int category_variation_index) where T : MonoBehaviour
+        public Type GetObjectClass(int category_index, int category_variation_index) 
         {
-            T ret = default(T);
+            Type ret = default(Type);
 
-            ObjectsCategoryPrefabs category = GetPrefabsCategory(category_index);
+            ObjectsCategoryClasses category = GetClassCategory(category_index);
 
-            if(category != null)
+            if (category != null)
             {
-                MonoBehaviour prefab = category.GetObjectPrefab(category_variation_index);
-
-                if(prefab != null)
-                {
-                    ret = prefab as T;
-                }
+                ret = category.GetObjectClass(category_variation_index);
             }
 
             return ret;
         }
 
-        public T SpawnObject<T>(int category_index, int category_variation_index) where T : MonoBehaviour
+        public T SpawnObject<T>(int category_index, int category_variation_index) where T : class
         {
             T ret = default(T);
 
-            T prefab = GetObjectPrefab<T>(category_index, category_variation_index);
+            Type class_type = GetObjectClass(category_index, category_variation_index);
 
-            if(prefab != null)
+            if (class_type != null)
             {
-                GameObject instance = MonoBehaviour.Instantiate(prefab.gameObject, Vector3.zero, Quaternion.identity);
+                object instance = (T)Activator.CreateInstance(class_type);
 
-                ret = instance.GetComponent<T>();
+                ret = (T)instance;
 
                 ObjectsCategoryInstances category_to_add_at = GetInstancesCategory(category_index);
 
-                if(category_to_add_at == null)
+                if (category_to_add_at == null)
                 {
                     category_to_add_at = new ObjectsCategoryInstances(category_index);
 
@@ -100,15 +94,15 @@ namespace Fast.Instances
             return ret;
         }
 
-        public List<T> SpawnObjects<T>(int category_index, int category_variation_index, int ammount) where T : MonoBehaviour
+        public List<T> SpawnObjects<T>(int category_index, int category_variation_index, int ammount) where T : class
         {
             List<T> ret = new List<T>();
 
-            for(int i = 0; i< ammount; ++i)
+            for (int i = 0; i < ammount; ++i)
             {
                 T instance = SpawnObject<T>(category_index, category_variation_index);
 
-                if(instance != null)
+                if (instance != null)
                 {
                     ret.Add(instance);
                 }
@@ -117,13 +111,13 @@ namespace Fast.Instances
             return ret;
         }
 
-        public ReadOnlyCollection<T> GetSpawnedObjects<T>(int category_index, int category_variation_index) where T : MonoBehaviour
+        public ReadOnlyCollection<T> GetSpawnedObjects<T>(int category_index, int category_variation_index) where T : class
         {
             ReadOnlyCollection<T> ret = null;
 
             ObjectsCategoryInstances category_to_get_from = GetInstancesCategory(category_index);
 
-            if(category_to_get_from != null)
+            if (category_to_get_from != null)
             {
                 ret = category_to_get_from.GetObjectsInstances<T>(category_variation_index);
             }
@@ -131,7 +125,7 @@ namespace Fast.Instances
             return ret;
         }
 
-        public ReadOnlyCollection<T> GetSpawnedObjects<T>(int category_index) where T : MonoBehaviour
+        public ReadOnlyCollection<T> GetSpawnedObjects<T>(int category_index) where T : class
         {
             ReadOnlyCollection<T> ret = null;
 
@@ -145,7 +139,7 @@ namespace Fast.Instances
             return ret;
         }
 
-        public void DespawnObject(int category_index, int category_variation_index, MonoBehaviour instance)
+        public void DespawnObject(int category_index, int category_variation_index, object instance)
         {
             if (instance != null)
             {
@@ -153,21 +147,16 @@ namespace Fast.Instances
 
                 if (category_to_remove_from != null)
                 {
-                    bool removed = category_to_remove_from.RemoveObjectInstance(category_variation_index, instance);
-
-                    if (removed)
-                    { 
-                        MonoBehaviour.Destroy(instance.gameObject);
-                    }
+                    category_to_remove_from.RemoveObjectInstance(category_variation_index, instance);
                 }
             }
         }
 
-        public void DespawnObjects(int category_index, int category_variation_index, List<MonoBehaviour> instances)
+        public void DespawnObjects(int category_index, int category_variation_index, List<object> instances)
         {
-            for(int i = 0; i < instances.Count; ++i)
+            for (int i = 0; i < instances.Count; ++i)
             {
-                MonoBehaviour curr_instance = instances[i];
+                object curr_instance = instances[i];
 
                 DespawnObject(category_index, category_variation_index, curr_instance);
             }
@@ -179,16 +168,7 @@ namespace Fast.Instances
 
             if (category_to_remove_from != null)
             {
-                ReadOnlyCollection<MonoBehaviour> instances = category_to_remove_from.GetObjectsInstances<MonoBehaviour>(category_variation_index);
-
                 category_to_remove_from.ClearObjectInstances(category_variation_index);
-
-                for (int i = 0; i < instances.Count; ++i)
-                {
-                    MonoBehaviour curr_instance = instances[i];
-
-                    MonoBehaviour.Destroy(curr_instance.gameObject);
-                }
             }
         }
 
@@ -198,22 +178,13 @@ namespace Fast.Instances
 
             if (category_to_remove_from != null)
             {
-                ReadOnlyCollection<MonoBehaviour> instances = category_to_remove_from.GetAllObjectsInstances<MonoBehaviour>();
-
                 category_to_remove_from.ClearObjectInstances();
-
-                for (int i = 0; i < instances.Count; ++i)
-                {
-                    MonoBehaviour curr_instance = instances[i];
-
-                    MonoBehaviour.Destroy(curr_instance.gameObject);
-                }
             }
         }
 
         public void DespawnAllObjects()
         {
-            for(int i = 0; i < instances.Count; ++i)
+            for (int i = 0; i < instances.Count; ++i)
             {
                 ObjectsCategoryInstances curr_category = instances[i];
 

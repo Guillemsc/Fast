@@ -2,7 +2,7 @@
 
 namespace Fast.Logic
 {
-    public class MatchLogicPlayerData
+    public class BaseMatchLogicPlayerData
     {
         private MatchLogicPlayerNature player_nature = MatchLogicPlayerNature.CLIENT;
 

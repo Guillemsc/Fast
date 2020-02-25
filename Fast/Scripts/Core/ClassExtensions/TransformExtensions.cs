@@ -110,4 +110,14 @@ public static class TransformExtensions
     {
         transform.localRotation = Quaternion.Euler(set);
     }
+
+    public static void SetLocalScale(this Transform transform, Vector2 set)
+    {
+        Vector3 new_scale = transform.localScale;
+
+        new_scale.x = set.x;
+        new_scale.y = set.y;
+
+        transform.localScale = new_scale;
+    }
 }

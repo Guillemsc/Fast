@@ -3,20 +3,20 @@ using System.Collections.Generic;
 
 namespace Fast.Logic
 {
-    public class MatchLogicData
+    public class BaseMatchLogicData
     {
         private int game_mode_index = 0;
 
-        private List<MatchLogicSettings> players_settings = new List<MatchLogicSettings>();
+        private List<BaseMatchLogicSettings> players_settings = new List<BaseMatchLogicSettings>();
 
-        private List<MatchLogicPlayerData> players_data = new List<MatchLogicPlayerData>();
+        private List<BaseMatchLogicPlayerData> players_data = new List<BaseMatchLogicPlayerData>();
 
-        protected List<MatchLogicSettings> PlayersSettings
+        protected List<BaseMatchLogicSettings> PlayersSettings
         {
             get { return players_settings; }
         }
 
-        protected List<MatchLogicPlayerData> PlayersData
+        protected List<BaseMatchLogicPlayerData> PlayersData
         {
             get { return players_data; }
         }
