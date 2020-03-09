@@ -1,9 +1,14 @@
-﻿using Amazon;
-using Amazon.CognitoIdentity;
-using Amazon.S3;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+
+#if USING_AMAZON
+
+using Amazon;
+using Amazon.CognitoIdentity;
+using Amazon.S3;
+
+#endif
 
 // To use this (in Unity 2019.1.14f), go to File -> BuildSettings -> PlayerSettings -> Player -> Scripting Define Simbols 
 // and add the preprocessor directives when necessary:
@@ -29,7 +34,7 @@ namespace Fast.Modules
 
         }
 
-        #if USING_AMAZON
+#if USING_AMAZON
 
         public void StartAmazonServices(string identity_pool_id, RegionEndpoint region_endpoint)
         {
