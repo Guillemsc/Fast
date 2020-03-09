@@ -57,7 +57,7 @@ namespace Fast.Localization
 
         private void Awake()
         {
-            DeSerialize(ref serialized_data);
+            DeSerialize(out serialized_data);
         }
 
         private void OnLostFocus()
@@ -72,7 +72,7 @@ namespace Fast.Localization
 
         private void OnEnable()
         {
-            DeSerialize(ref serialized_data);
+            DeSerialize(out serialized_data);
         }
 
         private void InitStyles()

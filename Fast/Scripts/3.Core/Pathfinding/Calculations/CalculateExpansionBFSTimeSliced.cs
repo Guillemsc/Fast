@@ -6,7 +6,7 @@ namespace Fast.Pathfinding
 {    
     class CalculateExpansionBFSTimeSliced : Fast.TimeSliced.TimeSlicedTask
     {
-        private PathfindingConfiguration config = null;
+        private IPathfindingConfiguration config = default;
 
         private Vector2Int grid_pos_origin = Vector2Int.zero;
         private int range = 0;
@@ -16,7 +16,7 @@ namespace Fast.Pathfinding
 
         private List<PathfindingNode> final_expansion_list = new List<PathfindingNode>();
 
-        public CalculateExpansionBFSTimeSliced(PathfindingConfiguration config, Vector2Int grid_pos_origin, int range)
+        public CalculateExpansionBFSTimeSliced(IPathfindingConfiguration config, Vector2Int grid_pos_origin, int range)
         {
             this.grid_pos_origin = grid_pos_origin;
             this.range = range;

@@ -6,7 +6,7 @@ namespace Fast.Pathfinding
 {
     class CalculatePathAStarTimeSliced : Fast.TimeSliced.TimeSlicedTask
     {
-        private PathfindingConfiguration config = null;
+        private IPathfindingConfiguration config = default;
 
         private Vector2Int grid_pos_origin = Vector2Int.zero;
         private Vector2Int grid_pos_dest = Vector2Int.zero;
@@ -17,7 +17,7 @@ namespace Fast.Pathfinding
 
         private PathfindingPath final_path = new PathfindingPath();
 
-        public CalculatePathAStarTimeSliced(PathfindingConfiguration config, Vector2Int grid_pos_origin, Vector2Int grid_pos_dest)
+        public CalculatePathAStarTimeSliced(IPathfindingConfiguration config, Vector2Int grid_pos_origin, Vector2Int grid_pos_dest)
         {
             this.config = config;
             this.grid_pos_origin = grid_pos_origin;

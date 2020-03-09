@@ -16,12 +16,11 @@ namespace Fast.Serializers
         {
             bool ret = false;
 
+            FileUtils.CreateAllFilepathDirectories(filepath);
+
             string data = Newtonsoft.Json.JsonConvert.SerializeObject(to_serialize, Newtonsoft.Json.Formatting.Indented);
-            
-            if (File.Exists(filepath))
-            {
-                File.Delete(filepath);
-            }
+
+            FileUtils.DeleteFileIfExists(filepath);
 
             File.WriteAllBytes(filepath, new byte[0]);
 
@@ -32,46 +31,45 @@ namespace Fast.Serializers
             return ret;
         }
 
-        public static bool DeSerializeFromPath<T>(string filepath, ref T deserialized_object)
+        public static bool DeSerializeFromPath<T>(string filepath, out T deserialized_object)
         {
             bool ret = false;
 
-            if (Directory.Exists(Application.persistentDataPath))
+            deserialized_object = default;
+
+            if (File.Exists(filepath))
             {
-                if (File.Exists(filepath))
+                string text = File.ReadAllText(filepath);
+
+                deserialized_object = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(text);
+
+                if (deserialized_object != null)
                 {
-                    string text = File.ReadAllText(filepath);
-
-                    deserialized_object = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(text);
-
-                    if (deserialized_object != null)
-                    {
-                        ret = true;
-                    }
+                    ret = true;
                 }
             }
+            
+            return ret;
+        }
+
+        public static bool SerializeToPersistentPath(string persistent_path, object to_serialize)
+        {
+            bool ret = false;
+
+            string filepath = Application.persistentDataPath + "/" + persistent_path + ".json";
+
+            ret = SerializeToPath(filepath, to_serialize);
 
             return ret;
         }
 
-        public static bool SerializeToPersistentPath(string save_name, object to_serialize)
+        public static bool DeSerializeFromPersistentPath<T>(string persistent_path, out T deserialized_object)
         {
             bool ret = false;
 
-            string file_path = Application.persistentDataPath + "/" + save_name + ".json";
+            string filepath = Application.persistentDataPath + "/" + persistent_path + ".json";
 
-            ret = SerializeToPath(file_path, to_serialize);
-
-            return ret;
-        }
-
-        public static bool DeSerializeFromPersistentPath<T>(string save_name, ref T deserialized_object)
-        {
-            bool ret = false;
-
-            string file_path = Application.persistentDataPath + "/" + save_name + ".json";
-
-            ret = DeSerializeFromPath(file_path, ref deserialized_object);
+            ret = DeSerializeFromPath(filepath, out deserialized_object);
 
             return ret;
         }
@@ -82,13 +80,11 @@ namespace Fast.Serializers
         {
             bool ret = false;
 
-            string path = Application.dataPath + "/" + assets_filepath;
+            string filepath = Application.dataPath + "/" + assets_filepath;
 
-            FileInfo info = new FileInfo(path);
+            FileUtils.CreateAllFilepathDirectories(filepath);
 
-            Directory.CreateDirectory(info.Directory.FullName);
-
-            ret = SerializeToPath(path, to_serialize);
+            ret = SerializeToPath(filepath, to_serialize);
 
             if (refresh_asset_database)
             {
@@ -102,13 +98,13 @@ namespace Fast.Serializers
             return ret;
         }
 
-        public static bool DeSerializeFromAssetsPath<T>(string assets_filepath, ref T deserialized_object)
+        public static bool DeSerializeFromAssetsPath<T>(string assets_filepath, out T deserialized_object)
         {
             bool ret = false;
 
             string path = Application.dataPath + "/" + assets_filepath;
 
-            ret = DeSerializeFromPath(path, ref deserialized_object);
+            ret = DeSerializeFromPath(path, out deserialized_object);
 
             return ret;
         }

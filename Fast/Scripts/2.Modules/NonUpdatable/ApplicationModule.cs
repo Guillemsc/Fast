@@ -71,11 +71,6 @@ namespace Fast.Modules
             get { return Application.systemLanguage; }
         }
 
-        public string SaveDataDir
-        {
-            get { return Application.persistentDataPath; }
-        }
-
         public void Quit()
         {
 

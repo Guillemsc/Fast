@@ -10,9 +10,11 @@ namespace Fast.Serializers
         {
             bool ret = false;
 
-            string file_path = Application.persistentDataPath + "/" + save_name + ".bin";
+            string filepath = Application.persistentDataPath + "/" + save_name + ".bin";
 
-            File.WriteAllBytes(file_path, to_serialize);
+            FileUtils.CreateAllFilepathDirectories(filepath);
+
+            File.WriteAllBytes(filepath, to_serialize);
 
             return ret;
         }
@@ -21,11 +23,11 @@ namespace Fast.Serializers
         {
             bool ret = false;
 
-            string file_path = Application.persistentDataPath + "/" + save_name + ".bin";
+            string filepath = Application.persistentDataPath + "/" + save_name + ".bin";
 
-            if (File.Exists(file_path))
+            if (File.Exists(filepath))
             {
-                deserialized_file = File.ReadAllBytes(file_path);
+                deserialized_file = File.ReadAllBytes(filepath);
 
                 ret = true;
             }

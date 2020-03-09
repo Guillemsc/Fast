@@ -74,5 +74,10 @@ namespace Fast.Modules
         {
             get { return Application.isEditor; }
         }
+
+        public bool IsPlaying
+        {
+            get { return Application.isPlaying; }
+        }
     }
 }

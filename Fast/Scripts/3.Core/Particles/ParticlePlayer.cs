@@ -26,15 +26,6 @@ namespace Fast.Particles
             }
         }
 
-        private void Update()
-        {
-            if(Input.GetKeyDown("f3"))
-            {
-                Stop();
-                Play();
-            }
-        }
-
         public void Play()
         {
             for (int i = 0; i < particles.Count; ++i)

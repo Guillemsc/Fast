@@ -24,9 +24,9 @@ namespace Fast.EditorTools
             Fast.Serializers.JSONSerializer.SerializToAssetsPath(assets_path, serializable_object, false);
         }
 
-        public void DeSerialize(ref T serializable_object)
+        public void DeSerialize(out T serializable_object)
         {
-            Fast.Serializers.JSONSerializer.DeSerializeFromAssetsPath(assets_path, ref serializable_object);
+            Fast.Serializers.JSONSerializer.DeSerializeFromAssetsPath(assets_path, out serializable_object);
         }
     }
 }

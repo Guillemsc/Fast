@@ -6,7 +6,6 @@ namespace Fast.Pathfinding
     public class PathfindingNode
     {
         private PathfindingNode parent_node = null;
-
         private Vector2Int grid_pos = Vector2Int.zero;
 
         public PathfindingNode(PathfindingNode parent, Vector2Int grid_pos)
