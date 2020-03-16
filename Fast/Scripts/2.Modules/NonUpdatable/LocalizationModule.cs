@@ -16,11 +16,6 @@ namespace Fast.Modules
 
         private string string_variable = "{$}";
 
-        public LocalizationModule(FastService fast) : base(fast)
-        {
-
-        }
-
         public string StringVariable
         {
             get { return string_variable; }

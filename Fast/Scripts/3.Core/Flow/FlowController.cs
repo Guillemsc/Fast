@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Fast.Flow
 {
-    public class FlowController
+    public class FlowController : Fast.IController, Fast.IUpdatable
     {
         private string default_animation_name = "default";
 

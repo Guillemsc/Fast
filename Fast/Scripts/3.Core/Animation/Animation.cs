@@ -13,6 +13,8 @@ namespace Fast
             this.force_start_values = force_start_values;
         }
 
+        protected bool ForceStartValues => force_start_values;
+
         public virtual DG.Tweening.Sequence AnimateForward()
         {
             return null;
@@ -21,11 +23,6 @@ namespace Fast
         public virtual DG.Tweening.Sequence AnimateBackward()
         {
             return null;
-        }
-
-        protected bool ForceStartValues
-        {
-            get { return force_start_values; }
         }
     }
 }

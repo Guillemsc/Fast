@@ -4,11 +4,9 @@ namespace Fast.Modules
 {
     public class Module : IModule
     {
-        private readonly FastService fast = null;
-
-        public Module(FastService fast)
+        public Module()
         {
-            this.fast = fast;
+
         }
 
         public virtual void Awake()
@@ -25,7 +23,5 @@ namespace Fast.Modules
         {
 
         }
-
-        protected FastService FastService => fast;
     }
 }

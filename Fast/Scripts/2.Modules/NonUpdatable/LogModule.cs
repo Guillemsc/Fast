@@ -13,11 +13,6 @@ namespace Fast.Modules
 
     public class LogModule : Module
     {
-        public LogModule(FastService fast) : base(fast)
-        {
-
-        }
-
         public override void Start()
         {
             Application.logMessageReceived += LogMessageReceived;
@@ -84,7 +79,7 @@ namespace Fast.Modules
 
         public void Log(LogType type, object context, string error)
         {
-            if (FastService.ApplicationMode == ApplicationMode.DEBUG)
+            if (FastService.Instance.ApplicationMode == ApplicationMode.DEBUG)
             {
                 string full_log = GetLog(type, context, error);
 
@@ -148,7 +143,7 @@ namespace Fast.Modules
 
             if (FastService.MPlatform.IsPlaying)
             {
-                if (FastService.ApplicationMode == ApplicationMode.DEBUG)
+                if (FastService.Instance.ApplicationMode == ApplicationMode.DEBUG)
                 {
                     string full_log = GetLog(type, context, error);
 

@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Fast
+namespace Fast.Commands
 {
-    public class CommandsController
+    public class CommandsController : Fast.IController
     {
         public IReadOnlyList<ICommandEffect> ExecuteCommands(IReadOnlyList<ICommand> commands)
         {

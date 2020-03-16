@@ -22,7 +22,7 @@ namespace Fast.Database
         public Exception ErrorException { get; set; }
     }
 
-    public class SQLController
+    public class SQLController : Fast.IController
     {
         private SQLConnectObject connection_obj = null;
 

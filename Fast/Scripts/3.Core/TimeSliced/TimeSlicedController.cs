@@ -6,45 +6,52 @@ namespace Fast.TimeSliced
     /// <summary>
     /// Controller of the time sliced tasks.
     /// </summary>
-    class TimeSlicedController
+    class TimeSlicedController : IController, IUpdatable
     {
+        private readonly Fast.Time.Timer timer = null;
+
         private Fast.Containers.PriorityQueue<TimeSlicedTask> tasks_queue
             = new Fast.Containers.PriorityQueue<TimeSlicedTask>();
 
-        private float max_time_ms_per_frame = 2.0f;
-        private Fast.Timer frame_timer = new Timer();
+        private TimeSpan max_time_per_frame = TimeSpan.FromMilliseconds(2);
+
+        public TimeSlicedController(Fast.Time.Timer timer)
+        {
+            this.timer = timer;
+        }
 
         public void Update()
         {
             UpdateTasks();
         }
 
-        public float MaxTimeMsPerFrame
+        public TimeSpan MaxTimePerFrame
         {
-            get { return max_time_ms_per_frame; }
-            set { max_time_ms_per_frame = value; }
+            get { return max_time_per_frame; }
+            set { max_time_per_frame = value; }
         }
 
-        public TimeSlicedTask PushTask(TimeSlicedTask task, int priority = 0)
+        public void PushTask(TimeSlicedTask task, int priority = 0)
         {
-            bool already_added = false;
-
-            for (int i = 0; i < tasks_queue.Count; ++i)
+            if (task != null)
             {
-                if (tasks_queue.At(i) == task)
-                {
-                    already_added = true;
+                bool already_added = false;
 
-                    break;
+                for (int i = 0; i < tasks_queue.Count; ++i)
+                {
+                    if (tasks_queue.At(i) == task)
+                    {
+                        already_added = true;
+
+                        break;
+                    }
+                }
+
+                if (!already_added)
+                {
+                    tasks_queue.Add(task, priority);
                 }
             }
-
-            if (!already_added)
-            {
-                tasks_queue.Add(task, priority);
-            }
-
-            return task;
         }
 
         public void CancelTask(TimeSlicedTask task)
@@ -62,7 +69,7 @@ namespace Fast.TimeSliced
 
         private void UpdateTasks()
         {
-            frame_timer.Start();
+            timer.Start();
 
             bool finish = false;
 
@@ -97,7 +104,7 @@ namespace Fast.TimeSliced
                     finish = true;
                 }
 
-                if(frame_timer.ReadTimeMs() > max_time_ms_per_frame)
+                if(timer.ReadUnscaledTime().Milliseconds > max_time_per_frame.Milliseconds)
                 {
                     finish = true;
                 }

@@ -20,6 +20,7 @@ namespace Fast
         private Fast.Modules.FirebaseModule firebase_module = null;
         private Fast.Modules.AmazonModule amazon_module = null;
 
+        private Fast.Modules.TimeModule time_module = null;
         private Fast.Modules.FlowModule flow_module = null;
         private Fast.Modules.LogicModule logic_module = null;
         private Fast.Modules.TimeSlicedModule time_sliced_module = null;
@@ -33,30 +34,36 @@ namespace Fast
             InitInstance(this);
         }
 
+        public static bool Initialized
+        {
+            get { return Instance.initialized; }
+        }
+
         public void Init(ApplicationMode mode)
         {
             if (!initialized)
             {
-                initialized = true;
-
                 this.mode = mode;
 
-                log_module = (Modules.LogModule)AddModule(new Modules.LogModule(this));
-                application_module = (Modules.ApplicationModule)AddModule(new Modules.ApplicationModule(this));
-                platform_module = (Modules.PlatformModule)AddModule(new Modules.PlatformModule(this));
-                localization_module = (Modules.LocalizationModule)AddModule(new Modules.LocalizationModule(this));
-                event_module = (Modules.EventModule)AddModule(new Modules.EventModule(this));
-                firebase_module = (Modules.FirebaseModule)AddModule(new Modules.FirebaseModule(this));
-                amazon_module = (Modules.AmazonModule)AddModule(new Modules.AmazonModule(this));
+                log_module = (Modules.LogModule)AddModule(new Modules.LogModule());
+                application_module = (Modules.ApplicationModule)AddModule(new Modules.ApplicationModule());
+                platform_module = (Modules.PlatformModule)AddModule(new Modules.PlatformModule());
+                localization_module = (Modules.LocalizationModule)AddModule(new Modules.LocalizationModule());
+                event_module = (Modules.EventModule)AddModule(new Modules.EventModule());
+                firebase_module = (Modules.FirebaseModule)AddModule(new Modules.FirebaseModule());
+                amazon_module = (Modules.AmazonModule)AddModule(new Modules.AmazonModule());
 
-                flow_module = (Modules.FlowModule)AddUpdatableModule(new Modules.FlowModule(this));
-                logic_module = (Modules.LogicModule)AddUpdatableModule(new Modules.LogicModule(this));
-                time_sliced_module = (Modules.TimeSlicedModule)AddUpdatableModule(new Modules.TimeSlicedModule(this));
-                particles_module = (Modules.ParticlesModule)AddUpdatableModule(new Modules.ParticlesModule(this));
+                time_module = (Modules.TimeModule)AddUpdatableModule(new Modules.TimeModule());
+                flow_module = (Modules.FlowModule)AddUpdatableModule(new Modules.FlowModule());
+                logic_module = (Modules.LogicModule)AddUpdatableModule(new Modules.LogicModule());
+                time_sliced_module = (Modules.TimeSlicedModule)AddUpdatableModule(new Modules.TimeSlicedModule());
+                particles_module = (Modules.ParticlesModule)AddUpdatableModule(new Modules.ParticlesModule());
 
-                StartModules();
+                initialized = true;
 
                 MLog.LogInfo(this, "Init success");
+
+                StartModules();
             }
         }
 
@@ -164,6 +171,11 @@ namespace Fast
         public static Fast.Modules.AmazonModule MAmazon
         {
             get { return Instance.amazon_module; }
+        }
+
+        public static Fast.Modules.TimeModule MTime
+        {
+            get { return Instance.time_module; }
         }
 
         public static Fast.Modules.FlowModule MFlow

@@ -9,7 +9,7 @@ namespace Fast.Others
 
         void Update()
         {
-            float rotation_speed_dt = Time.deltaTime * rotation_speed;
+            float rotation_speed_dt = UnityEngine.Time.deltaTime * rotation_speed;
 
             gameObject.transform.localRotation = gameObject.transform.localRotation * Quaternion.Euler(0, 0, rotation_speed_dt);
         }

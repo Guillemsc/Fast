@@ -8,12 +8,7 @@ namespace Fast.Modules
 {
     public class FlowModule : UpdatableModule
     {
-        private List<Fast.Flow.FlowController> flow_controller = new List<Flow.FlowController>();
-
-        public FlowModule(FastService fast) : base(fast)
-        {
-
-        }
+        private readonly List<Fast.Flow.FlowController> flow_controller = new List<Flow.FlowController>();
 
         public Fast.Flow.FlowController CreateController(string default_animation_name = "default")
         {

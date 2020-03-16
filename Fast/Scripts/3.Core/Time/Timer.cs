@@ -1,63 +1,85 @@
 ﻿using System;
-using System.Diagnostics;
-using UnityEngine;
+using System.Collections.Generic;
 
-namespace Fast
+namespace Fast.Time
 {
     public class Timer
     {
-        private Stopwatch stopwatch = new Stopwatch();
+        private readonly TimeContext context = null;
 
-        bool started = false;
+        private bool started = false;
+
+        private float start_time = 0.0f;
+        private float unscaled_start_time = 0.0f;
+
+        public Timer(TimeContext context)
+        {
+            Contract.IsNotNull(context);
+
+            this.context = context;
+        }
+
+        public float DeltaTime => context.DeltaTime;
+        public float UnscaledDeltaTime => context.UnscaledDeltaTime;
 
         public void Start()
         {
-            Reset();
-
-            stopwatch.Start();
-
             started = true;
+
+            start_time = context.CurrentTime;
+            unscaled_start_time = context.UnscaledCurrentTime;
         }
 
         public void Reset()
         {
             started = false;
 
-            stopwatch = new Stopwatch();
+            start_time = 0.0f;
+            unscaled_start_time = 0.0f;
         }
 
-        public float ReadTime()
+        public void Restart()
         {
-            float ret = 0.0f;
+            Reset();
+            Start();
+        }
 
-            if (started)
+        public TimeSpan ReadTime()
+        {
+            float passed_time = context.CurrentTime - start_time;
+
+            return TimeSpan.FromSeconds(passed_time);
+        }
+
+        public TimeSpan ReadUnscaledTime()
+        {
+            float passed_time = context.UnscaledCurrentTime - unscaled_start_time;
+
+            return TimeSpan.FromSeconds(passed_time);
+        }
+
+        public bool HasReached(float seconds)
+        {
+            bool ret = false;
+
+            if(ReadTime().TotalSeconds > seconds)
             {
-                TimeSpan ts = stopwatch.Elapsed;
-
-                ret = (float)ts.TotalSeconds;
+                ret = true;
             }
 
             return ret;
         }
 
-        public float ReadTimeMs()
+        public bool UnscaledHasReached(float seconds)
         {
-            float ret = 0.0f;
+            bool ret = false;
 
-            if (started)
+            if (ReadUnscaledTime().TotalSeconds > seconds)
             {
-                TimeSpan ts = stopwatch.Elapsed;
-
-                ret = (float)ts.TotalMilliseconds;
+                ret = true;
             }
 
             return ret;
-        }
-
-        public bool Started
-        {
-            get { return started; }
         }
     }
 }
-

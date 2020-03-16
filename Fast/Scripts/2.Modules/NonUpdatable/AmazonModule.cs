@@ -29,11 +29,6 @@ namespace Fast.Modules
 
 #endif
 
-        public AmazonModule(FastService fast) : base(fast)
-        {
-
-        }
-
 #if USING_AMAZON
 
         public void StartAmazonServices(string identity_pool_id, RegionEndpoint region_endpoint)
@@ -43,7 +38,7 @@ namespace Fast.Modules
                 started = true;
 
                 GameObject amazon_go = new GameObject("AmazonServices");
-                amazon_go.SetParent(FastService.gameObject);
+                amazon_go.SetParent(FastService.Instance.gameObject);
 
                 UnityInitializer.AttachToGameObject(amazon_go);
 

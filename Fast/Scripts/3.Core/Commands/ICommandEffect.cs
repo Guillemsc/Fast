@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Fast
+namespace Fast.Commands
 {
     public interface ICommandEffect
     {

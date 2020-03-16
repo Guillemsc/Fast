@@ -21,11 +21,6 @@ namespace Fast.Modules
 {
     public class PlatformModule : Module
     {
-        public PlatformModule(FastService fast) : base(fast)
-        {
-
-        }
-
         public Platform CurrentPlatform
         {
             get

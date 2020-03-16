@@ -1,36 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fast
 {
-    class EventsController
+    public class EventsController : Fast.IController
     {
-        private Dictionary<int, Callback<Event>> events_list = new Dictionary<int, Callback<Event>>();
+        private Dictionary<Type, Callback<IEvent>> events_list = new Dictionary<Type, Callback<IEvent>>();
 
-        public void Subscribe(int event_id, Action<Event> callback)
+        public void Subscribe<T>(Action<IEvent> callback) where T : IEvent
         {
-            Callback<Event> event_callback = null;
+            Type type = typeof(T);
 
-            bool exists = events_list.TryGetValue(event_id, out event_callback);
+            Callback<IEvent> event_callback = null;
+
+            bool exists = events_list.TryGetValue(type, out event_callback);
 
             if(!exists)
             {
-                event_callback = new Callback<Event>();
+                event_callback = new Callback<IEvent>();
 
-                events_list[event_id] = event_callback;
+                events_list[type] = event_callback;
             }
 
             event_callback.Subscribe(callback);
         }
 
-        public void UnSubscribe(int event_id, Action<Event> callback)
+        public void UnSubscribe<T>(Action<IEvent> callback) where T : IEvent
         {
-            Callback<Event> event_callback = null;
+            Type type = typeof(T);
 
-            bool exists = events_list.TryGetValue(event_id, out event_callback);
+            Callback<IEvent> event_callback = null;
+
+            bool exists = events_list.TryGetValue(type, out event_callback);
 
             if(exists)
             {
@@ -38,13 +39,15 @@ namespace Fast
             }
         }
 
-        public void SendEvent(Event ev)
+        public void SendEvent(IEvent ev) 
         {
             if (ev != null)
             {
-                Callback<Event> event_callback = null;
+                Type type = ev.GetType();
 
-                bool exists = events_list.TryGetValue(ev.Index, out event_callback);
+                Callback<IEvent> event_callback = null;
+
+                bool exists = events_list.TryGetValue(type, out event_callback);
 
                 if (exists)
                 {

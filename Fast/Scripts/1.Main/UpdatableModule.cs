@@ -8,7 +8,7 @@ namespace Fast.Modules
 {
     public class UpdatableModule : Module
     {
-        public UpdatableModule(FastService fast) : base(fast)
+        public UpdatableModule()
         {
 
         }

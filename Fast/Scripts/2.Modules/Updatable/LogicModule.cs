@@ -8,12 +8,7 @@ namespace Fast.Modules
 {
     public class LogicModule : UpdatableModule
     {
-        private List<Logic.GameLogic> game_logic_running = new List<Logic.GameLogic>();
-
-        public LogicModule(FastService fast) : base(fast)
-        {
-
-        }
+        private readonly List<Logic.GameLogic> game_logic_running = new List<Logic.GameLogic>();
 
         public override void Update()
         {

@@ -60,11 +60,6 @@ namespace Fast.Modules
 
 #endif
 
-        public FirebaseModule(FastService fast) : base(fast)
-        {
-
-        }
-
         public override void Awake()
         {
             ChooseAuthType();

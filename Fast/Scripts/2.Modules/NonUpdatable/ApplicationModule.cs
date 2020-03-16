@@ -11,11 +11,6 @@ namespace Fast.Modules
     {
         private int sleep_timeout_time = 30;
 
-        public ApplicationModule(FastService fast) : base(fast)
-        {
-            
-        }
-
         public bool VSync
         {
             get { return QualitySettings.vSyncCount == 1; }

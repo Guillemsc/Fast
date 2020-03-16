@@ -10,22 +10,17 @@ namespace Fast.Modules
     {
         private Fast.EventsController controller = new EventsController();
 
-        public EventModule(FastService fast) : base(fast)
+        public void Subscribe<T>(Action<IEvent> callback) where T : IEvent
         {
-
+            controller.Subscribe<T>(callback);
         }
 
-        public void Subscribe(int event_id, Action<Event> callback)
+        public void UnSubscribe<T>(Action<IEvent> callback) where T : IEvent
         {
-            controller.Subscribe(event_id, callback);
+            controller.UnSubscribe<T>(callback);
         }
 
-        public void UnSubscribe(int event_id, Action<Event> callback)
-        {
-            controller.UnSubscribe(event_id, callback);
-        }
-
-        public void SendEvent(Event ev)
+        public void SendEvent(IEvent ev)
         {
             controller.SendEvent(ev);
         }
