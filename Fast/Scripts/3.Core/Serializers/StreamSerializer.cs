@@ -7,32 +7,42 @@ namespace Fast.Serializers
 {
     class StreamSerializer
     {
-        public static void SerializeToPathAsync(string filepath, Stream to_serialize, Action on_success, Action<string> on_fail)
+        public static async Task SerializeToPathAsync(string filepath, Stream to_serialize)
         {
-            FileUtils.CreateAllFilepathDirectories(filepath);
+            bool can_create = FileUtils.CreateAllFilepathDirectories(filepath);
+
+            if(!can_create)
+            {
+                FastService.MLog.LogError($"Directories could not be created for filepath: {filepath}");
+
+                return;
+            }
 
             FileStream outputFileStream = new FileStream(filepath, FileMode.Create);
-            
-            Task task = to_serialize.CopyToAsync(outputFileStream);
 
-            task.ContinueWith(delegate (Task t)
+            await to_serialize.CopyToAsync(outputFileStream);
+
+            outputFileStream.Dispose();
+        }
+
+        public static async Task<Stream> DeSerializeFromPathAsync(string filepath)
+        {
+            if(!File.Exists(filepath))
             {
-                string error_message = "";
-                Exception exception = null;
-                bool has_errors = t.HasErrors(out error_message, out exception);
+                FastService.MLog.LogError($"The file specified does not exist: {filepath}");
 
-                if (!has_errors)
-                {
-                    on_success?.Invoke();
-                }
-                else
-                {
-                    on_fail?.Invoke(error_message);
-                }
+                return null;
+            }
 
-                outputFileStream.Dispose();
-            });
-            
+            FileStream outputFileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+            MemoryStream stream = new MemoryStream();
+
+            await outputFileStream.CopyToAsync(stream);
+
+            outputFileStream.Dispose();
+
+            return stream;
         }
     }
 }

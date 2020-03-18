@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading.Tasks;
+using System.IO;
 
 #if USING_AMAZON
 
 using Amazon;
 using Amazon.CognitoIdentity;
 using Amazon.S3;
+using Amazon.S3.Model;
 
 #endif
 
@@ -26,8 +29,10 @@ namespace Fast.Modules
 #if USING_AMAZON
 
         private IAmazonS3 s3_client = null;
-
+        private RegionEndpoint region_endpoint = null;
 #endif
+
+        private string bucket_name = "";
 
 #if USING_AMAZON
 
@@ -46,6 +51,17 @@ namespace Fast.Modules
 
                 AWSConfigs.HttpClient = AWSConfigs.HttpClientOption.UnityWebRequest;
 
+                AWSConfigs.CorrectForClockSkew = true;
+
+                var loggingConfig = AWSConfigs.LoggingConfig;
+                loggingConfig.LogTo = LoggingOptions.UnityLogger;
+                loggingConfig.LogMetrics = true;
+                loggingConfig.LogResponses = ResponseLoggingOption.Always;
+                loggingConfig.LogResponsesSizeLimit = 4096;
+                loggingConfig.LogMetricsFormat = LogMetricsFormatOption.JSON;
+
+                this.region_endpoint = region_endpoint;
+
                 CognitoAWSCredentials credentials = new CognitoAWSCredentials(
                  identity_pool_id, region_endpoint);
 
@@ -53,63 +69,120 @@ namespace Fast.Modules
             }
         }
 
-        public void GetFile(string bucket_name, string filename, string save_filepath, Action on_finish)
+        public void SetCurrentBucket(string bucket_name)
         {
-            if (started)
-            {
-                if (s3_client != null)
-                {
-                    s3_client.GetObjectAsync(bucket_name, filename,
-                    (responseObj) =>
-                    {
-                        var response = responseObj.Response;
-
-                        if (response != null)
-                        {
-                            if (response.ResponseStream != null)
-                            {
-                                Fast.Serializers.StreamSerializer.SerializeToPathAsync(save_filepath, response.ResponseStream,
-                                delegate ()
-                                {
-                                    on_finish?.Invoke();
-                                }
-                                , delegate (string error)
-                                {
-                                    FastService.MLog.LogError(this, error);
-
-                                    on_finish?.Invoke();
-                                });
-                            }
-                            else
-                            {
-                                FastService.MLog.LogError(this, "GetFile response stream was null");
-
-                                on_finish?.Invoke();
-                            }
-                        }
-                        else
-                        {
-                            FastService.MLog.LogError(this, "GetFile response was null");
-
-                            on_finish?.Invoke();
-                        }
-                    });
-                }
-                else
-                {
-                    FastService.MLog.LogError(this, "S3 client is null");
-
-                    on_finish?.Invoke();
-                }
-            }
-            else
-            {
-                FastService.MLog.LogError(this, "AmazonServices not started");
-
-                on_finish?.Invoke();
-            }
+            this.bucket_name = bucket_name;
         }
 
+        public async Task GetFile(string filename, string save_filepath)
+        {
+            TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
+
+            if (!started || s3_client == null)
+            {
+                FastService.MLog.LogError(this, "Amazon service not started, please use StartAmazonServices");
+            }
+
+            GetObjectRequest get_object_request = new GetObjectRequest()
+            {
+                BucketName = bucket_name,
+                Key = filename,
+            };
+
+            s3_client.GetObjectAsync(get_object_request, async (response) =>
+            {
+                if (response.Exception != null)
+                {
+                    FastService.MLog.LogError(this, $"Error getting file {filename} on Amazon S3: {response.Exception.Message}");
+                }
+
+                if (response.Response.ResponseStream != null)
+                {
+                    await Serializers.StreamSerializer.SerializeToPathAsync(save_filepath, response.Response.ResponseStream);
+                }
+
+                tcs.SetResult(null);
+            });
+
+            await tcs.Task;
+        }
+
+        public async Task PostFile(string load_filepath, string filename)
+        {
+            Stream stream = await Serializers.StreamSerializer.DeSerializeFromPathAsync(load_filepath);
+
+            if (stream == null)
+            {
+                FastService.MLog.LogError(this, $"Stream is null posting file {load_filepath} on Amazon S3");
+            }
+
+            await PostFile(stream, filename);
+        }
+
+        public async Task PostFile(Stream stream, string filename)
+        {
+            TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
+
+            if (!started || s3_client == null)
+            {
+                FastService.MLog.LogError(this, "Amazon service not started, please use StartAmazonServices");
+            }
+
+            PutObjectRequest put_object_request = new PutObjectRequest()
+            {
+                BucketName = bucket_name,
+                Key = filename,
+                InputStream = stream,
+                CannedACL = S3CannedACL.Private,
+            };
+
+            s3_client.PutObjectAsync(put_object_request, (response) =>
+            {
+                if (response.Exception != null)
+                {
+                    FastService.MLog.LogError(this, $"Error posting file {filename} on Amazon S3: {response.Exception.Message}");
+                }
+
+                tcs.SetResult(null);
+            });
+
+            await tcs.Task;
+        }
+
+        public async Task DeleteFile(string filename)
+        {
+            TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
+
+            if (!started || s3_client == null)
+            {
+                FastService.MLog.LogError(this, "Amazon service not started, please use StartAmazonServices");
+            }
+
+            KeyVersion key_version = new KeyVersion()
+            {
+                Key = filename,
+            };
+
+            List<KeyVersion> objects = new List<KeyVersion>() { key_version };
+
+            var delete_object_request = new DeleteObjectsRequest()
+            {
+                BucketName = bucket_name,
+                Objects = objects,
+            };
+
+            s3_client.DeleteObjectsAsync(delete_object_request, (response) =>
+            {
+                if (response.Exception != null)
+                {
+                    FastService.MLog.LogError(this, $"Error deleting file {filename} on Amazon S3: {response.Exception.Message}");
+                }
+                
+                tcs.SetResult(null);
+            });
+
+            await tcs.Task;
+        }
 #endif
 
     }

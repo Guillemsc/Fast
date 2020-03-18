@@ -6,10 +6,13 @@ namespace Fast
 {
     public class FileUtils
     {
-        public static void CreateAllFilepathDirectories(string filepath)
+        public static bool CreateAllFilepathDirectories(string filepath)
         {
             FileInfo info = new FileInfo(filepath);
-            Directory.CreateDirectory(info.Directory.FullName);
+
+            DirectoryInfo directory_info = Directory.CreateDirectory(info.Directory.FullName);
+
+            return directory_info.Exists;
         }
 
         public static void DeleteFileIfExists(string filepath)

@@ -13,6 +13,8 @@ namespace Fast.Modules
 
     public class LogModule : Module
     {
+        private bool terminated = false;
+
         public override void Start()
         {
             Application.logMessageReceived += LogMessageReceived;
@@ -141,42 +143,54 @@ namespace Fast.Modules
 
 #if UNITY_EDITOR
 
-            if (FastService.MPlatform.IsPlaying)
+            if(terminated)
             {
-                if (FastService.Instance.ApplicationMode == ApplicationMode.DEBUG)
-                {
-                    string full_log = GetLog(type, context, error);
-
-                    full_log += "\n\n- Ignore to continue with the execution\n- Break to attach the debugger\n- Terminate to finish execution";
-
-                    int selection = UnityEditor.EditorUtility.DisplayDialogComplex(type.ToString(), full_log, "Ignore", "Terminate", "Break");
-
-                    switch (selection)
-                    {
-                        case 0:
-                            {
-                                // Do nothing
-
-                                break;
-                            }
-
-                        case 1:
-                            {
-                                FastService.MApplication.Quit();
-
-                                break;
-                            }
-
-                        case 2:
-                            {
-                                Debugger.Break();
-
-                                break;
-                            }
-                    }
-                }
+                return;
             }
 
+            if (!FastService.MPlatform.IsPlaying)
+            {
+                return;
+            }
+
+            if(FastService.Instance.ApplicationMode != ApplicationMode.DEBUG)
+            {
+                return;
+            }
+            
+            string full_log = GetLog(type, context, error);
+
+            full_log += "\n\n- Ignore to continue with the execution" +
+                          "\n- Break to attach the debugger" +
+                          "\n- Terminate to finish execution (won't pop more error windows)";
+
+            int selection = UnityEditor.EditorUtility.DisplayDialogComplex(type.ToString(), full_log, "Ignore", "Terminate", "Break");
+
+            switch (selection)
+            {
+                case 0:
+                    {
+                        // Do nothing
+
+                        break;
+                    }
+
+                case 1:
+                    {
+                        terminated = true;
+
+                        FastService.MApplication.Quit();
+
+                        break;
+                    }
+
+                case 2:
+                    {
+                        Debugger.Break();
+
+                        break;
+                    }
+            }
 #endif
 
         }
