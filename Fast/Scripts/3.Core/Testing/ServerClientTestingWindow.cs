@@ -23,244 +23,244 @@ namespace Fast.Testing
         public bool x86_64 = false;
     }
 
-    class ServerClientTestingWindow : Fast.EditorTools.SerializableEditorWindow<ServerClientTestingWindowData>
-    {
-        private Vector2 scroll_pos = new Vector2();
+    //class ServerClientTestingWindow : Fast.EditorTools.SerializableEditorWindow<ServerClientTestingWindowData>
+    //{
+    //    //private Vector2 scroll_pos = new Vector2();
 
-        [SerializeField] [HideInInspector] private ServerClientTestingWindowData serialized_data = new ServerClientTestingWindowData();
+    //    //[SerializeField] [HideInInspector] private ServerClientTestingWindowData serialized_data = new ServerClientTestingWindowData();
 
-        private string server_build_filepath = "";
-        private string client_build_filepath = "";
+    //    //private string server_build_filepath = "";
+    //    //private string client_build_filepath = "";
 
-        private Fast.EditorTools.Styles styles = null;
+    //    //private Fast.EditorTools.Styles styles = null;
 
-        private ServerClientTestingWindow() : base("Fast-Testing-ServerClientTestingWindow")
-        {
+    //    //private ServerClientTestingWindow() : base("Fast-Testing-ServerClientTestingWindow")
+    //    //{
 
-        }
+    //    //}
 
-        [MenuItem("Fast/Server Client Testing")]
-        public static void ShowWindow()
-        {
-            GetWindow<ServerClientTestingWindow>("Fast S-C Testing");
-        }
+    //    //[MenuItem("Fast/Server Client Testing")]
+    //    //public static void ShowWindow()
+    //    //{
+    //    //    GetWindow<ServerClientTestingWindow>("Fast S-C Testing");
+    //    //}
 
-        private void Awake()
-        {
-            DeSerialize(out serialized_data);
-        }
+    //    //private void Awake()
+    //    //{
+    //    //    DeSerialize(out serialized_data);
+    //    //}
 
-        private void OnLostFocus()
-        {
-            Serialize(serialized_data);
-        }
+    //    //private void OnLostFocus()
+    //    //{
+    //    //    Serialize(serialized_data);
+    //    //}
 
-        private void OnDestroy()
-        {
-            Serialize(serialized_data);
-        }
+    //    //private void OnDestroy()
+    //    //{
+    //    //    Serialize(serialized_data);
+    //    //}
 
-        private void OnEnable()
-        {
-            DeSerialize(out serialized_data);
-        }
+    //    //private void OnEnable()
+    //    //{
+    //    //    DeSerialize(out serialized_data);
+    //    //}
 
-        private void InitStyles()
-        {
-            if (styles == null)
-                styles = new Fast.EditorTools.Styles();
-        }
+    //    //private void InitStyles()
+    //    //{
+    //    //    if (styles == null)
+    //    //        styles = new Fast.EditorTools.Styles();
+    //    //}
 
-        private void OnGUI()
-        {
-            InitStyles();
+    //    //private void OnGUI()
+    //    //{
+    //    //    InitStyles();
 
-            this.minSize = new Vector2(275, this.minSize.y);
+    //    //    this.minSize = new Vector2(275, this.minSize.y);
 
-            scroll_pos = EditorGUILayout.BeginScrollView(scroll_pos);
+    //    //    scroll_pos = EditorGUILayout.BeginScrollView(scroll_pos);
 
-            GUILayout.Label("FAST SERVER-CLIENT TESTING", styles.MainTitleStyle);
+    //    //    GUILayout.Label("FAST SERVER-CLIENT TESTING", styles.MainTitleStyle);
 
-            EditorGUILayout.BeginHorizontal();
-            {
-                EditorGUILayout.LabelField("Build folder", GUILayout.MaxWidth(105));
+    //    //    EditorGUILayout.BeginHorizontal();
+    //    //    {
+    //    //        EditorGUILayout.LabelField("Build folder", GUILayout.MaxWidth(105));
 
-                EditorGUILayout.TextField(serialized_data.build_folder);
+    //    //        EditorGUILayout.TextField(serialized_data.build_folder);
 
-                if (GUILayout.Button("...", GUILayout.ExpandWidth(false)))
-                {
-                    string last_path = serialized_data.build_folder;
+    //    //        if (GUILayout.Button("...", GUILayout.ExpandWidth(false)))
+    //    //        {
+    //    //            string last_path = serialized_data.build_folder;
 
-                    serialized_data.build_folder = EditorUtility.OpenFolderPanel("Select folder", "", "");
+    //    //            serialized_data.build_folder = EditorUtility.OpenFolderPanel("Select folder", "", "");
 
-                    if (last_path != serialized_data.build_folder)
-                    {
-                        this.Repaint();
-                    }
-                }
-            }
-            EditorGUILayout.EndHorizontal();
+    //    //            if (last_path != serialized_data.build_folder)
+    //    //            {
+    //    //                this.Repaint();
+    //    //            }
+    //    //        }
+    //    //    }
+    //    //    EditorGUILayout.EndHorizontal();
 
-            EditorGUILayout.BeginHorizontal();
-            {
-                EditorGUILayout.LabelField("Build name", GUILayout.MaxWidth(105));
+    //    //    EditorGUILayout.BeginHorizontal();
+    //    //    {
+    //    //        EditorGUILayout.LabelField("Build name", GUILayout.MaxWidth(105));
 
-                serialized_data.build_name = EditorGUILayout.TextField(serialized_data.build_name);
-            }
-            EditorGUILayout.EndHorizontal();
+    //    //        serialized_data.build_name = EditorGUILayout.TextField(serialized_data.build_name);
+    //    //    }
+    //    //    EditorGUILayout.EndHorizontal();
 
-            EditorGUILayout.BeginHorizontal();
-            {
-                EditorGUILayout.LabelField("Server arg", GUILayout.MaxWidth(105));
+    //    //    EditorGUILayout.BeginHorizontal();
+    //    //    {
+    //    //        EditorGUILayout.LabelField("Server arg", GUILayout.MaxWidth(105));
 
-                serialized_data.server_arg = EditorGUILayout.TextField(serialized_data.server_arg);
-            }
-            EditorGUILayout.EndHorizontal();
+    //    //        serialized_data.server_arg = EditorGUILayout.TextField(serialized_data.server_arg);
+    //    //    }
+    //    //    EditorGUILayout.EndHorizontal();
 
-            EditorGUILayout.BeginHorizontal();
-            {
-                EditorGUILayout.LabelField("Client arg", GUILayout.MaxWidth(105));
+    //    //    EditorGUILayout.BeginHorizontal();
+    //    //    {
+    //    //        EditorGUILayout.LabelField("Client arg", GUILayout.MaxWidth(105));
 
-                serialized_data.client_arg = EditorGUILayout.TextField(serialized_data.client_arg);
-            }
-            EditorGUILayout.EndHorizontal();
+    //    //        serialized_data.client_arg = EditorGUILayout.TextField(serialized_data.client_arg);
+    //    //    }
+    //    //    EditorGUILayout.EndHorizontal();
 
-            EditorGUILayout.BeginHorizontal();
-            {
-                EditorGUILayout.LabelField("Execute Server", GUILayout.MaxWidth(105));
+    //    //    EditorGUILayout.BeginHorizontal();
+    //    //    {
+    //    //        EditorGUILayout.LabelField("Execute Server", GUILayout.MaxWidth(105));
 
-                serialized_data.server = EditorGUILayout.Toggle(serialized_data.server);
-            }
-            EditorGUILayout.EndHorizontal();
+    //    //        serialized_data.server = EditorGUILayout.Toggle(serialized_data.server);
+    //    //    }
+    //    //    EditorGUILayout.EndHorizontal();
 
-            EditorGUILayout.BeginHorizontal();
-            {
-                EditorGUILayout.LabelField("Execute Clients", GUILayout.MaxWidth(105));
+    //    //    EditorGUILayout.BeginHorizontal();
+    //    //    {
+    //    //        EditorGUILayout.LabelField("Execute Clients", GUILayout.MaxWidth(105));
 
-                serialized_data.clients = EditorGUILayout.IntField(serialized_data.clients);
+    //    //        serialized_data.clients = EditorGUILayout.IntField(serialized_data.clients);
 
-                if(serialized_data.clients < 0)
-                {
-                    serialized_data.clients = 0;
-                }
-            }
-            EditorGUILayout.EndHorizontal();
+    //    //        if(serialized_data.clients < 0)
+    //    //        {
+    //    //            serialized_data.clients = 0;
+    //    //        }
+    //    //    }
+    //    //    EditorGUILayout.EndHorizontal();
 
-            EditorGUILayout.BeginHorizontal();
-            {
-                EditorGUILayout.LabelField("Rebuild Server", GUILayout.MaxWidth(105));
+    //    //    EditorGUILayout.BeginHorizontal();
+    //    //    {
+    //    //        EditorGUILayout.LabelField("Rebuild Server", GUILayout.MaxWidth(105));
 
-                serialized_data.rebuild_server = EditorGUILayout.Toggle(serialized_data.rebuild_server);
-            }
-            EditorGUILayout.EndHorizontal();
+    //    //        serialized_data.rebuild_server = EditorGUILayout.Toggle(serialized_data.rebuild_server);
+    //    //    }
+    //    //    EditorGUILayout.EndHorizontal();
 
-            EditorGUILayout.BeginHorizontal();
-            {
-                EditorGUILayout.LabelField("Rebuild Client", GUILayout.MaxWidth(105));
+    //    //    EditorGUILayout.BeginHorizontal();
+    //    //    {
+    //    //        EditorGUILayout.LabelField("Rebuild Client", GUILayout.MaxWidth(105));
 
-                serialized_data.rebuild_client = EditorGUILayout.Toggle(serialized_data.rebuild_client);
-            }
-            EditorGUILayout.EndHorizontal();
+    //    //        serialized_data.rebuild_client = EditorGUILayout.Toggle(serialized_data.rebuild_client);
+    //    //    }
+    //    //    EditorGUILayout.EndHorizontal();
 
-            EditorGUILayout.BeginHorizontal();
-            {
-                EditorGUILayout.LabelField("Build for Mac", GUILayout.MaxWidth(105));
+    //    //    EditorGUILayout.BeginHorizontal();
+    //    //    {
+    //    //        EditorGUILayout.LabelField("Build for Mac", GUILayout.MaxWidth(105));
 
-                serialized_data.mac_build = EditorGUILayout.Toggle(serialized_data.mac_build);
-            }
-            EditorGUILayout.EndHorizontal();
+    //    //        serialized_data.mac_build = EditorGUILayout.Toggle(serialized_data.mac_build);
+    //    //    }
+    //    //    EditorGUILayout.EndHorizontal();
 
-            if(!serialized_data.mac_build)
-            {
-                EditorGUILayout.BeginHorizontal();
-                {
-                    EditorGUILayout.LabelField("Windows x86_64", GUILayout.MaxWidth(105));
+    //    //    if(!serialized_data.mac_build)
+    //    //    {
+    //    //        EditorGUILayout.BeginHorizontal();
+    //    //        {
+    //    //            EditorGUILayout.LabelField("Windows x86_64", GUILayout.MaxWidth(105));
 
-                    serialized_data.x86_64 = EditorGUILayout.Toggle(serialized_data.x86_64);
-                }
-                EditorGUILayout.EndHorizontal();
-            }
+    //    //            serialized_data.x86_64 = EditorGUILayout.Toggle(serialized_data.x86_64);
+    //    //        }
+    //    //        EditorGUILayout.EndHorizontal();
+    //    //    }
 
-            if (GUILayout.Button("Start"))
-            {
-                server_build_filepath = serialized_data.build_folder + "/Server/" + serialized_data.build_name + ".exe";
-                client_build_filepath = serialized_data.build_folder + "/Client/" + serialized_data.build_name + ".exe";
+    //    //    if (GUILayout.Button("Start"))
+    //    //    {
+    //    //        server_build_filepath = serialized_data.build_folder + "/Server/" + serialized_data.build_name + ".exe";
+    //    //        client_build_filepath = serialized_data.build_folder + "/Client/" + serialized_data.build_name + ".exe";
 
-                UnityEditor.Build.Reporting.BuildReport ret = null;
-                BuildTarget build_target = BuildTarget.StandaloneWindows;
+    //    //        UnityEditor.Build.Reporting.BuildReport ret = null;
+    //    //        BuildTarget build_target = BuildTarget.StandaloneWindows;
 
-                if (serialized_data.mac_build)
-                {
-                    build_target = BuildTarget.StandaloneOSX;
-                }
-                else
-                {
-                    if (serialized_data.x86_64)
-                    {
-                        build_target = BuildTarget.StandaloneWindows64;
-                    }
-                }
+    //    //        if (serialized_data.mac_build)
+    //    //        {
+    //    //            build_target = BuildTarget.StandaloneOSX;
+    //    //        }
+    //    //        else
+    //    //        {
+    //    //            if (serialized_data.x86_64)
+    //    //            {
+    //    //                build_target = BuildTarget.StandaloneWindows64;
+    //    //            }
+    //    //        }
 
-                if (serialized_data.rebuild_server)
-                {
-                    ret = BuildPipeline.BuildPlayer(EditorBuildSettings.scenes, server_build_filepath,
-                        build_target, BuildOptions.EnableHeadlessMode);
-                }
+    //    //        if (serialized_data.rebuild_server)
+    //    //        {
+    //    //            ret = BuildPipeline.BuildPlayer(EditorBuildSettings.scenes, server_build_filepath,
+    //    //                build_target, BuildOptions.EnableHeadlessMode);
+    //    //        }
 
-                if(serialized_data.rebuild_client)
-                {
-                    if (ret == null || ret.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
-                    {
-                        PlayerSettings.resizableWindow = true;
-                        PlayerSettings.fullScreenMode = FullScreenMode.Windowed;
+    //    //        if(serialized_data.rebuild_client)
+    //    //        {
+    //    //            if (ret == null || ret.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
+    //    //            {
+    //    //                PlayerSettings.resizableWindow = true;
+    //    //                PlayerSettings.fullScreenMode = FullScreenMode.Windowed;
 
-                        ret = BuildPipeline.BuildPlayer(EditorBuildSettings.scenes, client_build_filepath,
-                            build_target, BuildOptions.Development);
-                    }
-                }
+    //    //                ret = BuildPipeline.BuildPlayer(EditorBuildSettings.scenes, client_build_filepath,
+    //    //                    build_target, BuildOptions.Development);
+    //    //            }
+    //    //        }
 
-                if ((!serialized_data.rebuild_server && !serialized_data.rebuild_client) 
-                    || ret.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
-                {
-                    if (serialized_data.server)
-                    {
-                        StartProcess(true);
-                    }
+    //    //        if ((!serialized_data.rebuild_server && !serialized_data.rebuild_client) 
+    //    //            || ret.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
+    //    //        {
+    //    //            if (serialized_data.server)
+    //    //            {
+    //    //                StartProcess(true);
+    //    //            }
 
-                    for(int i = 0; i < serialized_data.clients; ++i)
-                    {
-                        StartProcess(false);
-                    }
-                }
-            }
+    //    //            for(int i = 0; i < serialized_data.clients; ++i)
+    //    //            {
+    //    //                StartProcess(false);
+    //    //            }
+    //    //        }
+    //    //    }
 
-            EditorGUILayout.EndScrollView();
-        }
+    //    //    EditorGUILayout.EndScrollView();
+    //    //}
 
-        private void StartProcess(bool as_server)
-        {
-            Process myProcess = new Process();
-            myProcess.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
+    //    //private void StartProcess(bool as_server)
+    //    //{
+    //    //    Process myProcess = new Process();
+    //    //    myProcess.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
 
-            if (as_server)
-            {
-                myProcess.StartInfo.UseShellExecute = true;
-                myProcess.StartInfo.CreateNoWindow = true;
-                myProcess.StartInfo.FileName = server_build_filepath;
-                myProcess.StartInfo.Arguments = "-" + serialized_data.server_arg;
-            }
-            else
-            {
-                myProcess.StartInfo.UseShellExecute = false;
-                myProcess.StartInfo.CreateNoWindow = false;
-                myProcess.StartInfo.FileName = client_build_filepath;
-                myProcess.StartInfo.Arguments = "-" + serialized_data.client_arg;
-            }
+    //    //    if (as_server)
+    //    //    {
+    //    //        myProcess.StartInfo.UseShellExecute = true;
+    //    //        myProcess.StartInfo.CreateNoWindow = true;
+    //    //        myProcess.StartInfo.FileName = server_build_filepath;
+    //    //        myProcess.StartInfo.Arguments = "-" + serialized_data.server_arg;
+    //    //    }
+    //    //    else
+    //    //    {
+    //    //        myProcess.StartInfo.UseShellExecute = false;
+    //    //        myProcess.StartInfo.CreateNoWindow = false;
+    //    //        myProcess.StartInfo.FileName = client_build_filepath;
+    //    //        myProcess.StartInfo.Arguments = "-" + serialized_data.client_arg;
+    //    //    }
 
-            myProcess.EnableRaisingEvents = true;
-            myProcess.Start();
-        }
-    }
+    //    //    myProcess.EnableRaisingEvents = true;
+    //    //    myProcess.Start();
+    //    //}
+    //}
 }
 
 #endif

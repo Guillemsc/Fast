@@ -10,15 +10,15 @@ namespace Fast.Serializers
 {
     public class TextAssetSerializer
     {
-        public static bool SerializeToAssetsPath(string assets_filepath, string to_serialize, bool refresh_asset_database = true)
+        public static bool SerializeToAssetsPath(string assets_filepath, string data, bool refresh_asset_database = true)
         {
             bool ret = false;
 
-            string filepath = Application.dataPath + "/" + assets_filepath;
+            string filepath = Application.dataPath + Path.DirectorySeparatorChar + assets_filepath;
 
             FileUtils.CreateAllFilepathDirectories(filepath);
 
-            File.WriteAllText(filepath, to_serialize);
+            File.WriteAllText(filepath, data);
 
             if (refresh_asset_database)
             {

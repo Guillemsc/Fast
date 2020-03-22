@@ -25,6 +25,31 @@ namespace Fast.Serializers
             outputFileStream.Dispose();
         }
 
+        public static void SerializeToPersistentPath(string persistent_path, Stream to_serialize)
+        {
+            string filepath = Application.persistentDataPath + Path.DirectorySeparatorChar + persistent_path;
+
+            SerializeToPath(filepath, to_serialize);
+        }
+
+        public static void SerializeToPath(string filepath, Stream to_serialize)
+        {
+            bool can_create = FileUtils.CreateAllFilepathDirectories(filepath);
+
+            if (!can_create)
+            {
+                FastService.MLog.LogError($"Directories could not be created for filepath: {filepath}");
+
+                return;
+            }
+
+            FileStream outputFileStream = new FileStream(filepath, FileMode.Create);
+
+            to_serialize.CopyTo(outputFileStream);
+
+            outputFileStream.Dispose();
+        }
+
         public static async Task<Stream> DeSerializeFromPathAsync(string filepath)
         {
             if(!File.Exists(filepath))

@@ -11,6 +11,11 @@ namespace Fast
 
         }
 
+        public Color(float r, float g, float b)
+        {
+            this.color = new UnityEngine.Color(r, g, b);
+        }
+
         public Color(UnityEngine.Color color)
         {
             this.color = color;

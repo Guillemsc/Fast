@@ -74,37 +74,126 @@ namespace Fast.Modules
             this.bucket_name = bucket_name;
         }
 
-        public async Task GetFile(string filename, string save_filepath)
+        public async Task<List<S3Object>> GetFilesList()
         {
-            TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
+            return await GetFilesList("");
+        }
+
+        public async Task<List<S3Object>> GetFilesList(string folder)
+        {
+            TaskCompletionSource<List<S3Object>> tcs = new TaskCompletionSource<List<S3Object>>();
 
             if (!started || s3_client == null)
             {
                 FastService.MLog.LogError(this, "Amazon service not started, please use StartAmazonServices");
+                tcs.SetResult(null);
+            }
+            else
+            {
+                ListObjectsRequest list_objects_request = new ListObjectsRequest()
+                {
+                    BucketName = bucket_name,
+                    Prefix = folder,
+                };
+
+                s3_client.ListObjectsAsync(list_objects_request, (response) =>
+                {
+                    if (response.Exception != null)
+                    {
+                        FastService.MLog.LogError(this, $"Error getting file list on Amazon S3: {response.Exception.Message}");
+                    }
+
+                    if (response.Response == null)
+                    {
+                        tcs.SetResult(new List<S3Object>());
+                    }
+                    else
+                    {
+                        tcs.SetResult(response.Response.S3Objects);
+                    }
+                });
             }
 
-            GetObjectRequest get_object_request = new GetObjectRequest()
+            return await tcs.Task;
+        }
+
+        public async Task<List<string>> GetFoldersList(string folder)
+        {
+            TaskCompletionSource<List<string>> tcs = new TaskCompletionSource<List<string>>();
+
+            if (!started || s3_client == null)
             {
-                BucketName = bucket_name,
-                Key = filename,
-            };
-
-            s3_client.GetObjectAsync(get_object_request, async (response) =>
-            {
-                if (response.Exception != null)
-                {
-                    FastService.MLog.LogError(this, $"Error getting file {filename} on Amazon S3: {response.Exception.Message}");
-                }
-
-                if (response.Response.ResponseStream != null)
-                {
-                    await Serializers.StreamSerializer.SerializeToPathAsync(save_filepath, response.Response.ResponseStream);
-                }
-
+                FastService.MLog.LogError(this, "Amazon service not started, please use StartAmazonServices");
                 tcs.SetResult(null);
-            });
+            }
+            else
+            {
+                ListObjectsRequest list_objects_request = new ListObjectsRequest()
+                {
+                    BucketName = bucket_name,
+                    Prefix = folder,
+                    Delimiter = "/",
+                };
 
-            await tcs.Task;
+                s3_client.ListObjectsAsync(list_objects_request, (response) =>
+                {
+                    if (response.Exception != null)
+                    {
+                        FastService.MLog.LogError(this, $"Error getting folders list on Amazon S3: {response.Exception.Message}");
+                    }
+
+                    if (response.Response == null)
+                    {
+                        tcs.SetResult(new List<string>());
+                    }
+                    else
+                    {
+                        tcs.SetResult(response.Response.CommonPrefixes);
+                    }
+                });
+            }
+
+            return await tcs.Task;
+        }
+
+        public async Task<bool> GetFile(string filename, string save_filepath)
+        {
+            TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+
+            if (!started || s3_client == null)
+            {
+                FastService.MLog.LogError(this, "Amazon service not started, please use StartAmazonServices");
+                tcs.SetResult(false);
+            }
+            else
+            {
+                GetObjectRequest get_object_request = new GetObjectRequest()
+                {
+                    BucketName = bucket_name,
+                    Key = filename,
+                };
+
+                s3_client.GetObjectAsync(get_object_request, async (response) =>
+                {
+                    if (response.Exception != null)
+                    {
+                        FastService.MLog.LogError(this, $"Error getting file {filename} on Amazon S3: {response.Exception.Message}");
+                    }
+
+                    if (response.Response.ResponseStream == null)
+                    {
+                        tcs.SetResult(false);
+                    }
+                    else
+                    {
+                        await Serializers.StreamSerializer.SerializeToPathAsync(save_filepath, response.Response.ResponseStream);
+
+                        tcs.SetResult(true);
+                    }
+                });
+            }
+
+            return await tcs.Task;
         }
 
         public async Task PostFile(string load_filepath, string filename)
@@ -115,8 +204,13 @@ namespace Fast.Modules
             {
                 FastService.MLog.LogError(this, $"Stream is null posting file {load_filepath} on Amazon S3");
             }
-
+            
             await PostFile(stream, filename);
+
+            if (stream != null)
+            {
+                stream.Dispose();
+            }
         }
 
         public async Task PostFile(Stream stream, string filename)
@@ -126,25 +220,28 @@ namespace Fast.Modules
             if (!started || s3_client == null)
             {
                 FastService.MLog.LogError(this, "Amazon service not started, please use StartAmazonServices");
-            }
-
-            PutObjectRequest put_object_request = new PutObjectRequest()
-            {
-                BucketName = bucket_name,
-                Key = filename,
-                InputStream = stream,
-                CannedACL = S3CannedACL.Private,
-            };
-
-            s3_client.PutObjectAsync(put_object_request, (response) =>
-            {
-                if (response.Exception != null)
-                {
-                    FastService.MLog.LogError(this, $"Error posting file {filename} on Amazon S3: {response.Exception.Message}");
-                }
-
                 tcs.SetResult(null);
-            });
+            }
+            else
+            {
+                PutObjectRequest put_object_request = new PutObjectRequest()
+                {
+                    BucketName = bucket_name,
+                    Key = filename,
+                    InputStream = stream,
+                    CannedACL = S3CannedACL.Private,
+                };
+
+                s3_client.PutObjectAsync(put_object_request, (response) =>
+                {
+                    if (response.Exception != null)
+                    {
+                        FastService.MLog.LogError(this, $"Error posting file {filename} on Amazon S3: {response.Exception.Message}");
+                    }
+
+                    tcs.SetResult(null);
+                });
+            }
 
             await tcs.Task;
         }
@@ -156,30 +253,33 @@ namespace Fast.Modules
             if (!started || s3_client == null)
             {
                 FastService.MLog.LogError(this, "Amazon service not started, please use StartAmazonServices");
-            }
-
-            KeyVersion key_version = new KeyVersion()
-            {
-                Key = filename,
-            };
-
-            List<KeyVersion> objects = new List<KeyVersion>() { key_version };
-
-            var delete_object_request = new DeleteObjectsRequest()
-            {
-                BucketName = bucket_name,
-                Objects = objects,
-            };
-
-            s3_client.DeleteObjectsAsync(delete_object_request, (response) =>
-            {
-                if (response.Exception != null)
-                {
-                    FastService.MLog.LogError(this, $"Error deleting file {filename} on Amazon S3: {response.Exception.Message}");
-                }
-                
                 tcs.SetResult(null);
-            });
+            }
+            else
+            {
+                KeyVersion key_version = new KeyVersion()
+                {
+                    Key = filename,
+                };
+
+                List<KeyVersion> objects = new List<KeyVersion>() { key_version };
+
+                var delete_object_request = new DeleteObjectsRequest()
+                {
+                    BucketName = bucket_name,
+                    Objects = objects,
+                };
+
+                s3_client.DeleteObjectsAsync(delete_object_request, (response) =>
+                {
+                    if (response.Exception != null)
+                    {
+                        FastService.MLog.LogError(this, $"Error deleting file {filename} on Amazon S3: {response.Exception.Message}");
+                    }
+
+                    tcs.SetResult(null);
+                });
+            }
 
             await tcs.Task;
         }

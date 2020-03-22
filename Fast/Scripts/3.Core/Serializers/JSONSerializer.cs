@@ -56,7 +56,7 @@ namespace Fast.Serializers
         {
             bool ret = false;
 
-            string filepath = Application.persistentDataPath + "/" + persistent_path + ".json";
+            string filepath = Application.persistentDataPath + Path.DirectorySeparatorChar + persistent_path + ".json";
 
             ret = SerializeToPath(filepath, to_serialize);
 
@@ -67,7 +67,7 @@ namespace Fast.Serializers
         {
             bool ret = false;
 
-            string filepath = Application.persistentDataPath + "/" + persistent_path + ".json";
+            string filepath = Application.persistentDataPath + Path.DirectorySeparatorChar + persistent_path + ".json";
 
             ret = DeSerializeFromPath(filepath, out deserialized_object);
 
@@ -80,7 +80,7 @@ namespace Fast.Serializers
         {
             bool ret = false;
 
-            string filepath = Application.dataPath + "/" + assets_filepath;
+            string filepath = Application.dataPath + Path.DirectorySeparatorChar + assets_filepath;
 
             FileUtils.CreateAllFilepathDirectories(filepath);
 
@@ -102,7 +102,7 @@ namespace Fast.Serializers
         {
             bool ret = false;
 
-            string path = Application.dataPath + "/" + assets_filepath;
+            string path = Application.dataPath + Path.DirectorySeparatorChar + assets_filepath;
 
             ret = DeSerializeFromPath(path, out deserialized_object);
 

@@ -10,7 +10,7 @@ namespace Fast.Serializers
         {
             bool ret = false;
 
-            string filepath = Application.persistentDataPath + "/" + save_name + ".bin";
+            string filepath = Application.persistentDataPath + Path.DirectorySeparatorChar + save_name + ".bin";
 
             FileUtils.CreateAllFilepathDirectories(filepath);
 
@@ -23,7 +23,7 @@ namespace Fast.Serializers
         {
             bool ret = false;
 
-            string filepath = Application.persistentDataPath + "/" + save_name + ".bin";
+            string filepath = Application.persistentDataPath + Path.DirectorySeparatorChar + save_name + ".bin";
 
             if (File.Exists(filepath))
             {

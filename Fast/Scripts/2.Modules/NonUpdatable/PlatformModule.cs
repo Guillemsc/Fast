@@ -74,5 +74,10 @@ namespace Fast.Modules
         {
             get { return Application.isPlaying; }
         }
+
+        public RuntimePlatform UnityPlatform
+        {
+            get { return Application.platform; }
+        }
     }
 }

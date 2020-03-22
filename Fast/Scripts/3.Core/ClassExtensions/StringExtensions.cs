@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.IO;
+using System.Text;
 
 public static class StringExtensions
 {
@@ -14,6 +15,19 @@ public static class StringExtensions
 
             ret = sb.ToString();
         }
+
+        return ret;
+    }
+
+    public static Stream ToStream(this string str)
+    {
+        MemoryStream ret = new MemoryStream();
+
+        StreamWriter writer = new StreamWriter(ret);
+        writer.Write(str);
+        writer.Flush();
+
+        ret.Position = 0;
 
         return ret;
     }

@@ -12,29 +12,45 @@ using Google.Apis.Services;
 using System.Collections.Generic;
 using System.Linq;
 
-# if UNITY_EDITOR
+#if UNITY_EDITOR
 
 namespace Fast.GoogleDrive
 {
     public class DownloadSpreadsheetSuccessObject
     {
-        public Data.GridData data { get; set; }
+        private readonly Data.GridData data = null;
+
+        public DownloadSpreadsheetSuccessObject(Data.GridData data)
+        {
+            this.data = data;
+        }
+
+        public Data.GridData Data => data;
     }
 
     public class DownloadSpreadsheetErrorObject
     {
-        public string ErrorMessage { get; set; }
-        public Exception ErrorException { get; set; }
+        private string message_error = "";
+        private Exception exception = null;
+
+        public DownloadSpreadsheetErrorObject(string message_error, Exception exception)
+        {
+            this.message_error = message_error;
+            this.exception = exception;
+        }
+
+        public string MessageError => message_error;
+        public Exception Exception => exception;
     }
 
-    public class DownloadSpreadsheet : Request<DownloadSpreadsheetSuccessObject, DownloadSpreadsheetErrorObject>
+    public class DownloadSpreadsheetRequest : AwaitRequest<DownloadSpreadsheetSuccessObject, DownloadSpreadsheetErrorObject>
     {
-        private string client_id = "";
-        private string client_secret = "";
-        private string document_id = "";
-        private string document_data_range = "";
+        private readonly string client_id = "";
+        private readonly string client_secret = "";
+        private readonly string document_id = "";
+        private readonly string document_data_range = "";
 
-        public DownloadSpreadsheet(string client_id, string client_secret, string document_id, string document_data_range)
+        public DownloadSpreadsheetRequest(string client_id, string client_secret, string document_id, string document_data_range)
         {
             this.client_id = client_id;
             this.client_secret = client_secret;
@@ -42,9 +58,8 @@ namespace Fast.GoogleDrive
             this.document_data_range = document_data_range;
         }
 
-        protected override void RunRequestInternal(Action<DownloadSpreadsheetSuccessObject> on_success,
-           Action<DownloadSpreadsheetErrorObject> on_fail)
-        {
+        protected override async Task RunRequestInternal()
+        { 
             //For Google Drive Api documentation visit https://developers.google.com/sheets/api/quickstart/dotnet
 
             string[] scopes = { SheetsService.Scope.SpreadsheetsReadonly };
@@ -53,106 +68,81 @@ namespace Fast.GoogleDrive
             secrets.ClientId = client_id;
             secrets.ClientSecret = client_secret;
 
-            GoogleWebAuthorizationBroker.AuthorizeAsync(secrets, scopes, "user", CancellationToken.None)
-                .ContinueWith(delegate(Task<UserCredential> user_credential_task)
-                {
-                    string error_msg = "";
-                    Exception exception = null;
+            UpdateProgress("Authenticating", 0);
 
-                    bool has_errors = user_credential_task.HasErrors(out error_msg, out exception);
+            Task<UserCredential> user_credential_task = GoogleWebAuthorizationBroker.AuthorizeAsync(secrets, scopes, "user", CancellationToken.None);
+            AwaitResult user_credential_task_result = await AwaitUtils.AwaitTask(user_credential_task);
 
-                    if(!has_errors)
-                    {
-                        if (user_credential_task.Result != null)
-                        {
-                            BaseClientService.Initializer service_in = new BaseClientService.Initializer();
-                            service_in.HttpClientInitializer = user_credential_task.Result;
-                            service_in.ApplicationName = "Download Spreadhseet";
+            if(user_credential_task_result.HasErrors)
+            {
+                has_errors = true;
+                error_result = new DownloadSpreadsheetErrorObject(
+                    user_credential_task_result.Exception.Message, user_credential_task_result.Exception);
 
-                            SheetsService service = new SheetsService(service_in);
+                return;
+            }
 
-                            SpreadsheetsResource.ValuesResource.GetRequest request =
-                            service.Spreadsheets.Values.Get(document_id, document_data_range);
+            UserCredential credential = user_credential_task.Result;
 
-                            request.ExecuteAsync().ContinueWith(delegate (Task<Google.Apis.Sheets.v4.Data.ValueRange> values_task)
-                            {
-                                if (values_task.IsCanceled)
-                                {
-                                    DownloadSpreadsheetErrorObject ret = new DownloadSpreadsheetErrorObject();
-                                    ret.ErrorException = values_task.Exception;
-                                    ret.ErrorMessage = "Values tasks canceled";
+            if (credential == null)
+            {
+                has_errors = true;
+                error_result = new DownloadSpreadsheetErrorObject("Credentials are null", null);
 
-                                    if (on_fail != null)
-                                        on_fail.Invoke(ret);
-                                }
-                                else if (values_task.IsFaulted)
-                                {
-                                    DownloadSpreadsheetErrorObject ret = new DownloadSpreadsheetErrorObject();
-                                    ret.ErrorException = values_task.Exception;
-                                    ret.ErrorMessage = "Values tasks faulted";
+                return;
+            }
 
-                                    if (on_fail != null)
-                                        on_fail.Invoke(ret);
-                                }
-                                else
-                                {
-                                    if (values_task.Result != null)
-                                    {
-                                        Google.Apis.Sheets.v4.Data.ValueRange values = values_task.Result;
+            UpdateProgress("Getting data", 50);
 
-                                        IList<IList<object>> values_data = values.Values;
+            BaseClientService.Initializer service_in = new BaseClientService.Initializer();
+            service_in.HttpClientInitializer = credential;
+            service_in.ApplicationName = "Download spreadhseet GoogleDrive";
 
-                                        List<List<object>> data = new List<List<object>>();
+            SheetsService service = new SheetsService(service_in);
 
-                                        List<IList<object>> values_data_list = values_data.ToList();
+            SpreadsheetsResource.ValuesResource.GetRequest get_values_request =
+            service.Spreadsheets.Values.Get(document_id, document_data_range);
 
-                                        for (int i = 0; i < values_data_list.Count; ++i)
-                                        {
-                                            List<object> data_row = values_data_list[i].ToList();
+            Task<Google.Apis.Sheets.v4.Data.ValueRange> get_values_task = get_values_request.ExecuteAsync();
+            AwaitResult get_values_task_result = await AwaitUtils.AwaitTask(get_values_task);
 
-                                            data.Add(data_row);
-                                        }
+            UpdateProgress("Processing data", 50);
 
-                                        DownloadSpreadsheetSuccessObject ret = new DownloadSpreadsheetSuccessObject();
-                                        ret.data = new Data.GridData(data);
+            if (get_values_task_result.HasErrors)
+            {
+                has_errors = true;
+                error_result = new DownloadSpreadsheetErrorObject(
+                    get_values_task_result.Exception.Message, get_values_task_result.Exception);
 
-                                        if (on_success != null)
-                                            on_success.Invoke(ret);
-                                    }
-                                    else
-                                    {
-                                        DownloadSpreadsheetErrorObject ret = new DownloadSpreadsheetErrorObject();
-                                        ret.ErrorException = values_task.Exception;
-                                        ret.ErrorMessage = "Error on task";
+                return;
+            }
 
-                                        if (on_fail != null)
-                                            on_fail.Invoke(ret);
-                                    }
-                                }
+            Google.Apis.Sheets.v4.Data.ValueRange values = get_values_task.Result;
 
-                            }, TaskScheduler.FromCurrentSynchronizationContext());
-                        }
-                        else
-                        {
-                            DownloadSpreadsheetErrorObject ret = new DownloadSpreadsheetErrorObject();
-                            ret.ErrorException = user_credential_task.Exception;
-                            ret.ErrorMessage = "Error on task";
+            if (values == null)
+            {
+                has_errors = true;
+                error_result = new DownloadSpreadsheetErrorObject("Values are null", null);
 
-                            if (on_fail != null)
-                                on_fail.Invoke(ret);
-                        }
-                    }
-                    else
-                    {
-                        DownloadSpreadsheetErrorObject ret = new DownloadSpreadsheetErrorObject();
-                        ret.ErrorMessage = error_msg;
-                        ret.ErrorException = exception;
+                return;
+            }
 
-                        if (on_fail != null)
-                            on_fail.Invoke(ret);
-                    }
+            IList<IList<object>> values_data = values.Values;
 
-                }, TaskScheduler.FromCurrentSynchronizationContext());
+            List<List<object>> data = new List<List<object>>();
+
+            List<IList<object>> values_data_list = values_data.ToList();
+
+            for (int i = 0; i < values_data_list.Count; ++i)
+            {
+                List<object> data_row = values_data_list[i].ToList();
+
+                data.Add(data_row);
+            }
+
+            Data.GridData grid_data = new Data.GridData(data);
+
+            success_result = new DownloadSpreadsheetSuccessObject(grid_data);
         }
     }
 }
