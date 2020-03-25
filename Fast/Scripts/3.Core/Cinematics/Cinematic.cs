@@ -1,65 +1,78 @@
-﻿using System;
+﻿using FlowCanvas;
+using FlowCanvas.Nodes;
+using NodeCanvas.Framework;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Fast.Cinematics
 {
-    public class Cinematic
+    public class Cinematic : MonoBehaviour
     {
-        private readonly List<CinematicTimeline> timelines = new List<CinematicTimeline>();
+        [SerializeField] private FlowScript script = null;
 
-        private bool started = false;
-        private bool finished = false;
-
-        public bool Started => started;
-        public bool Finished => finished;
-
-        public Cinematic(List<CinematicTimeline> timelines)
-        {
-            this.timelines = timelines;
-        }
-
-        public void Start()
-        {
-            if (!started)
-            {
-                started = true;
-                finished = false;
-
-                for (int i = 0; i < timelines.Count; ++i)
-                {
-                    CinematicTimeline curr_timeline = timelines[i];
-
-                    curr_timeline.Start();
-                }
-            }
-        }
+        private Graph running_graph = null;
 
         public void Update()
         {
-            if (!finished)
+            if(Input.GetKeyDown("a"))
             {
-                int finished_timelines = 0;
+                ForceStop();
+                Play();
+            }
+        }
 
-                for (int i = 0; i < timelines.Count; ++i)
+        public void Play()
+        {
+            Blackboard bb = gameObject.GetComponent<Blackboard>();
+
+            running_graph = Graph.Clone<Graph>(script);
+
+            running_graph.StartGraph(this, bb, true, null);
+  
+            if (running_graph == null)
+            {
+                return;
+            }
+
+            List<Node> root_nodes = running_graph.GetRootNodes();
+
+            for (int i = 0; i < root_nodes.Count; ++i)
+            {
+                Node curr_node = root_nodes[i];
+
+                Timeline timeline_node = curr_node as Timeline;
+                
+                if(timeline_node == null)
                 {
-                    CinematicTimeline curr_timeline = timelines[i];
-
-                    curr_timeline.Update();
-
-                    if (curr_timeline.Finished)
-                    {
-                        ++finished_timelines;
-                    }
+                    continue;
                 }
 
-                if (finished_timelines == timelines.Count)
+                timeline_node.StartFlow();
+            }
+        }
+
+        public void ForceStop()
+        {
+            if (running_graph == null)
+            {
+                return;
+            }
+
+            List<Node> root_nodes = running_graph.GetRootNodes();
+
+            for (int i = 0; i < root_nodes.Count; ++i)
+            {
+                Node curr_node = root_nodes[i];
+
+                Timeline timeline_node = curr_node as Timeline;
+
+                if (timeline_node == null)
                 {
-                    started = false;
-                    finished = true;
+                    continue;
                 }
+
+                timeline_node.ForceStopFlow();
             }
         }
     }

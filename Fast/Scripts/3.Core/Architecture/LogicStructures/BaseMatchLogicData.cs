@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Fast.Logic
+namespace Fast.Architecture
 {
     public class BaseMatchLogicData
     {

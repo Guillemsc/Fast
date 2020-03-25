@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Fast.Presentation
+namespace Fast.Architecture
 {
     public class BaseMatchPresentationData
     {

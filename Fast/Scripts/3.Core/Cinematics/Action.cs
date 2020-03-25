@@ -1,0 +1,47 @@
+﻿using FlowCanvas;
+using FlowCanvas.Nodes;
+using ParadoxNotion.Design;
+using System;
+using System.Collections.Generic;
+
+namespace Fast.Cinematics
+{
+    public class Action : Finishable
+    {
+        private FlowInput main_flow_in = null;
+
+        protected override void RegisterPorts()
+        {
+            main_flow_in = AddFlowInput("MainFlow", OnFlowInput);
+
+            ActionRegisterPorts();
+        }
+
+        private void OnFlowInput(FlowCanvas.Flow flow)
+        {
+            Reset();
+
+            ActionStart();
+        }
+
+        protected override void FinishableFinished(bool complete)
+        {
+            ActionFinished(complete);
+        }
+
+        protected virtual void ActionRegisterPorts()
+        {
+
+        }
+
+        protected virtual void ActionStart()
+        {
+
+        }
+
+        protected virtual void ActionFinished(bool complete)
+        {
+
+        }
+    }
+}

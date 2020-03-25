@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Fast.Logic
+namespace Fast.Architecture
 {
     public class GameLogic
     {

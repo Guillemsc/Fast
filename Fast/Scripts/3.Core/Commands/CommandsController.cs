@@ -7,7 +7,13 @@ namespace Fast.Commands
     {
         public IReadOnlyList<ICommandEffect> ExecuteCommands(IReadOnlyList<ICommand> commands)
         {
-            List<ICommandEffect> ret = new List<ICommandEffect>();
+            if(commands == null)
+            {
+                Fast.FastService.MLog.LogError(this, $"Trying to get a execute commands, but list is null");
+                return null;
+            }
+
+            List<ICommandEffect> effects = new List<ICommandEffect>();
 
             for (int i = 0; i < commands.Count; ++i)
             {
@@ -15,15 +21,21 @@ namespace Fast.Commands
 
                 IReadOnlyList<ICommandEffect> curr_command_effects = ExecuteCommand(curr_command);
 
-                ret.AddRange(curr_command_effects);
+                effects.AddRange(curr_command_effects);
             }
 
-            return ret.AsReadOnly();
+            return effects;
         }
 
         public IReadOnlyList<ICommandEffect> ExecuteCommand(ICommand command)
         {
-            List<ICommandEffect> ret = new List<ICommandEffect>();
+            if(command == null)
+            {
+                Fast.FastService.MLog.LogError(this, $"Trying to get a execute command, but it's null");
+                return null;
+            }
+
+            List<ICommandEffect> effects = new List<ICommandEffect>();
 
             Queue<ICommand> commands_queue = new Queue<ICommand>();
 
@@ -34,7 +46,7 @@ namespace Fast.Commands
                 ICommand curr_command = commands_queue.Dequeue();
 
                 IReadOnlyList<ICommandEffect> curr_command_effects = curr_command.Execute();
-                ret.AddRange(curr_command_effects);
+                effects.AddRange(curr_command_effects);
 
                 for (int i = 0; i < curr_command_effects.Count; ++i)
                 {
@@ -50,7 +62,20 @@ namespace Fast.Commands
                 AddCommandsToCommandsQueue(ref commands_queue, curr_command_new_commands);
             }
 
-            return ret.AsReadOnly();
+            return effects;
+        }
+
+        public IReadOnlyList<ICommandEffect> ExecuteCommandInput(ICommandInput input)
+        {
+            if(input == null)
+            {
+                Fast.FastService.MLog.LogError(this, $"Trying to get a execute command  input, but it's null");
+                return null;
+            }
+
+            IReadOnlyList<ICommand> commands = input.GenerateCommands();
+
+            return ExecuteCommands(commands);
         }
 
         private void AddCommandsToCommandsQueue(ref Queue<ICommand> commands_queue, IReadOnlyList<ICommand> commands)

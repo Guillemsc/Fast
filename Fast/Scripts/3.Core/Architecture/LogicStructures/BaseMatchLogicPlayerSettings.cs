@@ -1,14 +1,11 @@
 ﻿using System;
 
-namespace Fast.Logic
+namespace Fast.Architecture
 {
     public class BaseMatchLogicPlayerSettings
     {
-        private MatchLogicPlayerNature player_nature = MatchLogicPlayerNature.CLIENT;
+        private MatchLogicPlayerNature player_nature = MatchLogicPlayerNature.USER;
 
-        protected MatchLogicPlayerNature PlayerNature
-        {
-            get { return player_nature; }
-        }
+        protected MatchLogicPlayerNature PlayerNature => player_nature;
     }
 }

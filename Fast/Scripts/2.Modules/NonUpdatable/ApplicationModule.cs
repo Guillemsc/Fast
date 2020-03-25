@@ -11,6 +11,13 @@ namespace Fast.Modules
     {
         private int sleep_timeout_time = 30;
 
+        private string persistent_data_path = "";
+
+        public override void Awake()
+        {
+            persistent_data_path = $"{Application.persistentDataPath}/";
+        }
+
         public bool VSync
         {
             get { return QualitySettings.vSyncCount == 1; }
@@ -61,10 +68,9 @@ namespace Fast.Modules
             set { Screen.fullScreenMode = value; }
         }
 
-        public SystemLanguage SystemLanguage
-        {
-            get { return Application.systemLanguage; }
-        }
+        public SystemLanguage SystemLanguage => Application.systemLanguage;
+
+        public string PersistentDataPath => persistent_data_path;
 
         public void Quit()
         {

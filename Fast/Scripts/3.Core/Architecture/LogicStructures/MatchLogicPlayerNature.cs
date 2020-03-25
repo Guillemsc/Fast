@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace Fast.Logic
+namespace Fast.Architecture
 {
     public enum MatchLogicPlayerNature
     {
-        CLIENT,
+        USER,
         AI,
     }
 }

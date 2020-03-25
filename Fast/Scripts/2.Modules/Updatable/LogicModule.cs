@@ -8,14 +8,14 @@ namespace Fast.Modules
 {
     public class LogicModule : UpdatableModule
     {
-        private readonly List<Logic.GameLogic> game_logic_running = new List<Logic.GameLogic>();
+        private readonly List<Architecture.GameLogic> game_logic_running = new List<Architecture.GameLogic>();
 
         public override void Update()
         {
             UpdateLogic();
         }
 
-        public void StartLogic(Logic.GameLogic logic)
+        public void StartLogic(Architecture.GameLogic logic)
         {
             if (logic != null)
             {
@@ -23,7 +23,7 @@ namespace Fast.Modules
 
                 for (int i = 0; i < game_logic_running.Count; ++i)
                 {
-                    Logic.GameLogic curr_game_logic = game_logic_running[i];
+                    Architecture.GameLogic curr_game_logic = game_logic_running[i];
 
                     if (curr_game_logic == logic)
                     {
@@ -43,7 +43,7 @@ namespace Fast.Modules
             }
         }
 
-        public void StopLogic(Logic.GameLogic logic)
+        public void StopLogic(Architecture.GameLogic logic)
         {
             if (logic != null)
             {
@@ -53,7 +53,7 @@ namespace Fast.Modules
 
                     for (int i = 0; i < game_logic_running.Count; ++i)
                     {
-                        Logic.GameLogic curr_game_logic = game_logic_running[i];
+                        Architecture.GameLogic curr_game_logic = game_logic_running[i];
 
                         if (curr_game_logic == logic)
                         {
@@ -68,11 +68,11 @@ namespace Fast.Modules
 
         private void UpdateLogic()
         {
-            List<Logic.GameLogic> to_start = new List<Logic.GameLogic>(game_logic_running);
+            List<Architecture.GameLogic> to_start = new List<Architecture.GameLogic>(game_logic_running);
 
             for (int i = 0; i < to_start.Count; ++i)
             {
-                Logic.GameLogic curr_game_logic = to_start[i];
+                Architecture.GameLogic curr_game_logic = to_start[i];
 
                 if (!curr_game_logic.Running)
                 {
@@ -80,11 +80,11 @@ namespace Fast.Modules
                 }
             }
 
-            List<Logic.GameLogic> to_update = new List<Logic.GameLogic>(game_logic_running);
+            List<Architecture.GameLogic> to_update = new List<Architecture.GameLogic>(game_logic_running);
 
             for (int i = 0; i < to_update.Count; ++i)
             {
-                Logic.GameLogic curr_game_logic = to_update[i];
+                Architecture.GameLogic curr_game_logic = to_update[i];
 
                 curr_game_logic.Update();
             }

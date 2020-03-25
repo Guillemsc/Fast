@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Fast.Logic
+namespace Fast.Architecture
 {
     public class BaseMatchLogicObject
     {
@@ -16,9 +16,6 @@ namespace Fast.Logic
             this.object_category_variation = object_category_variation;
         }
 
-        public int ObjectUID
-        {
-            get { return object_uid; }
-        }
+        public int ObjectUID => object_uid;
     }
 }

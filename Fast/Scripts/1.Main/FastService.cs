@@ -15,6 +15,7 @@ namespace Fast
         private Fast.Modules.LogModule log_module = null;
         private Fast.Modules.ApplicationModule application_module = null;
         private Fast.Modules.PlatformModule platform_module = null;
+        private Fast.Modules.SaveDataModule save_data_module = null;
         private Fast.Modules.LocalizationModule localization_module = null;
         private Fast.Modules.EventModule event_module = null;
         private Fast.Modules.FirebaseModule firebase_module = null;
@@ -48,6 +49,7 @@ namespace Fast
                 log_module = (Modules.LogModule)AddModule(new Modules.LogModule());
                 application_module = (Modules.ApplicationModule)AddModule(new Modules.ApplicationModule());
                 platform_module = (Modules.PlatformModule)AddModule(new Modules.PlatformModule());
+                save_data_module = (Modules.SaveDataModule)AddModule(new Modules.SaveDataModule());
                 localization_module = (Modules.LocalizationModule)AddModule(new Modules.LocalizationModule());
                 event_module = (Modules.EventModule)AddModule(new Modules.EventModule());
                 firebase_module = (Modules.FirebaseModule)AddModule(new Modules.FirebaseModule());
@@ -151,6 +153,11 @@ namespace Fast
         public static Fast.Modules.PlatformModule MPlatform
         {
             get { return Instance.platform_module; }
+        }
+
+        public static Fast.Modules.SaveDataModule MSaveData
+        {
+            get { return Instance.save_data_module; }
         }
 
         public static Fast.Modules.LocalizationModule MLocalization

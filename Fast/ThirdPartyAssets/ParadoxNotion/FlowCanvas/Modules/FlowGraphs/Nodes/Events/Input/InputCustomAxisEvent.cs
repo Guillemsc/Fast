@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace FlowCanvas.Nodes{
-
+namespace FlowCanvas.Nodes
+{
 	[Name("Input Axis")]
 	[Category("Events/Input")]
 	[Description("You are free to define any Input Axis in this node.\nAxis can be set in 'Project Settings/Input'.\nCalls Out when either of the Axis defined is not zero")]

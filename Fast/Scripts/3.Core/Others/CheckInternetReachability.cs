@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -6,59 +7,58 @@ namespace Fast.Others
 {
     public class CheckInternetReachabilitySuccessObject
     {
+        private readonly bool can_reach_internet = false;
 
+        public CheckInternetReachabilitySuccessObject(bool can_reach_internet)
+        {
+            this.can_reach_internet = can_reach_internet;
+        }
+
+        public bool CanReachInternet => can_reach_internet;
     }
 
     public class CheckInternetReachabilityErrorObject
     {
-        public string error = "";
+
     }
 
-    public class CheckInternetReachability : Request<CheckInternetReachabilitySuccessObject, CheckInternetReachabilityErrorObject>
+    public class CheckInternetReachability : AwaitRequest<CheckInternetReachabilitySuccessObject, CheckInternetReachabilityErrorObject>
     {
-        private string web_to_test = "https://www.google.com";
-        private int timeout = 5;
+        private readonly string web_to_test = "https://www.google.com";
+        private readonly int timeout = 5;
 
         private UnityWebRequest webRequest = null;
-
-        public CheckInternetReachability()
-        {
-
-        }
-
+ 
         public CheckInternetReachability(string web_to_test, int timeout = 3)
         {
             this.web_to_test = web_to_test;
             this.timeout = timeout;
         }
 
-        protected override void RunRequestInternal(Action<CheckInternetReachabilitySuccessObject> on_success, 
-            Action<CheckInternetReachabilityErrorObject> on_fail)
+        protected override async Task RunRequestInternal()
         {
-            webRequest = new UnityWebRequest(web_to_test);
+            TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
 
+            UnityWebRequest webRequest = new UnityWebRequest(web_to_test);
             webRequest.timeout = timeout;
 
             webRequest.SendWebRequest().completed += delegate (AsyncOperation operation)
             {
-                if(!webRequest.isNetworkError)
+                if (webRequest.isNetworkError)
                 {
-                    webRequest.Dispose();
-
-                    if (on_success != null)
-                        on_success.Invoke(new CheckInternetReachabilitySuccessObject());
+                    success_result = new CheckInternetReachabilitySuccessObject(false);
                 }
                 else
                 {
-                    CheckInternetReachabilityErrorObject ret = new CheckInternetReachabilityErrorObject();
-                    ret.error = webRequest.error;
-
-                    webRequest.Dispose();
-
-                    if (on_fail != null)
-                        on_fail.Invoke(ret);
+                    success_result = new CheckInternetReachabilitySuccessObject(true);
                 }
+
+                webRequest.Dispose();
+
+                tcs.SetResult(null);
             };
+
+            await tcs.Task;
         }
     }
 }

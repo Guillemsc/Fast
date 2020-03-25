@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using UnityEngine;
+using System.Threading.Tasks;
 
 #if UNITY_EDITOR
 
@@ -23,12 +24,34 @@ namespace Fast.Serializers
             FileUtils.DeleteFileIfExists(filepath);
 
             File.WriteAllBytes(filepath, new byte[0]);
-
             File.WriteAllText(filepath, data);
 
             ret = true;
-            
+
             return ret;
+        }
+
+        public static async Task<bool> SerializeToPathAsync(string filepath, object to_serialize)
+        {
+            FileUtils.CreateAllFilepathDirectories(filepath);
+
+            string data = Newtonsoft.Json.JsonConvert.SerializeObject(to_serialize, Newtonsoft.Json.Formatting.Indented);
+
+            FileUtils.DeleteFileIfExists(filepath);
+
+            StreamWriter writer = File.CreateText(filepath);
+
+            Task write_task = writer.WriteAsync(data);
+            AwaitResult write_result = await AwaitUtils.AwaitTask(write_task);
+
+            writer.Dispose();
+
+            if (write_result.HasErrors)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public static bool DeSerializeFromPath<T>(string filepath, out T deserialized_object)
@@ -52,26 +75,45 @@ namespace Fast.Serializers
             return ret;
         }
 
-        public static bool SerializeToPersistentPath(string persistent_path, object to_serialize)
+
+        public static async Task<T> DeSerializeFromPathAsync<T>(string filepath)
         {
-            bool ret = false;
+            FileUtils.CreateAllFilepathDirectories(filepath);
 
-            string filepath = Application.persistentDataPath + Path.DirectorySeparatorChar + persistent_path + ".json";
+            if (!File.Exists(filepath))
+            {
+                return default(T);
+            }
 
-            ret = SerializeToPath(filepath, to_serialize);
+            StreamReader reader = new StreamReader(filepath);
 
-            return ret;
+            Task<string>read_task = reader.ReadToEndAsync();
+            AwaitResult read_result = await AwaitUtils.AwaitTask(read_task);
+
+            if(read_result.HasErrors)
+            {
+                return default(T);
+            }
+
+            T deserialized_object = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(read_task.Result);
+
+            reader.Dispose();
+
+            return deserialized_object;
         }
 
-        public static bool DeSerializeFromPersistentPath<T>(string persistent_path, out T deserialized_object)
+        public static async Task<bool> SerializeToPersistentPathAsync(string persistent_path, object to_serialize)
         {
-            bool ret = false;
+            string filepath = Application.persistentDataPath + Path.DirectorySeparatorChar + persistent_path;
 
-            string filepath = Application.persistentDataPath + Path.DirectorySeparatorChar + persistent_path + ".json";
+            return await SerializeToPathAsync(filepath, to_serialize);
+        }
 
-            ret = DeSerializeFromPath(filepath, out deserialized_object);
+        public static async Task<T> DeSerializeFromPersistentPathAsync<T>(string persistent_path)
+        {
+            string filepath = Application.persistentDataPath + Path.DirectorySeparatorChar + persistent_path;
 
-            return ret;
+            return await DeSerializeFromPathAsync<T>(filepath);
         }
 
 #if UNITY_EDITOR
@@ -81,8 +123,6 @@ namespace Fast.Serializers
             bool ret = false;
 
             string filepath = Application.dataPath + Path.DirectorySeparatorChar + assets_filepath;
-
-            FileUtils.CreateAllFilepathDirectories(filepath);
 
             ret = SerializeToPath(filepath, to_serialize);
 

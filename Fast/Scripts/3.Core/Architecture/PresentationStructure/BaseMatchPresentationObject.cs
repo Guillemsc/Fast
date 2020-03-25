@@ -1,25 +1,27 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Fast.Presentation
+namespace Fast.Architecture
 {
     public class BaseMatchPresentationObject : MonoBehaviour
     {
-        protected int object_uid = 0;
+        private bool inited = false;
+        private BaseMatchLogicObject logic_object = null;
 
-        protected int object_category = 0;
-        protected int object_category_variation = 0;
-
-        protected void Init(int object_uid, int object_category, int object_category_variation = 0)
+        public void Init(BaseMatchLogicObject logic_object)
         {
-            this.object_uid = object_uid;
-            this.object_category = object_category;
-            this.object_category_variation = object_category_variation;
+            if(inited)
+            {
+                return;
+            }
+
+            inited = true;
+
+            this.logic_object = logic_object;
         }
 
-        public int ObjectUID
-        {
-            get { return object_uid; }
-        }
+        public bool Inited => inited;
+
+        public BaseMatchLogicObject BaseMatchLogicObject => logic_object;
     }
 }

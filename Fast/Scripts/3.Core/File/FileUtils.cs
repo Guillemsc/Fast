@@ -22,5 +22,13 @@ namespace Fast
                 File.Delete(filepath);
             }
         }
+
+        public static void DeleteFolderIfExists(string folderpath)
+        {
+            if (Directory.Exists(folderpath))
+            {
+                Directory.Delete(folderpath);
+            }
+        }
     }
 }

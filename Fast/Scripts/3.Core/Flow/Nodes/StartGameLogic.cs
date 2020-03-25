@@ -3,7 +3,7 @@ using DG.Tweening;
 
 public static class StartGameLogicExtension
 {
-    public static Fast.Flow.FlowContainer FlowStartGameLogic(this Fast.Flow.FlowContainer container, Fast.Logic.GameLogic logic)
+    public static Fast.Flow.FlowContainer FlowStartGameLogic(this Fast.Flow.FlowContainer container, Fast.Architecture.GameLogic logic)
     {
         Fast.Flow.StartGameLogic node = new Fast.Flow.StartGameLogic(container, logic);
 
@@ -17,9 +17,9 @@ namespace Fast.Flow
 {
     public class StartGameLogic : FlowNode
     {
-        private Fast.Logic.GameLogic logic = null;
+        private Fast.Architecture.GameLogic logic = null;
 
-        public StartGameLogic(FlowContainer container, Fast.Logic.GameLogic logic) : base(container)
+        public StartGameLogic(FlowContainer container, Fast.Architecture.GameLogic logic) : base(container)
         {
             this.logic = logic;
         }
