@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace Fast.Parsers
 {
-    class TSVParser
+    public class TSVParser
     {
         public static Data.GridData Parse(List<string> lines)
         {

@@ -7,28 +7,42 @@ using UnityEngine;
 
 namespace Fast.Cinematics
 {
-    public class Cinematic : MonoBehaviour
+    public class Cinematic 
     {
-        [SerializeField] private FlowScript script = null;
+        private CinematicAsset cinematic_asset = null;
 
         private Graph running_graph = null;
 
-        public void Update()
+        List<Timeline> timelines = new List<Timeline>();
+        private int timelines_finished = 0;
+
+        private Fast.Callback on_finish = new Callback();
+
+        public Fast.Callback OnFinish => on_finish;
+
+        public Cinematic(CinematicAsset cinematic_asset)
         {
-            if(Input.GetKeyDown("a"))
-            {
-                ForceStop();
-                Play();
-            }
+            this.cinematic_asset = cinematic_asset;
         }
 
         public void Play()
         {
-            Blackboard bb = gameObject.GetComponent<Blackboard>();
+            if(cinematic_asset == null)
+            {
+                return;
+            }
 
-            running_graph = Graph.Clone<Graph>(script);
+            if(cinematic_asset.NodeCanvasScript == null)
+            {
+                return;
+            }
 
-            running_graph.StartGraph(this, bb, true, null);
+            timelines.Clear();
+            timelines_finished = 0;
+
+            running_graph = Graph.Clone<Graph>(cinematic_asset.NodeCanvasScript);
+
+            running_graph.StartGraph(Fast.FastService.Instance, new Blackboard(), true, null);
   
             if (running_graph == null)
             {
@@ -42,13 +56,33 @@ namespace Fast.Cinematics
                 Node curr_node = root_nodes[i];
 
                 Timeline timeline_node = curr_node as Timeline;
-                
-                if(timeline_node == null)
+
+                if (timeline_node == null)
                 {
                     continue;
                 }
 
-                timeline_node.StartFlow();
+                timelines.Add(timeline_node);
+            }
+
+            for (int i = 0; i < timelines.Count; ++i)
+            {
+                Timeline curr_timeline = timelines[i];
+
+                curr_timeline.OnFinish.UnSubscribeAll();
+                curr_timeline.OnFinish.Subscribe(OnTimelineFinishes);
+
+                curr_timeline.StartFlow();
+            }
+        }
+
+        private void OnTimelineFinishes()
+        {
+            ++timelines_finished;
+
+            if (timelines.Count == timelines_finished)
+            {
+                on_finish.Invoke();
             }
         }
 

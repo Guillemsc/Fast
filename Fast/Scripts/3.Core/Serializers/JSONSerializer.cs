@@ -11,7 +11,7 @@ using UnityEditor;
 
 namespace Fast.Serializers
 {
-    class JSONSerializer
+    public class JSONSerializer
     {
         public static bool SerializeToPath(string filepath, object to_serialize)
         {

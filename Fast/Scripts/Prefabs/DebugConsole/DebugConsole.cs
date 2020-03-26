@@ -23,7 +23,7 @@ namespace Fast.Prefabs.DebugConsole
 
         private List<DebugConsoleLog> console_logs = new List<DebugConsoleLog>();
 
-        private List<UnityEngine.LogType> log_types_showing = new List<LogType>(); 
+        private List<UnityEngine.LogType> log_types_showing = new List<UnityEngine.LogType>(); 
 
         private void Awake()
         {

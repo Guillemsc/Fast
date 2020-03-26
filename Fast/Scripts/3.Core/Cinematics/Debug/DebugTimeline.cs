@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Fast.Cinematics
 {
     [Name("DebugTimeline")]
-    [Category("Fast/NewCinematics/Debug")]
+    [Category("Fast/Cinematics/Debug")]
     [Description("Start timeline")]
     [Color("0384fc")]
     public class DebugTimeline : Timeline

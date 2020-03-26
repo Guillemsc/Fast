@@ -12,7 +12,7 @@ namespace Fast.Cinematics
 
         protected override void RegisterPorts()
         {
-            main_flow_in = AddFlowInput("MainFlow", OnFlowInput);
+            main_flow_in = AddFlowInput("Action flow", OnFlowInput);
 
             ActionRegisterPorts();
         }
@@ -21,7 +21,7 @@ namespace Fast.Cinematics
         {
             Reset();
 
-            ActionStart();
+            ActionStart(flow);
         }
 
         protected override void FinishableFinished(bool complete)
@@ -34,7 +34,7 @@ namespace Fast.Cinematics
 
         }
 
-        protected virtual void ActionStart()
+        protected virtual void ActionStart(FlowCanvas.Flow flow)
         {
 
         }

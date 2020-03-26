@@ -8,16 +8,18 @@ using System.Collections.Generic;
 namespace Fast.Cinematics
 {
     [Name("Timeline")]
-    [Category("Fast/NewCinematics")]
+    [Category("Fast/Cinematics")]
     [Description("Start timeline")]
     [Color("0384fc")]
     public class Timeline : EventNode
     {
         private FlowOutput main_flow_out = null;
-
         private FlowCanvas.Flow flow = default;
-
         private FlowPoint curr_flow_point = null;
+
+        private Fast.Callback on_finish = new Callback();
+
+        public Fast.Callback OnFinish => on_finish;
 
         protected override void RegisterPorts()
         {
@@ -63,34 +65,37 @@ namespace Fast.Cinematics
                     }
                 }
 
-                if(curr_flow_point != null)
+                if(curr_flow_point == null)
                 {
-                    curr_flow_point.OnFinish.UnSubscribeAll();
-                    curr_flow_point.OnFinish.Subscribe(StartNextFlowPoint);
+                    on_finish.Invoke();
 
-                    flow = new FlowCanvas.Flow();
-
-                    main_flow_out.Call(flow);
+                    return;
                 }
+
+                curr_flow_point.OnFinish.UnSubscribeAll();
+                curr_flow_point.OnFinish.Subscribe(StartNextFlowPoint);
+
+                flow = new FlowCanvas.Flow();
+
+                main_flow_out.Call(flow);
             }
             else
             {
-                if(curr_flow_point != null)
+                FlowPoint next_flow_point = curr_flow_point.GetNextFlowPoint();
+
+                if (next_flow_point == null || curr_flow_point == null)
                 {
-                    FlowPoint next_flow_point = curr_flow_point.GetNextFlowPoint();
+                    on_finish.Invoke();
 
-                    if(next_flow_point == null)
-                    {
-                        return;
-                    }
-
-                    curr_flow_point.StartNextFlowPoint(flow);
-
-                    curr_flow_point = next_flow_point;
-
-                    curr_flow_point.OnFinish.UnSubscribeAll();
-                    curr_flow_point.OnFinish.Subscribe(StartNextFlowPoint);
+                    return;
                 }
+
+                curr_flow_point.StartNextFlowPoint(flow);
+
+                curr_flow_point = next_flow_point;
+
+                curr_flow_point.OnFinish.UnSubscribeAll();
+                curr_flow_point.OnFinish.Subscribe(StartNextFlowPoint);
             }
         }
 

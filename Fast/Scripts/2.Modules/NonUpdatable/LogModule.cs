@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using UnityEngine;
 
-namespace Fast.Modules
+namespace Fast
 {
     public enum LogType
     {
@@ -10,7 +10,10 @@ namespace Fast.Modules
         WARNING,
         INFO,
     }
+}
 
+namespace Fast.Modules
+{
     public class LogModule : Module
     {
         private bool terminated = false;

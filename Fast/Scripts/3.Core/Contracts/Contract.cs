@@ -10,11 +10,11 @@ namespace Fast
 
             if (info_message != null)
             {
-                log = FastService.MLog.GetLog(Modules.LogType.ERROR, obj, $"{class_name} {error} -> [{info_message}]");
+                log = FastService.MLog.GetLog(LogType.ERROR, obj, $"{class_name} {error} -> [{info_message}]");
             }
             else
             {
-                log = FastService.MLog.GetLog(Modules.LogType.ERROR, obj, $"{class_name} {error}");
+                log = FastService.MLog.GetLog(LogType.ERROR, obj, $"{class_name} {error}");
             }
 
             throw new Exception(log);

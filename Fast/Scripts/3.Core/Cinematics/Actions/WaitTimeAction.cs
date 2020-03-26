@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace Fast.Cinematics
 {
     [Name("Wait Time Action")]
-    [Category("Fast/NewCinematics")]
+    [Category("Fast/Cinematics")]
     [Description("Start timeline")]
     [Color("e6e6e6")]
     public class WaitTimeAction : Action, IUpdatable
@@ -21,7 +21,7 @@ namespace Fast.Cinematics
             value = AddValueInput<float>("Time");
         }
 
-        protected override void ActionStart()
+        protected override void ActionStart(FlowCanvas.Flow flow)
         {
             seq = DOTween.Sequence();
 

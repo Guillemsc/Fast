@@ -7,11 +7,11 @@ using UnityEngine;
 
 namespace Fast.Cinematics
 {
-    [Name("FlowPoint")]
-    [Category("Fast/NewCinematics")]
+    [Name("Flow Point")]
+    [Category("Fast/Cinematics")]
     [Description("Start timeline")]
     [Color("fc8c03")]
-    public class FlowPoint : Finishable, IUpdatable
+    public class FlowPoint : Finishable
     {
         [SerializeField] private int output_ports_count = 1;
 
@@ -35,11 +35,6 @@ namespace Fast.Cinematics
             main_flow_out = AddFlowOutput("MainFlow");
 
             RegisterCustomPorts();
-        }
-
-        public void Update()
-        {
-            CheckFinished();
         }
 
         private void DrawPortModifiersGUI()
@@ -76,7 +71,7 @@ namespace Fast.Cinematics
             {
                 finishables_outputs.Add(null);
 
-                finishables_outputs[finishables_outputs.Count - 1] = AddFlowOutput($"Action: {i}");
+                finishables_outputs[finishables_outputs.Count - 1] = AddFlowOutput($"Action flow: {i}");
             }
         }
 

@@ -40,12 +40,6 @@ namespace Fast.Cinematics
             on_finish.Invoke();
         }
 
-        protected virtual void CheckFinished()
-        {
-
-        }
-
-
         protected virtual void FinishableFinished(bool complete = true)
         {
 
