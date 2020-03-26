@@ -42,7 +42,7 @@ namespace Fast.Cinematics
 
             running_graph = Graph.Clone<Graph>(cinematic_asset.NodeCanvasScript);
 
-            running_graph.StartGraph(Fast.FastService.Instance, new Blackboard(), true, null);
+            running_graph.StartGraph(null, new Blackboard(), true, null);
   
             if (running_graph == null)
             {

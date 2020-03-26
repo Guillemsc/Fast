@@ -37,8 +37,8 @@ namespace Fast.UI
 
                 CanvasGroup curr_go_cg = curr_go.GetOrAddComponent<CanvasGroup>();
 
-                Fast.Animations.FadeAnimation fade_in_anim
-                    = new Fast.Animations.FadeAnimation(curr_go, 0.4f, 0, 1, ForceStartingValues);
+                Fast.Tweening.FadeTween fade_in_anim
+                    = new Fast.Tweening.FadeTween(curr_go, 0.4f, 0, 1, ForceStartingValues);
 
                 Sequence seq = fade_in_anim.AnimateForward();
                 seq.SetEase(to_fade_forward_ease);
@@ -54,8 +54,8 @@ namespace Fast.UI
 
                 CanvasGroup curr_go_cg = curr_go.GetOrAddComponent<CanvasGroup>();
 
-                Fast.Animations.ScaleAnimation scale_in_anim
-                    = new Fast.Animations.ScaleAnimation(curr_go, 0.4f, Vector3.zero, Vector3.one, ForceStartingValues);
+                Fast.Tweening.ScaleTween scale_in_anim
+                    = new Fast.Tweening.ScaleTween(curr_go, 0.4f, Vector3.zero, Vector3.one, ForceStartingValues);
 
                 Sequence seq = scale_in_anim.AnimateForward();
                 seq.SetEase(to_scale_forward_ease);
@@ -79,8 +79,8 @@ namespace Fast.UI
 
                 CanvasGroup curr_go_cg = curr_go.GetOrAddComponent<CanvasGroup>();
 
-                Fast.Animations.FadeAnimation fade_in_anim
-                    = new Fast.Animations.FadeAnimation(curr_go, 0.4f, 0, 1, ForceStartingValues);
+                Fast.Tweening.FadeTween fade_in_anim
+                    = new Fast.Tweening.FadeTween(curr_go, 0.4f, 0, 1, ForceStartingValues);
 
                 Sequence seq = fade_in_anim.AnimateBackward();
                 seq.SetEase(to_fade_backwards_ease);
@@ -96,8 +96,8 @@ namespace Fast.UI
 
                 CanvasGroup curr_go_cg = curr_go.GetOrAddComponent<CanvasGroup>();
 
-                Fast.Animations.ScaleAnimation scale_in_anim
-                    = new Fast.Animations.ScaleAnimation(curr_go, 0.3f, Vector3.zero, Vector3.one, ForceStartingValues);
+                Fast.Tweening.ScaleTween scale_in_anim
+                    = new Fast.Tweening.ScaleTween(curr_go, 0.3f, Vector3.zero, Vector3.one, ForceStartingValues);
 
                 Sequence seq = scale_in_anim.AnimateBackward();
                 seq.SetEase(to_scale_backwards_ease);

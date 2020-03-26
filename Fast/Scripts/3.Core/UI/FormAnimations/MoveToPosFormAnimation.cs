@@ -49,10 +49,10 @@ namespace Fast.UI
 
                     curr_go.gameObject.SetActive(true);
 
-                    Fast.Animations.FadeAnimation fade_anim = new Animations.FadeAnimation(curr_go, 0.0f, 1, 1, true);
+                    Fast.Tweening.FadeTween fade_anim = new Fast.Tweening.FadeTween(curr_go, 0.0f, 1, 1, true);
 
-                    Fast.Animations.MoveAnimation move_anim
-                        = new Fast.Animations.MoveAnimation(curr_go, curr_data.start_pos.transform.localPosition,
+                    Fast.Tweening.MoveTween move_anim
+                        = new Fast.Tweening.MoveTween(curr_go, curr_data.start_pos.transform.localPosition,
                         curr_data.end_pos.transform.localPosition, 0.4f, ForceStartingValues);
 
                     sequence.Join(fade_anim.AnimateForward());
@@ -81,10 +81,10 @@ namespace Fast.UI
 
                     curr_go.gameObject.SetActive(true);
 
-                    Fast.Animations.FadeAnimation fade_anim = new Animations.FadeAnimation(curr_go, 0.0f, 1, 1, true);
+                    Fast.Tweening.FadeTween fade_anim = new Tweening.FadeTween(curr_go, 0.0f, 1, 1, true);
 
-                    Fast.Animations.MoveAnimation move_anim
-                        = new Fast.Animations.MoveAnimation(curr_go, curr_data.start_pos.transform.position,
+                    Fast.Tweening.MoveTween move_anim
+                        = new Fast.Tweening.MoveTween(curr_go, curr_data.start_pos.transform.position,
                         curr_data.end_pos.transform.position, 0.4f, ForceStartingValues);
 
                     sequence.Join(fade_anim.AnimateForward());

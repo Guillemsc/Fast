@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Fast
+namespace Fast.Tweening
 {
-    public class Animation 
+    public class Tween
     {
         private bool force_start_values = false;
 
-        public Animation(bool force_start_values = false)
+        public Tween(bool force_start_values = false)
         {
             this.force_start_values = force_start_values;
         }

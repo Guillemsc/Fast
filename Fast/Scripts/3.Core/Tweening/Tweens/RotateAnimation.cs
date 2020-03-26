@@ -2,9 +2,9 @@
 using DG.Tweening;
 using UnityEngine;
 
-namespace Fast.Animations
+namespace Fast.Tweening
 {
-    class RotateAnimation : Animation
+    class RotateTween : Tween
     {
         private GameObject go = null;
         private float time = 0.0f;
@@ -12,7 +12,7 @@ namespace Fast.Animations
         private Vector3 start_rotation = Vector3.zero;
         private Vector3 end_rotation = Vector3.zero;
 
-        public RotateAnimation(GameObject go, Vector3 start_rotation, Vector3 end_rotation, float time = 1.0f,
+        public RotateTween(GameObject go, Vector3 start_rotation, Vector3 end_rotation, float time = 1.0f,
             bool force_start_value = false) : base(force_start_value)
         {
             this.go = go;

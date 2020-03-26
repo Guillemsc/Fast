@@ -2,23 +2,23 @@
 using DG.Tweening;
 using UnityEngine;
 
-namespace Fast.Animations
+namespace Fast.Tweening
 {
-    class ScaleAnimation : Animation
+    class FadeTween : Tween
     {
         private GameObject go = null;
         private float time = 0.0f;
 
-        private Vector3 start_scale = Vector3.zero;
-        private Vector3 end_scale = Vector3.zero;
+        private float start_alpha = 0.0f;
+        private float end_alpha = 0.0f;
 
-        public ScaleAnimation(GameObject go, float time, Vector3 start_scale, Vector3 end_scale,
+        public FadeTween(GameObject go, float time, float start_alpha, float end_alpha, 
             bool force_start_value = false) : base(force_start_value)
         {
             this.go = go;
             this.time = time;
-            this.start_scale = start_scale;
-            this.end_scale = end_scale;
+            this.start_alpha = start_alpha;
+            this.end_alpha = end_alpha;
         }
 
         public override Sequence AnimateForward()
@@ -29,10 +29,10 @@ namespace Fast.Animations
 
             if (ForceStartValues)
             {
-                ret.Append(go.transform.DOScale(start_scale, 0.0f));
+                ret.Append(cg.DOFade(start_alpha, 0.0f));
             }
 
-            ret.Append(go.transform.DOScale(end_scale, time).SetEase(Ease.InOutQuad));
+            ret.Append(cg.DOFade(end_alpha, time).SetEase(Ease.InOutQuad));
 
             return ret;
         }
@@ -45,10 +45,10 @@ namespace Fast.Animations
 
             if (ForceStartValues)
             {
-                ret.Append(go.transform.DOScale(end_scale, 0.0f));
+                ret.Append(cg.DOFade(end_alpha, 0.0f));
             }
 
-            ret.Append(go.transform.DOScale(start_scale, time).SetEase(Ease.InOutQuad));
+            ret.Append(cg.DOFade(start_alpha, time).SetEase(Ease.InOutQuad));
 
             return ret;
         }

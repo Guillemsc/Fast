@@ -2,9 +2,9 @@
 using DG.Tweening;
 using UnityEngine;
 
-namespace Fast.Animations
+namespace Fast.Tweening
 {
-    class MoveAnimation : Animation
+    class MoveTween : Tween
     {
         private GameObject go = null;
         private float time = 0.0f;
@@ -14,7 +14,7 @@ namespace Fast.Animations
 
         private Ease ease = Ease.Linear;
 
-        public MoveAnimation(GameObject go, Vector3 start_pos, Vector3 end_pos, float time = 1.0f,
+        public MoveTween(GameObject go, Vector3 start_pos, Vector3 end_pos, float time = 1.0f,
             bool force_start_value = false) : base(force_start_value)
         {
             this.go = go;
