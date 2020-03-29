@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace Fast.Scenes
 {
-    [CreateAssetMenu(fileName = "FastScenes", menuName = "Fast/Scene/Scenes", order = 1)]
-    public class ScenesAsset : ScriptableObject
+    [CreateAssetMenu(fileName = "ScenesConfig", menuName = "Fast/ScenesConfig", order = 1)]
+    public class ScenesConfigAsset : ScriptableObject
     {
         [SerializeField] private List<Scene> scenes = new List<Scene>();
 

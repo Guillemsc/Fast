@@ -6,11 +6,27 @@ using UnityEngine;
 
 namespace Fast
 {
+    [Sirenix.OdinInspector.HideMonoScript]
     public class FastService : Fast.MonoSingleton<FastService>
     {
-        private bool initialized = false;
+        [Sirenix.OdinInspector.Required]
+        [Sirenix.OdinInspector.LabelText("Game configuration")]
+        [SerializeField] private Fast.Game.GameConfigAsset game_config = null;
 
-        private ApplicationMode mode = ApplicationMode.DEBUG;
+        [Sirenix.OdinInspector.Required]
+        [Sirenix.OdinInspector.LabelText("Scenes configuration")]
+        [SerializeField] private Fast.Scenes.ScenesConfigAsset scenes_config = null;
+
+        [Sirenix.OdinInspector.Required]
+        [Sirenix.OdinInspector.LabelText("Services prefab")]
+        [SerializeField] private GameObject services_prefab = null;
+
+        [Sirenix.OdinInspector.LabelText("Application mode")]
+        [SerializeField] private Fast.ApplicationMode mode = Fast.ApplicationMode.DEBUG;
+
+        private bool first_update = true;
+
+        private bool initialized = false;
 
         private Fast.Modules.LogModule log_module = null;
         private Fast.Modules.ApplicationModule application_module = null;
@@ -20,6 +36,8 @@ namespace Fast
         private Fast.Modules.EventModule event_module = null;
         private Fast.Modules.FirebaseModule firebase_module = null;
         private Fast.Modules.AmazonModule amazon_module = null;
+        private Fast.Modules.GameModule game_module = null;
+        private Fast.Modules.ScenesModule scenes_module = null;
 
         private Fast.Modules.TimeModule time_module = null;
         private Fast.Modules.FlowModule flow_module = null;
@@ -40,12 +58,10 @@ namespace Fast
             get { return Instance.initialized; }
         }
 
-        public void Init(ApplicationMode mode)
+        public void Init()
         {
             if (!initialized)
             {
-                this.mode = mode;
-
                 log_module = (Modules.LogModule)AddModule(new Modules.LogModule());
                 application_module = (Modules.ApplicationModule)AddModule(new Modules.ApplicationModule());
                 platform_module = (Modules.PlatformModule)AddModule(new Modules.PlatformModule());
@@ -54,6 +70,8 @@ namespace Fast
                 event_module = (Modules.EventModule)AddModule(new Modules.EventModule());
                 firebase_module = (Modules.FirebaseModule)AddModule(new Modules.FirebaseModule());
                 amazon_module = (Modules.AmazonModule)AddModule(new Modules.AmazonModule());
+                game_module = (Modules.GameModule)AddModule(new Modules.GameModule());
+                scenes_module = (Modules.ScenesModule)AddModule(new Modules.ScenesModule());
 
                 time_module = (Modules.TimeModule)AddUpdatableModule(new Modules.TimeModule());
                 flow_module = (Modules.FlowModule)AddUpdatableModule(new Modules.FlowModule());
@@ -61,16 +79,64 @@ namespace Fast
                 time_sliced_module = (Modules.TimeSlicedModule)AddUpdatableModule(new Modules.TimeSlicedModule());
                 particles_module = (Modules.ParticlesModule)AddUpdatableModule(new Modules.ParticlesModule());
 
+                StartModules();
+
+                InitGameConfig();
+                InitScenesConfig();
+                SpawnServicesPrefab();
+
                 initialized = true;
 
                 MLog.LogInfo(this, "Init success");
-
-                StartModules();
             }
+        }
+
+        private void InitGameConfig()
+        {
+            if (game_config == null)
+            {
+                MLog.LogError(this, "Game config is null, quitting application");
+                MApplication.Quit();
+                return;
+            }
+
+            MGame.SetGameConfig(game_config);
+        }
+
+        private void InitScenesConfig()
+        {
+            if (scenes_config == null)
+            {
+                MLog.LogError(this, "Scenes config is null, quitting application");
+                MApplication.Quit();
+                return;
+            }
+
+            MScenes.SetScenesConfig(scenes_config);
+        }
+
+        private void SpawnServicesPrefab()
+        {
+            if (services_prefab == null)
+            {
+                MLog.LogError(this, "Services prefab is null, quitting application");
+                MApplication.Quit();
+                return;
+            }
+
+            GameObject services_instance = Instantiate(services_prefab);
+            services_instance.name = "Services";
         }
 
         private void Update()
         {
+            if(first_update)
+            {
+                first_update = false;
+
+                Init();
+            }
+
             UpdateModules();
         }
 
@@ -178,6 +244,16 @@ namespace Fast
         public static Fast.Modules.AmazonModule MAmazon
         {
             get { return Instance.amazon_module; }
+        }
+
+        public static Fast.Modules.GameModule MGame
+        {
+            get { return Instance.game_module; }
+        }
+
+        public static Fast.Modules.ScenesModule MScenes
+        {
+            get { return Instance.scenes_module; }
         }
 
         public static Fast.Modules.TimeModule MTime

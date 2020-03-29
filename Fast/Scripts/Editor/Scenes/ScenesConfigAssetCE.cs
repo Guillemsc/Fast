@@ -9,41 +9,50 @@ using UnityEngine;
 
 namespace Fast.Editor.Scenes
 {
-    [CustomEditor(typeof(Fast.Scenes.ScenesAsset))]
+    [CustomEditor(typeof(Fast.Scenes.ScenesConfigAsset))]
     [Sirenix.OdinInspector.HideMonoScript]
     class ScenesAssetCE : EditorHelper
     {
-        private int to_add_selected = 0;
-
         private List<Fast.Scenes.Scene> to_remove = new List<Fast.Scenes.Scene>();
 
         protected override void OnDrawInspectorGUI()
         {
-            Fast.Scenes.ScenesAsset asset = (Fast.Scenes.ScenesAsset)target;
+            Fast.Scenes.ScenesConfigAsset asset = (Fast.Scenes.ScenesConfigAsset)target;
 
-            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Project scenes:", Style.BoldTextStyle);
+            
+            string[] scenes = GetAllAvaliableScenesToAdd(asset);
+
+            for (int i = 0; i < scenes.Length; ++i)
             {
-                string[] options = GetAllAvaliableScenesToAdd(asset);
+                string curr_scene = scenes[i];
 
-                if (GUILayout.Button("Add"))
+                EditorGUILayout.BeginHorizontal();
                 {
-                    if (to_add_selected < options.Length && to_add_selected >= 0)
-                    {
-                        Fast.Scenes.Scene scene = new Fast.Scenes.Scene(options[to_add_selected]);
+                    EditorGUILayout.LabelField($"{curr_scene}");
 
+                    if (GUILayout.Button("Find", GUILayout.MaxWidth(40)))
+                    {
+                        string assets_path = Utils.GetSceneAssetPath(curr_scene);
+                        UnityEngine.Object obj = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(assets_path);
+
+                        Selection.activeObject = obj;
+                        EditorGUIUtility.PingObject(obj);
+                    }
+
+                    if (GUILayout.Button("Add", GUILayout.MaxWidth(40)))
+                    {
+                        Fast.Scenes.Scene scene = new Fast.Scenes.Scene(curr_scene);
                         asset.AddScene(scene);
                     }
                 }
-
-                to_add_selected = EditorGUILayout.Popup(to_add_selected, options);
+                EditorGUILayout.EndHorizontal();
             }
-            EditorGUILayout.EndHorizontal();
+            
 
             EditorGUILayout.Separator();
 
             EditorElements.HorizontalLine(Style);
-
-            EditorGUILayout.Separator();
 
             EditorGUILayout.LabelField("Selected scenes:", Style.BoldTextStyle);
 
@@ -83,18 +92,20 @@ namespace Fast.Editor.Scenes
 
             EditorElements.HorizontalLine(Style);
 
+            EditorGUILayout.LabelField("Utils:", Style.BoldTextStyle);
+
             if (GUILayout.Button("Remove deleted"))
             {
                 CheckAddedScenes(asset);
             }
 
-            if (GUILayout.Button("Add all to build"))
+            if (GUILayout.Button("Add selected to build"))
             {
                 Utils.AddScenesToBuild(asset.Scenes);
             }
         }
 
-        private string[] GetAllAvaliableScenesToAdd(Fast.Scenes.ScenesAsset asset)
+        private string[] GetAllAvaliableScenesToAdd(Fast.Scenes.ScenesConfigAsset asset)
         {
             List<string> ret = new List<string>();
 
@@ -128,7 +139,7 @@ namespace Fast.Editor.Scenes
             return ret.ToArray();
         }
 
-        private void CheckAddedScenes(Fast.Scenes.ScenesAsset asset)
+        private void CheckAddedScenes(Fast.Scenes.ScenesConfigAsset asset)
         {
             for(int i = 0; i < asset.Scenes.Count; ++i)
             {
