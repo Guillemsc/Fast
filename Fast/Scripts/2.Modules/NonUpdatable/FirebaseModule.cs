@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 // To use this (in Unity 2019.1.14f), go to File -> BuildSettings -> PlayerSettings -> Player -> Scripting Define Simbols 

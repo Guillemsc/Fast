@@ -1,21 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
-
-namespace Fast
-{
-    public enum Platform
-    {
-        IOS,
-        ANDROID,
-        WINDOWS,
-        MACOS,
-        LINUX,
-        WEBGL,
-    }
-}
 
 namespace Fast.Modules
 {

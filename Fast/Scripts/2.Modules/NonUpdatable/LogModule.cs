@@ -2,23 +2,13 @@
 using System.Diagnostics;
 using UnityEngine;
 
-namespace Fast
-{
-    public enum LogType
-    {
-        INFO,
-        WARNING,
-        ERROR,
-    }
-}
-
 namespace Fast.Modules
 {
     public class LogModule : Module
     {
         private bool terminated = false;
 
-        public override void Start()
+        public override void Awake()
         {
             Application.logMessageReceived += LogMessageReceived;
         }
@@ -84,30 +74,27 @@ namespace Fast.Modules
 
         public void Log(LogType type, object context, string error)
         {
-            if (FastService.Instance.ApplicationMode == ApplicationMode.DEBUG)
+            string full_log = GetLog(type, context, error);
+
+            switch (type)
             {
-                string full_log = GetLog(type, context, error);
+                case LogType.ERROR:
+                    {
+                        UnityEngine.Debug.LogError(full_log);
+                        break;
+                    }
 
-                switch (type)
-                {
-                    case LogType.ERROR:
-                        {
-                            UnityEngine.Debug.LogError(full_log);
-                            break;
-                        }
+                case LogType.WARNING:
+                    {
+                        UnityEngine.Debug.LogWarning(full_log);
+                        break;
+                    }
 
-                    case LogType.WARNING:
-                        {
-                            UnityEngine.Debug.LogWarning(full_log);
-                            break;
-                        }
-
-                    case LogType.INFO:
-                        {
-                            UnityEngine.Debug.Log(full_log);
-                            break;
-                        }
-                }
+                case LogType.INFO:
+                    {
+                        UnityEngine.Debug.Log(full_log);
+                        break;
+                    }
             }
         }
 

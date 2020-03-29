@@ -1,23 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fast.Modules
 {
     public class TimeModule : UpdatableModule
     {
-        private readonly Fast.Time.TimeController time_controller = null;
+        private readonly Fast.Time.TimeController time_controller = new Time.TimeController(); 
 
-        private readonly Fast.Time.TimeContext general_time_context = null;
+        private Fast.Time.TimeContext general_time_context = null;
 
-        public TimeModule()
+        public override void Awake()
         {
-            time_controller = new Time.TimeController(); 
-
             general_time_context = CreateTimeContext();
         }
+
+        public Fast.Time.TimeContext GeneralTimeContext => general_time_context;
 
         public override void Update()
         {
@@ -28,7 +24,5 @@ namespace Fast.Modules
         {
             return time_controller.CreateTimeContext();
         }
-
-        public Fast.Time.TimeContext GeneralTimeContext => general_time_context;
     }
 }

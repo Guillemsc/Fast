@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
-using System.Threading.Tasks;
-using System.IO;
 
 #if USING_AMAZON
 

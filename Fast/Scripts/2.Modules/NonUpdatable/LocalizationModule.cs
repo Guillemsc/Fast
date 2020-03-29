@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fast.Modules
 {
     public class LocalizationModule : Module
     {
-        private Localization.LanguageData curr_language_data = null;
-        private Dictionary<string, Localization.LanguageData> languages_data 
+        private readonly Dictionary<string, Localization.LanguageData> languages_data 
             = new Dictionary<string, Localization.LanguageData>();
 
-        private List<Localization.LocalizationText> texts = new List<Localization.LocalizationText>();
+        private readonly List<Localization.LocalizationText> text_instances = new List<Localization.LocalizationText>();
 
         private string string_variable = "{$}";
+
+        private Localization.LanguageData curr_language_data = null;
 
         public string StringVariable
         {
@@ -33,7 +31,7 @@ namespace Fast.Modules
 
             if (language_found)
             {
-                UpdateTexts();
+                UpdateTextInstances();
             }
 
             return language_found;
@@ -125,14 +123,14 @@ namespace Fast.Modules
 
         public void AddLocalizationText(Localization.LocalizationText text)
         {
-            texts.Add(text);
+            text_instances.Add(text);
         }
 
-        private void UpdateTexts()
+        private void UpdateTextInstances()
         {
-            for (int i = 0; i < texts.Count; ++i)
+            for (int i = 0; i < text_instances.Count; ++i)
             {
-                texts[i].UpdateText();
+                text_instances[i].UpdateText();
             }
         }
     }

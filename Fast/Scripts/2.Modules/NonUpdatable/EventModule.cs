@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
 
 namespace Fast.Modules
 {
     public class EventModule : Module
     {
-        private Fast.EventsController controller = new EventsController();
+        private readonly Fast.EventsController controller = new EventsController();
 
         public void Subscribe<T>(Action<IEvent> callback) where T : IEvent
         {
