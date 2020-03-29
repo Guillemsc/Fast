@@ -3,11 +3,11 @@
 using System;
 using UnityEngine;
 
-namespace Fast.Editor.Windows
+namespace Fast.Editor
 {
-    public class WindowElements
+    public class EditorElements
     {
-        public static void HorizontalLine(WindowStyle style)
+        public static void HorizontalLine(EditorStyle style)
         {
             UnityEngine.Color c = GUI.color;
             GUI.color = style.HorizontalLineBase.UnityColor;
@@ -15,7 +15,7 @@ namespace Fast.Editor.Windows
             GUI.color = c;
         }
 
-        public static void BigDropdownHeader(string content, ref bool show_dropdown, WindowStyle style)
+        public static void BigDropdownHeader(string content, ref bool show_dropdown, EditorStyle style)
         {
             string label = "";
 
@@ -46,7 +46,7 @@ namespace Fast.Editor.Windows
             GUI.backgroundColor = last_background_color;
         }
 
-        public static void DropdownHeader(string content, ref bool show_dropdown, WindowStyle style)
+        public static void DropdownHeader(string content, ref bool show_dropdown, EditorStyle style)
         {
             string label = "";
 

@@ -8,7 +8,7 @@ namespace Fast.Data
 {
     public class GridData
     {
-        private List<List<object>> data_list = new List<List<object>>();
+        private readonly List<List<object>> data_list = new List<List<object>>();
 
         public GridData()
         {

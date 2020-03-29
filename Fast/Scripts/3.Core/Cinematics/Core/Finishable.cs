@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Fast.Cinematics
 {
-    public class Finishable : FlowControlNode
+    public class Finishable : CinematicsNode
     {
         private bool finished = false;
 

@@ -6,9 +6,9 @@ namespace Fast
 {
     public enum LogType
     {
-        ERROR,
-        WARNING,
         INFO,
+        WARNING,
+        ERROR,
     }
 }
 

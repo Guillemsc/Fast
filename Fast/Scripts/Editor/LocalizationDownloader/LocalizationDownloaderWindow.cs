@@ -25,11 +25,11 @@ namespace Fast.Editor.LocalizationDownloader
             GetWindow<LocalizationDownloaderWindow>("Fast Loc Downloader");
         }
 
-        protected override void OnDrawGui()
+        protected override void OnDrawGUI()
         {
             DrawHeader();
 
-            Windows.WindowElements.BigDropdownHeader("Settings", ref Data.ShowSettings, Style);
+            EditorElements.BigDropdownHeader("Settings", ref Data.ShowSettings, Style);
 
             if (Data.ShowSettings)
             {
@@ -90,7 +90,7 @@ namespace Fast.Editor.LocalizationDownloader
 
         private void DrawSperadsheetList()
         {
-            Windows.WindowElements.HorizontalLine(Style);
+            EditorElements.HorizontalLine(Style);
 
             if (GUILayout.Button("Add spreadsheet"))
             {
@@ -155,7 +155,7 @@ namespace Fast.Editor.LocalizationDownloader
 
         private void DrawDownloadButton()
         {
-            Windows.WindowElements.HorizontalLine(Style);
+            EditorElements.HorizontalLine(Style);
 
             EditorGUILayout.Separator();
 

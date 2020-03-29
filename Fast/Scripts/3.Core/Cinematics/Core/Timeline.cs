@@ -17,6 +17,8 @@ namespace Fast.Cinematics
         private FlowCanvas.Flow flow = default;
         private FlowPoint curr_flow_point = null;
 
+        private Bindings.BindingData binding_data = null;
+
         private Fast.Callback on_finish = new Callback();
 
         public Fast.Callback OnFinish => on_finish;
@@ -28,8 +30,10 @@ namespace Fast.Cinematics
             TimelineRegisterPorts();
         }
 
-        public void StartFlow()
+        public void StartFlow(Bindings.BindingData binding_data)
         {
+            this.binding_data = binding_data;
+
             curr_flow_point = null;
 
             StartNextFlowPoint();
@@ -77,7 +81,7 @@ namespace Fast.Cinematics
 
                 flow = new FlowCanvas.Flow();
 
-                main_flow_out.Call(flow);
+                CinematicsNode.CinematicsCall(curr_flow_point, main_flow_out, binding_data, flow);
             }
             else
             {

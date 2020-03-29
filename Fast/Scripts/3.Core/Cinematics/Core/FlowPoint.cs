@@ -101,7 +101,7 @@ namespace Fast.Cinematics
                 finishable.OnFinish.UnSubscribeAll();
                 finishable.OnFinish.Subscribe(OnFinishablesOutputsFinished);
 
-                curr_flow_output.Call(flow);
+                CinematicsCall(finishable, curr_flow_output, flow);
             }
         }
 
@@ -136,7 +136,14 @@ namespace Fast.Cinematics
 
         public void StartNextFlowPoint(FlowCanvas.Flow flow)
         {
-            main_flow_out.Call(flow);
+            Finishable finishable = Utils.GetFinishableFromFlowOutput(main_flow_out);
+
+            if (finishable == null)
+            {
+                return;
+            }
+
+            CinematicsCall(finishable, main_flow_out, flow);
         }
 
         public void ForceStopFlowPoint()

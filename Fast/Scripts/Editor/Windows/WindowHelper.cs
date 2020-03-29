@@ -11,11 +11,11 @@ namespace Fast.Editor.Windows
     {
         private bool fist_time = true;
 
-        private WindowStyle style = null;
+        private EditorStyle style = null;
 
         private T helper_data = default(T);
 
-        public WindowStyle Style => style;
+        public EditorStyle Style => style;
 
         protected void SetWindowData(Vector2 min_size)
         {
@@ -52,12 +52,12 @@ namespace Fast.Editor.Windows
         {
             StartDrawGUI();
 
-            OnDrawGui();
+            OnDrawGUI();
 
             FinishDrawGUI();
         }
 
-        protected virtual void OnDrawGui()
+        protected virtual void OnDrawGUI()
         {
 
         }
@@ -68,7 +68,7 @@ namespace Fast.Editor.Windows
             {
                 fist_time = false;
 
-                style = new WindowStyle();
+                style = new EditorStyle();
             }
 
             Vector2 scroll_pos = EditorGUILayout.BeginScrollView(helper_data.ScrollPos.ToVector2());

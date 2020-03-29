@@ -11,9 +11,9 @@ namespace Fast.Cinematics
     {
         private CinematicAsset cinematic_asset = null;
 
-        private Graph running_graph = null;
+        private CinematicAsset running_graph = null;
 
-        List<Timeline> timelines = new List<Timeline>();
+        private List<Timeline> timelines = new List<Timeline>();
         private int timelines_finished = 0;
 
         private Fast.Callback on_finish = new Callback();
@@ -25,27 +25,40 @@ namespace Fast.Cinematics
             this.cinematic_asset = cinematic_asset;
         }
 
-        public void Play()
+        public void Play(Fast.Bindings.BindingData binding_data)
         {
             if(cinematic_asset == null)
             {
+                Fast.FastService.MLog.LogError(this, "CinematicAsset is null");
                 return;
             }
 
-            if(cinematic_asset.NodeCanvasScript == null)
+            if(binding_data == null)
             {
+                Fast.FastService.MLog.LogError(this, "Binding data is null");
+                return;
+            }
+
+            bool binding_data_is_valid = cinematic_asset.BindingLink.BindingDataIsValid(binding_data);
+
+            if(!binding_data_is_valid)
+            {
+                Fast.FastService.MLog.LogError(this, "Binding data passed missmatch between cinematic binding");
                 return;
             }
 
             timelines.Clear();
             timelines_finished = 0;
 
-            running_graph = Graph.Clone<Graph>(cinematic_asset.NodeCanvasScript);
+            running_graph = Graph.Clone<CinematicAsset>(cinematic_asset);
+
+            running_graph.SetBindingData(binding_data);
 
             running_graph.StartGraph(null, new Blackboard(), true, null);
   
             if (running_graph == null)
             {
+                Fast.FastService.MLog.LogError(this, "Running graph is null");
                 return;
             }
 
@@ -72,7 +85,7 @@ namespace Fast.Cinematics
                 curr_timeline.OnFinish.UnSubscribeAll();
                 curr_timeline.OnFinish.Subscribe(OnTimelineFinishes);
 
-                curr_timeline.StartFlow();
+                curr_timeline.StartFlow(binding_data);
             }
         }
 
