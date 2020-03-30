@@ -12,28 +12,29 @@ namespace Fast.Editor.Cinematics
     [Sirenix.OdinInspector.HideMonoScript]
     class CinematicAssetCE : UnityEditor.Editor
     {
+        private Fast.Cinematics.CinematicAsset target_script = null;
+
         private readonly List<string> to_remove = new List<string>();
+
+
+        private void OnEnable()
+        {
+            target_script = (Fast.Cinematics.CinematicAsset)target;
+        }
 
         public override void OnInspectorGUI()
         {
-            Fast.Cinematics.CinematicAsset asset = (Fast.Cinematics.CinematicAsset)target;
-
-            if(asset == null)
-            {
-                return;
-            }
-
             if (GUILayout.Button("OPEN CINEMATIC GRAPH"))
             {
-                NodeCanvas.Editor.GraphEditor.OpenWindow(asset);
+                NodeCanvas.Editor.GraphEditor.OpenWindow(target_script);
             }
 
             EditorGUILayout.Separator();
 
-            DrawBindingLinksGUI(asset);
+            DrawBindingLinksGUI();
         }
 
-        private void DrawBindingLinksGUI(Fast.Cinematics.CinematicAsset asset)
+        private void DrawBindingLinksGUI()
         {
             GUILayout.BeginHorizontal();
             {                
@@ -48,7 +49,9 @@ namespace Fast.Editor.Cinematics
                             return;
                         }
 
-                        asset.BindingLink.AddBindingLink($"binding_{type}", type.ToString());
+                        target_script.BindingLink.AddBindingLink($"binding_{type}", type.ToString());
+
+                        EditorUtility.SetDirty(target_script);
                     },
                     menu, "New", true);
 
@@ -59,15 +62,22 @@ namespace Fast.Editor.Cinematics
 
             to_remove.Clear();
 
-            for (int i = 0; i < asset.BindingLink.Links.Count; ++i)
+            for (int i = 0; i < target_script.BindingLink.Links.Count; ++i)
             {
-                Fast.Bindings.BindingLinkData curr_link = asset.BindingLink.Links[i];
+                Fast.Bindings.BindingLinkData curr_link = target_script.BindingLink.Links[i];
 
                 GUILayout.BeginHorizontal();
                 {
                     EditorGUILayout.LabelField("Key", GUILayout.MaxWidth(30));
 
-                    curr_link.Key = EditorGUILayout.TextField(curr_link.Key, GUILayout.MaxWidth(250));
+                    EditorGUI.BeginChangeCheck();
+                    {
+                        curr_link.Key = EditorGUILayout.TextField(curr_link.Key, GUILayout.MaxWidth(250));
+                    }
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        EditorUtility.SetDirty(target_script);
+                    }
 
                     EditorGUILayout.LabelField($"Type: {curr_link.Type}", GUILayout.MaxWidth(150));
 
@@ -81,7 +91,12 @@ namespace Fast.Editor.Cinematics
 
             for(int i = 0; i< to_remove.Count; ++i)
             {
-                asset.BindingLink.RemoveBindingLink(to_remove[i]);
+                target_script.BindingLink.RemoveBindingLink(to_remove[i]);
+            }
+
+            if(to_remove.Count > 0)
+            {
+                EditorUtility.SetDirty(target_script);
             }
         }
     }

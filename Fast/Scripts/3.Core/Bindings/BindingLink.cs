@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Fast.Bindings
 {
     [System.Serializable]
     public class BindingLink
     {
-        private List<BindingLinkData> links = new List<BindingLinkData>();
+        [SerializeField] private List<BindingLinkData> links = new List<BindingLinkData>();
 
         public IReadOnlyList<BindingLinkData> Links => links;
 

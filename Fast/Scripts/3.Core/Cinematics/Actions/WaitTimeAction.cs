@@ -10,11 +10,11 @@ namespace Fast.Cinematics
     [Category("Fast/Cinematics")]
     [Description("Start timeline")]
     [Color("e6e6e6")]
-    public class WaitTimeAction : Action, IUpdatable
+    public class WaitTimeAction : UpdatableAction
     {
         private ValueInput<float> value = null;
 
-        private Sequence seq = null;
+        private Fast.Time.Timer timer = null;
 
         protected override void ActionRegisterPorts()
         {
@@ -23,18 +23,9 @@ namespace Fast.Cinematics
 
         protected override void ActionStart(FlowCanvas.Flow flow)
         {
-            seq = DOTween.Sequence();
+            timer = CinematicAsset.TimeContext.GetTimer();
 
-            seq.AppendInterval(value.value);
-
-            seq.Play();
-
-            seq.onComplete += (delegate ()
-            {
-                UnityEngine.Debug.Log($"Finished: {value.value}");
-
-                Finish();
-            });
+            timer.Start();
         }
 
         protected override void ActionFinished(bool complete)
@@ -43,13 +34,26 @@ namespace Fast.Cinematics
             {
                 return;
             }
-
-            seq.Kill();
         }
 
-        public void Update()
+        protected override void ActionUpdate()
         {
+            CheckTime();
+        }
 
+        private void CheckTime()
+        {
+            if(timer == null)
+            {
+                return;
+            }
+
+            if(timer.ReadTime().TotalSeconds >= value.value)
+            {
+                UnityEngine.Debug.Log($"{timer.ReadTime().TotalSeconds}");
+
+                Finish();
+            }
         }
     }
 }

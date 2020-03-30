@@ -13,15 +13,37 @@ namespace Fast.Editor.Scenes
     [Sirenix.OdinInspector.HideMonoScript]
     class ScenesAssetCE : EditorHelper
     {
+        private Fast.Scenes.ScenesConfigAsset target_script = null;
+
         private List<Fast.Scenes.Scene> to_remove = new List<Fast.Scenes.Scene>();
+
+        private void OnEnable()
+        {
+            target_script = (Fast.Scenes.ScenesConfigAsset)target;
+        }
 
         protected override void OnDrawInspectorGUI()
         {
-            Fast.Scenes.ScenesConfigAsset asset = (Fast.Scenes.ScenesConfigAsset)target;
+            DrawProjectScenesGUI();
 
+            EditorGUILayout.Separator();
+
+            EditorElements.HorizontalLine(Style);
+
+            DrawSelectedScenesGUI();
+
+            EditorGUILayout.Separator();
+
+            EditorElements.HorizontalLine(Style);
+
+            DrawUtilsGUI();
+        }
+
+        private void DrawProjectScenesGUI()
+        {
             EditorGUILayout.LabelField("Project scenes:", Style.BoldTextStyle);
-            
-            string[] scenes = GetAllAvaliableScenesToAdd(asset);
+
+            string[] scenes = GetAllAvaliableScenesToAdd();
 
             for (int i = 0; i < scenes.Length; ++i)
             {
@@ -43,22 +65,22 @@ namespace Fast.Editor.Scenes
                     if (GUILayout.Button("Add", GUILayout.MaxWidth(40)))
                     {
                         Fast.Scenes.Scene scene = new Fast.Scenes.Scene(curr_scene);
-                        asset.AddScene(scene);
+                        target_script.AddScene(scene);
+
+                        EditorUtility.SetDirty(target_script);
                     }
                 }
                 EditorGUILayout.EndHorizontal();
             }
-            
+        }
 
-            EditorGUILayout.Separator();
-
-            EditorElements.HorizontalLine(Style);
-
+        private void DrawSelectedScenesGUI()
+        {
             EditorGUILayout.LabelField("Selected scenes:", Style.BoldTextStyle);
 
-            for (int i = 0; i < asset.Scenes.Count; ++i)
+            for (int i = 0; i < target_script.Scenes.Count; ++i)
             {
-                Fast.Scenes.Scene curr_scene = asset.Scenes[i];
+                Fast.Scenes.Scene curr_scene = target_script.Scenes[i];
 
                 EditorGUILayout.BeginHorizontal();
                 {
@@ -83,29 +105,35 @@ namespace Fast.Editor.Scenes
 
             for (int i = 0; i < to_remove.Count; ++i)
             {
-                asset.RemoveScene(to_remove[i].Name);
+                target_script.RemoveScene(to_remove[i].Name);
+            }
+
+            if(to_remove.Count > 0)
+            {
+                EditorUtility.SetDirty(target_script);
             }
 
             to_remove.Clear();
+        }
 
-            EditorGUILayout.Separator();
-
-            EditorElements.HorizontalLine(Style);
-
+        private void DrawUtilsGUI()
+        {
             EditorGUILayout.LabelField("Utils:", Style.BoldTextStyle);
 
             if (GUILayout.Button("Remove deleted"))
             {
-                CheckAddedScenes(asset);
+                CheckAddedScenes();
+
+                EditorUtility.SetDirty(target_script);
             }
 
             if (GUILayout.Button("Add selected to build"))
             {
-                Utils.AddScenesToBuild(asset.Scenes);
+                Utils.AddScenesToBuild(target_script.Scenes);
             }
         }
 
-        private string[] GetAllAvaliableScenesToAdd(Fast.Scenes.ScenesConfigAsset asset)
+        private string[] GetAllAvaliableScenesToAdd()
         {
             List<string> ret = new List<string>();
 
@@ -128,7 +156,7 @@ namespace Fast.Editor.Scenes
             {
                 Fast.Scenes.Scene curr_scene = all_scenes[i];
 
-                bool exists = asset.SceneAdded(curr_scene.Name);
+                bool exists = target_script.SceneAdded(curr_scene.Name);
 
                 if(!exists)
                 {
@@ -139,11 +167,11 @@ namespace Fast.Editor.Scenes
             return ret.ToArray();
         }
 
-        private void CheckAddedScenes(Fast.Scenes.ScenesConfigAsset asset)
+        private void CheckAddedScenes()
         {
-            for(int i = 0; i < asset.Scenes.Count; ++i)
+            for(int i = 0; i < target_script.Scenes.Count; ++i)
             {
-                Fast.Scenes.Scene curr_scene = asset.Scenes[i];
+                Fast.Scenes.Scene curr_scene = target_script.Scenes[i];
 
                 bool exists = Utils.SceneExists(curr_scene.Name);
 
@@ -155,7 +183,7 @@ namespace Fast.Editor.Scenes
 
             for (int i = 0; i < to_remove.Count; ++i)
             {
-                asset.RemoveScene(to_remove[i].Name);
+                target_script.RemoveScene(to_remove[i].Name);
             }
 
             to_remove.Clear();

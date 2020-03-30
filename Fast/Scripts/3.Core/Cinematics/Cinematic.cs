@@ -9,7 +9,7 @@ namespace Fast.Cinematics
 {
     public class Cinematic 
     {
-        private CinematicAsset cinematic_asset = null;
+        private readonly CinematicAsset cinematic_asset = null;
 
         private CinematicAsset running_graph = null;
 
@@ -25,11 +25,17 @@ namespace Fast.Cinematics
             this.cinematic_asset = cinematic_asset;
         }
 
-        public void Play(Fast.Bindings.BindingData binding_data)
+        public void Play(Time.TimeContext time_context, Fast.Bindings.BindingData binding_data)
         {
             if(cinematic_asset == null)
             {
                 Fast.FastService.MLog.LogError(this, "CinematicAsset is null");
+                return;
+            }
+
+            if(time_context == null)
+            {
+                Fast.FastService.MLog.LogError(this, "Time context is null");
                 return;
             }
 
@@ -52,7 +58,7 @@ namespace Fast.Cinematics
 
             running_graph = Graph.Clone<CinematicAsset>(cinematic_asset);
 
-            running_graph.SetBindingData(binding_data);
+            running_graph.Init(time_context, binding_data);
 
             running_graph.StartGraph(null, new Blackboard(), true, null);
   

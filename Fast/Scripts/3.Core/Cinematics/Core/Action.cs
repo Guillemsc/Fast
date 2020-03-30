@@ -10,6 +10,8 @@ namespace Fast.Cinematics
     {
         private FlowInput main_flow_in = null;
 
+        protected CinematicAsset CinematicAsset => (CinematicAsset)base.flowGraph;
+
         protected override void RegisterPorts()
         {
             main_flow_in = AddFlowInput("Action flow", OnFlowInput);

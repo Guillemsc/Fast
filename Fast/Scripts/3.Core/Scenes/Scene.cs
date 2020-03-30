@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Fast.Scenes
 {
+    [System.Serializable]
     public class Scene
     {
-        private readonly string name = "";
+        [SerializeField] private string name = "";
 
         public Scene(string name)
         {

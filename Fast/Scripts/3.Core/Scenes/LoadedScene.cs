@@ -9,15 +9,15 @@ namespace Fast.Scenes
     public class LoadedScene
     {
         private readonly Scene scene = null;
-        private readonly SceneRoot scene_root = null;
+        private readonly UnityEngine.SceneManagement.Scene unity_scene = default;
 
-        public LoadedScene(Scene scene, SceneRoot scene_root)
+        public LoadedScene(Scene scene, UnityEngine.SceneManagement.Scene unity_scene)
         {
             this.scene = scene;
-            this.scene_root = scene_root;
+            this.unity_scene = unity_scene;
         }
 
         public Scene Scene => scene;
-        public SceneRoot SceneRoot => scene_root;
+        public UnityEngine.SceneManagement.Scene UnityScene => unity_scene;
     }
 }
