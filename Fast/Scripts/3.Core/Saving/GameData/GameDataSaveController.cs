@@ -2,30 +2,29 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using UnityEngine;
 
-namespace Fast.Save
+namespace Fast.Saving
 {
-    public class SaveController : Fast.IController
+    public class GameDataSaveController : Fast.IController
     {
-        private readonly List<SaveDataSlot> loaded_slots = new List<SaveDataSlot>();
+        private readonly List<GameDataSaveSlot> loaded_slots = new List<GameDataSaveSlot>();
 
-        private SaveDataSlot current_slot = null;
+        private GameDataSaveSlot current_slot = null;
 
-        private readonly Fast.Callback<SaveDataSlot> on_load_current_slot = new Callback<SaveDataSlot>();
-        private readonly Fast.Callback<SaveDataSlot> on_save_current_slot = new Callback<SaveDataSlot>();
+        private readonly Fast.Callback<GameDataSaveSlot> on_load_current_slot = new Callback<GameDataSaveSlot>();
+        private readonly Fast.Callback<GameDataSaveSlot> on_save_current_slot = new Callback<GameDataSaveSlot>();
 
-        public IReadOnlyList<SaveDataSlot> LoadedSlots => loaded_slots;
+        public IReadOnlyList<GameDataSaveSlot> LoadedSlots => loaded_slots;
 
-        public Fast.Callback<SaveDataSlot> OnLoadCurrentSlot => on_load_current_slot;
-        public Fast.Callback<SaveDataSlot> OnSaveCurrentLost => on_save_current_slot;
+        public Fast.Callback<GameDataSaveSlot> OnLoadCurrentSlot => on_load_current_slot;
+        public Fast.Callback<GameDataSaveSlot> OnSaveCurrentLost => on_save_current_slot;
 
         public async Task LoadAllSlots()
         {
             loaded_slots.Clear();
             current_slot = null;
 
-            string base_folder = $"{Fast.FastService.MApplication.PersistentDataPath}Fast/SaveData/";
+            string base_folder = $"{Fast.FastService.MApplication.PersistentDataPath}Fast/GameSaveData/";
 
             Fast.FileUtils.CreateAllFilepathDirectories(base_folder);
 
@@ -37,7 +36,7 @@ namespace Fast.Save
 
                 string file_directory = $"{curr_directory}/data.save";
 
-                SaveDataSlot data = await Fast.Serializers.JSONSerializer.DeSerializeFromPathAsync<SaveDataSlot>(file_directory);
+                GameDataSaveSlot data = await Fast.Serializers.JSONSerializer.DeSerializeFromPathAsync<GameDataSaveSlot>(file_directory);
 
                 lock (loaded_slots)
                 {
@@ -60,13 +59,13 @@ namespace Fast.Save
 
         public async Task SaveSlot(int slot)
         {
-            SaveDataSlot to_save = null;
+            GameDataSaveSlot to_save = null;
 
             lock (loaded_slots)
             {
                 for (int i = 0; i < loaded_slots.Count; ++i)
                 {
-                    SaveDataSlot curr_slot = loaded_slots[i];
+                    GameDataSaveSlot curr_slot = loaded_slots[i];
 
                     if (curr_slot.Slot == slot)
                     {
@@ -82,7 +81,7 @@ namespace Fast.Save
                 }
             }
 
-            string filepath = $"{Fast.FastService.MApplication.PersistentDataPath}Fast/SaveData/{slot}/data.save";
+            string filepath = $"{Fast.FastService.MApplication.PersistentDataPath}Fast/GameSaveData/{slot}/data.save";
 
             bool success = await Fast.Serializers.JSONSerializer.SerializeToPathAsync(filepath, to_save);
 
@@ -106,9 +105,9 @@ namespace Fast.Save
                 return false;
             }
 
-            SaveDataSlot new_slot = new SaveDataSlot(slot, save_data_name);
+            GameDataSaveSlot new_slot = new GameDataSaveSlot(slot, save_data_name);
 
-            string filepath = $"{Fast.FastService.MApplication.PersistentDataPath}Fast/SaveData/{new_slot.Slot}/data.save";
+            string filepath = $"{Fast.FastService.MApplication.PersistentDataPath}Fast/GameSaveData/{new_slot.Slot}/data.save";
 
             bool success = await Fast.Serializers.JSONSerializer.SerializeToPathAsync(filepath, new_slot);
 
@@ -154,7 +153,7 @@ namespace Fast.Save
                 }
             }
 
-            string folderpath = $"{Fast.FastService.MApplication.PersistentDataPath}Fast/SaveData/{slot}/";
+            string folderpath = $"{Fast.FastService.MApplication.PersistentDataPath}Fast/GameSaveData/{slot}/";
 
             Fast.FileUtils.DeleteFolderIfExists(folderpath);
         }
@@ -165,7 +164,7 @@ namespace Fast.Save
             {
                 for (int i = 0; i < loaded_slots.Count; ++i)
                 {
-                    SaveDataSlot curr_slot = loaded_slots[i];
+                    GameDataSaveSlot curr_slot = loaded_slots[i];
 
                     if (loaded_slots[i].Slot == slot)
                     {
@@ -183,7 +182,7 @@ namespace Fast.Save
             {
                 for (int i = 0; i < loaded_slots.Count; ++i)
                 {
-                    SaveDataSlot curr_slot = loaded_slots[i];
+                    GameDataSaveSlot curr_slot = loaded_slots[i];
 
                     if (loaded_slots[i].Slot == slot)
                     {

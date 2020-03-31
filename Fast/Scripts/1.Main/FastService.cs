@@ -29,7 +29,7 @@ namespace Fast
         private Fast.Modules.LogModule log_module = null;
         private Fast.Modules.ApplicationModule application_module = null;
         private Fast.Modules.PlatformModule platform_module = null;
-        private Fast.Modules.SaveDataModule save_data_module = null;
+        private Fast.Modules.GameDataSaveModule game_data_save_module = null;
         private Fast.Modules.LocalizationModule localization_module = null;
         private Fast.Modules.EventModule event_module = null;
         private Fast.Modules.FirebaseModule firebase_module = null;
@@ -37,6 +37,7 @@ namespace Fast
         private Fast.Modules.GameModule game_module = null;
         private Fast.Modules.ScenesModule scenes_module = null;
 
+        private Fast.Modules.SettingsDataSaveModule settings_data_save_module = null;
         private Fast.Modules.TimeModule time_module = null;
         private Fast.Modules.FlowModule flow_module = null;
         private Fast.Modules.LogicModule logic_module = null;
@@ -63,7 +64,7 @@ namespace Fast
                 log_module = (Modules.LogModule)AddModule(new Modules.LogModule());
                 application_module = (Modules.ApplicationModule)AddModule(new Modules.ApplicationModule());
                 platform_module = (Modules.PlatformModule)AddModule(new Modules.PlatformModule());
-                save_data_module = (Modules.SaveDataModule)AddModule(new Modules.SaveDataModule());
+                game_data_save_module = (Modules.GameDataSaveModule)AddModule(new Modules.GameDataSaveModule());
                 localization_module = (Modules.LocalizationModule)AddModule(new Modules.LocalizationModule());
                 event_module = (Modules.EventModule)AddModule(new Modules.EventModule());
                 firebase_module = (Modules.FirebaseModule)AddModule(new Modules.FirebaseModule());
@@ -71,6 +72,7 @@ namespace Fast
                 game_module = (Modules.GameModule)AddModule(new Modules.GameModule());
                 scenes_module = (Modules.ScenesModule)AddModule(new Modules.ScenesModule());
 
+                settings_data_save_module = (Modules.SettingsDataSaveModule)AddUpdatableModule(new Modules.SettingsDataSaveModule());
                 time_module = (Modules.TimeModule)AddUpdatableModule(new Modules.TimeModule());
                 flow_module = (Modules.FlowModule)AddUpdatableModule(new Modules.FlowModule());
                 logic_module = (Modules.LogicModule)AddUpdatableModule(new Modules.LogicModule());
@@ -219,9 +221,9 @@ namespace Fast
             get { return Instance.platform_module; }
         }
 
-        public static Fast.Modules.SaveDataModule MSaveData
+        public static Fast.Modules.GameDataSaveModule MGameDataSave
         {
-            get { return Instance.save_data_module; }
+            get { return Instance.game_data_save_module; }
         }
 
         public static Fast.Modules.LocalizationModule MLocalization
@@ -252,6 +254,11 @@ namespace Fast
         public static Fast.Modules.ScenesModule MScenes
         {
             get { return Instance.scenes_module; }
+        }
+
+        public static Fast.Modules.SettingsDataSaveModule MSettingsDataSave
+        {
+            get { return Instance.settings_data_save_module; }
         }
 
         public static Fast.Modules.TimeModule MTime

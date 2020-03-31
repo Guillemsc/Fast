@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
+using Newtonsoft.Json;
 
-namespace Fast.Save
+namespace Fast.Saving
 {
     [System.Serializable]
-    public class SaveDataSlot
+    public class GameDataSaveSlot
     {
         [JsonProperty("slot")]
         private int slot = 0;
@@ -12,7 +12,7 @@ namespace Fast.Save
         [JsonProperty("name")]
         private string name = "";
 
-        public SaveDataSlot(int slot, string name)
+        public GameDataSaveSlot(int slot, string name)
         {
             this.slot = slot;
             this.name = name;

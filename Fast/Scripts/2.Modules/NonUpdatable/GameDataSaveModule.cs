@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace Fast.Modules
 {
-    public class SaveDataModule : Module
+    public class GameDataSaveModule : Module
     {
-        private readonly Fast.Save.SaveController controller = new Save.SaveController();
+        private readonly Fast.Saving.GameDataSaveController controller = new Saving.GameDataSaveController();
 
-        public Fast.Callback<Fast.Save.SaveDataSlot> OnLoadCurrentSlot => controller.OnLoadCurrentSlot;
-        public Fast.Callback<Fast.Save.SaveDataSlot> OnSaveCurrentSlot => controller.OnSaveCurrentLost;
+        public Fast.Callback<Fast.Saving.GameDataSaveSlot> OnLoadCurrentSlot => controller.OnLoadCurrentSlot;
+        public Fast.Callback<Fast.Saving.GameDataSaveSlot> OnSaveCurrentSlot => controller.OnSaveCurrentLost;
 
-        public IReadOnlyList<Fast.Save.SaveDataSlot> LoadedSlots => controller.LoadedSlots;
+        public IReadOnlyList<Fast.Saving.GameDataSaveSlot> LoadedSlots => controller.LoadedSlots;
 
         public async Task LoadAllSlots()
         {

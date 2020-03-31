@@ -10,5 +10,9 @@ namespace Fast.Modules
         {
             this.game_config_asset = game_config_asset;
         }
+
+        public string GameName => game_config_asset.GameName;
+        public string GameVersion => game_config_asset.GameVersion;
+        public Fast.Game.GameStage GameStage => game_config_asset.GameStage;
     }
 }

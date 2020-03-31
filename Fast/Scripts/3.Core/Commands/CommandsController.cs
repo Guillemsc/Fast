@@ -31,7 +31,7 @@ namespace Fast.Commands
         {
             if(command == null)
             {
-                Fast.FastService.MLog.LogError(this, $"Trying to get a execute command, but it's null");
+                Fast.FastService.MLog.LogError(this, $"Trying to execute a command, but it's null");
                 return null;
             }
 

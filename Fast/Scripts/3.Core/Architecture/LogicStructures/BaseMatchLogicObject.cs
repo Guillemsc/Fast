@@ -4,7 +4,7 @@ namespace Fast.Architecture
 {
     public class BaseMatchLogicObject
     {
-        protected int object_uid = 0;
+        private int object_uid = 0;
 
         protected int object_category = 0;
         protected int object_category_variation = 0;
