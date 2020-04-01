@@ -9,7 +9,7 @@ namespace Fast.UI
     /// Represents a piece of UI that is has some independent functionality
     /// </summary>
     [Sirenix.OdinInspector.HideMonoScript]
-    public class Form : MonoBehaviour
+    public abstract class Form : MonoBehaviour
     {
         [Sirenix.OdinInspector.HideLabel]
         [Sirenix.OdinInspector.Title("Parent", "All form UI objects should be placed as childs of the parent")]
@@ -23,10 +23,7 @@ namespace Fast.UI
         [Sirenix.OdinInspector.SceneObjectsOnly]
         [SerializeField] private FormAnimation default_animation = null;
 
-        [Sirenix.OdinInspector.HideLabel]
-        [Sirenix.OdinInspector.Title("Animations", "List of animations that can be used with this form")]
-        [Sirenix.OdinInspector.SceneObjectsOnly]
-        [SerializeField] private List<FormAnimation> animations = new List<FormAnimation>();
+        private List<FormAnimation> animations = new List<FormAnimation>();
 
         private bool showing = false;
 
@@ -34,23 +31,26 @@ namespace Fast.UI
         {
             parent.SetActive(false);
 
-            OnAwakeInternal();
+            FindAnimations();
+
+            AwakeInternal();
         }
 
         /// <summary>
-        /// [Internal, don't use] Parent object for all the form UI.
+        /// Parent object for all the form UI.
         /// </summary>
-        public GameObject Parent
-        {
-            get { return parent; }
-        }
+        public GameObject Parent => parent;
 
         /// <summary>
-        /// [Internal, don't use] Animation used in default ocasions.
+        /// Animation used in default ocasions.
         /// </summary>
-        public FormAnimation DefaultAnimation
+        public FormAnimation DefaultAnimation => default_animation;
+
+        private void FindAnimations()
         {
-            get { return default_animation; }
+            FormAnimation[] animations_array = gameObject.GetComponents<FormAnimation>();
+
+            animations.AddRange(animations_array);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace Fast.UI
             {
                 showing = true;
 
-                OnShowInternal();
+                ShowInternal();
             }
         }
 
@@ -101,7 +101,7 @@ namespace Fast.UI
         {
             if (showing)
             {
-                OnHideInternal();
+                HideInternal();
 
                 showing = false;
             }
@@ -110,7 +110,7 @@ namespace Fast.UI
         /// <summary>
         /// Called on the same time as the MonoBehaveour's Awake().
         /// </summary>
-        virtual protected void OnAwakeInternal()
+        virtual protected void AwakeInternal()
         {
 
         }
@@ -118,7 +118,7 @@ namespace Fast.UI
         /// <summary>
         /// Called when the the form is marked as being used.
         /// </summary>
-        virtual protected void OnShowInternal()
+        virtual protected void ShowInternal()
         {
 
         }
@@ -126,7 +126,7 @@ namespace Fast.UI
         /// <summary>
         /// Called when the the form stops to be marked as being used.
         /// </summary>
-        virtual protected void OnHideInternal()
+        virtual protected void HideInternal()
         {
 
         }

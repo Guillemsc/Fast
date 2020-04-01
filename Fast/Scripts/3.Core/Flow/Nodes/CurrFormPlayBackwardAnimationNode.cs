@@ -46,7 +46,7 @@ namespace Fast.Flow
                         Finish();
                     });
 
-                    curr_animation.AnimateBackward();
+                    //curr_animation.AnimateBackward();
                 }
                 else
                 {

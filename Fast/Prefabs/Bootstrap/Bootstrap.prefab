@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4308900494959335274}
   - component: {fileID: 5068972793846836789}
-  - component: {fileID: 4308900494959335273}
   m_Layer: 0
   m_Name: Bootstrap
   m_TagString: Untagged
@@ -44,19 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c68c0dad953f1204a9e69c2a6f103da8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &4308900494959335273
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4308900494959335275}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52a46d9a49c6604448b5c3f92d63e4a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
   game_config: {fileID: 0}
   scenes_config: {fileID: 0}
-  mode: 0
   services_prefab: {fileID: 0}
+  mode: 0

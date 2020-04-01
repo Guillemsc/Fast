@@ -36,6 +36,7 @@ namespace Fast
         private Fast.Modules.AmazonModule amazon_module = null;
         private Fast.Modules.GameModule game_module = null;
         private Fast.Modules.ScenesModule scenes_module = null;
+        private Fast.Modules.UIModule ui_module = null;
 
         private Fast.Modules.SettingsDataSaveModule settings_data_save_module = null;
         private Fast.Modules.TimeModule time_module = null;
@@ -44,13 +45,31 @@ namespace Fast
         private Fast.Modules.TimeSlicedModule time_sliced_module = null;
         private Fast.Modules.ParticlesModule particles_module = null; 
 
-        private List<Modules.IModule> all_modules = new List<Modules.IModule>();
+        private List<Modules.Module> all_modules = new List<Modules.Module>();
         private List<Modules.UpdatableModule> updatable_modules = new List<Modules.UpdatableModule>();
 
         FastService()
         {
             InitInstance(this);
         }
+
+        private void Update()
+        {
+            if (first_update)
+            {
+                first_update = false;
+
+                Init();
+            }
+
+            UpdateModules();
+        }
+
+        private void OnApplicationQuit()
+        {
+            CleanUpModules();
+        }
+
 
         public static bool Initialized
         {
@@ -78,6 +97,7 @@ namespace Fast
                 logic_module = (Modules.LogicModule)AddUpdatableModule(new Modules.LogicModule());
                 time_sliced_module = (Modules.TimeSlicedModule)AddUpdatableModule(new Modules.TimeSlicedModule());
                 particles_module = (Modules.ParticlesModule)AddUpdatableModule(new Modules.ParticlesModule());
+                ui_module = (Modules.UIModule)AddUpdatableModule(new Modules.UIModule());
 
                 StartModules();
 
@@ -126,23 +146,6 @@ namespace Fast
 
             GameObject services_instance = Instantiate(services_prefab);
             services_instance.name = "Services";
-        }
-
-        private void Update()
-        {
-            if(first_update)
-            {
-                first_update = false;
-
-                Init();
-            }
-
-            UpdateModules();
-        }
-
-        private void OnApplicationQuit()
-        {
-            CleanUpModules();
         }
 
         private Modules.Module AddModule(Modules.Module module)
@@ -284,6 +287,11 @@ namespace Fast
         public static Modules.ParticlesModule MParticles
         {
             get { return Instance.particles_module; }
+        }
+
+        public static Fast.Modules.UIModule MUI
+        {
+            get { return Instance.ui_module; }
         }
     }
 }

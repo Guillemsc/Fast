@@ -21,6 +21,16 @@ namespace Fast.Tweening
             this.end_scale = end_scale;
         }
 
+        public override void SetStartingValuesForward()
+        {
+            go.transform.localScale = start_scale;
+        }
+
+        public override void SetStartingValuesBackward()
+        {
+            go.transform.localScale = end_scale;
+        }
+
         public override Sequence AnimateForward()
         {
             Sequence ret = DOTween.Sequence();
@@ -29,7 +39,7 @@ namespace Fast.Tweening
 
             if (ForceStartValues)
             {
-                ret.Append(go.transform.DOScale(start_scale, 0.0f));
+                ret.AppendCallback(SetStartingValuesForward);
             }
 
             ret.Append(go.transform.DOScale(end_scale, time).SetEase(Ease.InOutQuad));
@@ -45,7 +55,7 @@ namespace Fast.Tweening
 
             if (ForceStartValues)
             {
-                ret.Append(go.transform.DOScale(end_scale, 0.0f));
+                ret.AppendCallback(SetStartingValuesBackward);
             }
 
             ret.Append(go.transform.DOScale(start_scale, time).SetEase(Ease.InOutQuad));

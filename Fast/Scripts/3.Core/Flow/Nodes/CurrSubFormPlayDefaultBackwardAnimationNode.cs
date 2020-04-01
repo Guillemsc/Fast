@@ -41,7 +41,7 @@ namespace Fast.Flow
                         Finish();
                     });
 
-                    Container.Controller.FlowState.CurrSubForm.DefaultAnimation.AnimateBackward();
+                    //Container.Controller.FlowState.CurrSubForm.DefaultAnimation.AnimateBackward();
                 }
                 else
                 {

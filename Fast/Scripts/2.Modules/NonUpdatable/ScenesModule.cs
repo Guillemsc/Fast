@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
+using UnityEngine.SceneManagement;
 
 namespace Fast.Modules
 {
@@ -13,6 +15,16 @@ namespace Fast.Modules
             this.scenes_config_asset = scenes_config_asset;
 
             controller.SetLoadableScenes(scenes_config_asset.Scenes);
+        }
+
+        public Fast.Scenes.Scene GetLoadableScene(string scene_name)
+        {
+            return controller.GetLoadableScene(scene_name);
+        }
+
+        public async Task<Fast.Scenes.LoadedScene> LoadSceneAsync(Fast.Scenes.Scene scene, LoadSceneMode mode)
+        {
+            return await controller.LoadSceneAsync(scene, mode);
         }
     }
 }

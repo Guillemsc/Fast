@@ -11,6 +11,8 @@ namespace Fast.Scenes
         private readonly List<Scene> scenes = new List<Scene>();
         private readonly List<LoadedScene> loaded_scenes = new List<LoadedScene>();
 
+        private readonly List<SceneResolver> using_resolvers = new List<SceneResolver>();
+
         public void SetLoadableScenes(IReadOnlyList<Scene> scenes)
         {
             this.scenes.Clear();
@@ -164,6 +166,105 @@ namespace Fast.Scenes
             }
 
             await tcs.Task;
+        }
+
+        public async Task ResolveScenes(SceneResolver resolver)
+        {
+            if(resolver == null)
+            {
+                return;
+            }
+
+            lock (using_resolvers)
+            {
+                for (int i = 0; i < using_resolvers.Count; ++i)
+                {
+                    if (using_resolvers[i] == resolver)
+                    {
+                        return;
+                    }
+                }
+
+                using_resolvers.Add(resolver);
+            }
+
+            for(int i = 0; i < resolver.ScenesToResolve.Count; ++i)
+            {
+                Scene curr_scene = resolver.ScenesToResolve[i];
+
+                bool loaded = SceneIsLoaded(curr_scene);
+
+                if(loaded)
+                {
+                    continue;
+                }
+
+                await LoadSceneAsync(curr_scene, LoadSceneMode.Additive);
+            }
+        }
+
+        public async Task UnresolveScenes(SceneResolver resolver)
+        {
+            if (resolver == null)
+            {
+                return;
+            }
+
+            bool found = false;
+
+            lock (using_resolvers)
+            {
+                for (int i = 0; i < using_resolvers.Count; ++i)
+                {
+                    if (using_resolvers[i] == resolver)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!found)
+            {
+                return;
+            }
+
+            for (int i = 0; i < resolver.ScenesToResolve.Count; ++i)
+            {
+                Scene curr_scene = resolver.ScenesToResolve[i];
+
+                bool is_used = SceneIsUsed(curr_scene, resolver);
+
+                if(is_used)
+                {
+                    continue;
+                }
+
+                await UnloadSceneAsync(curr_scene);
+            }
+        }
+
+        private bool SceneIsUsed(Scene scene, SceneResolver to_ignore)
+        {
+            for (int i = 0; i < using_resolvers.Count; ++i)
+            {
+                SceneResolver curr_resolver = using_resolvers[i];
+
+                if(curr_resolver == to_ignore)
+                {
+                    continue;
+                }
+
+                for(int y = 0; y < curr_resolver.ScenesToResolve.Count; ++y)
+                {
+                    if(curr_resolver.ScenesToResolve[y] == scene)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }

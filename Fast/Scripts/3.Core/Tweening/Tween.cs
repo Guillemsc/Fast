@@ -15,6 +15,16 @@ namespace Fast.Tweening
 
         protected bool ForceStartValues => force_start_values;
 
+        public virtual void SetStartingValuesForward()
+        {
+
+        }
+
+        public virtual void SetStartingValuesBackward()
+        {
+
+        }
+
         public virtual DG.Tweening.Sequence AnimateForward()
         {
             return null;

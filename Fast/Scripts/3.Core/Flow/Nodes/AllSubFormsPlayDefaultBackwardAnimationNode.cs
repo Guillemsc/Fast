@@ -55,7 +55,7 @@ namespace Fast.Flow
                             }
                         });
 
-                        curr_form.DefaultAnimation.AnimateBackward();
+                        //curr_form.DefaultAnimation.AnimateBackward();
                     }
                     else
                     {

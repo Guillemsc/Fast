@@ -1,14 +1,9 @@
 ﻿using System;
 
-namespace Fast.Modules
+namespace Fast.Game
 {
-    public class Module : Fast.IModule
+    public class GameModule : Fast.IModule
     {
-        public Module()
-        {
-
-        }
-
         public virtual void Awake()
         {
 

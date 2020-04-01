@@ -46,7 +46,7 @@ namespace Fast.Flow
                         Finish();
                     });
 
-                    curr_animation.AnimateForward();
+                    //curr_animation.AnimateForward();
                 }
                 else
                 {

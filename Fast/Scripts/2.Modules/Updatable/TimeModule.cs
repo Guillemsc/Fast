@@ -8,14 +8,12 @@ namespace Fast.Modules
 
         private Fast.Time.TimeContext general_time_context = null;
 
+        public Fast.Time.TimeContext GeneralTimeContext => general_time_context;
+
         public override void Awake()
         {
             general_time_context = CreateTimeContext();
-
-            general_time_context.TimeScale = 0.5f;
         }
-
-        public Fast.Time.TimeContext GeneralTimeContext => general_time_context;
 
         public override void Update()
         {

@@ -19,15 +19,25 @@ namespace Fast.UI
         [SerializeField] private Ease to_scale_forward_ease = Ease.InOutQuad;
         [SerializeField] private Ease to_scale_backwards_ease = Ease.InOutQuad;
 
-        [Sirenix.OdinInspector.LabelText("To scale")]
+        private Sequence sequence = null;
 
         private ScaleAndFadeInFormAnimation() : base("ScaleAndFadeIn")
         {
         }
 
-        protected override void OnAnimateForwardInternal()
+        protected override void TimeScaleChangedInternal(float time_scale)
         {
-            Sequence sequence = DOTween.Sequence();
+            if (sequence == null)
+            {
+                return;
+            }
+
+            sequence.timeScale = time_scale;
+        }
+
+        protected override void AnimateForwardInternal(float time_scale)
+        {
+            sequence = DOTween.Sequence();
 
             for (int i = 0; i < to_fade.Count; ++i)
             {
@@ -39,6 +49,11 @@ namespace Fast.UI
 
                 Fast.Tweening.FadeTween fade_in_anim
                     = new Fast.Tweening.FadeTween(curr_go, 0.4f, 0, 1, ForceStartingValues);
+
+                if(ForceStartingValues)
+                {
+                    fade_in_anim.SetStartingValuesForward();
+                }
 
                 Sequence seq = fade_in_anim.AnimateForward();
                 seq.SetEase(to_fade_forward_ease);
@@ -57,19 +72,27 @@ namespace Fast.UI
                 Fast.Tweening.ScaleTween scale_in_anim
                     = new Fast.Tweening.ScaleTween(curr_go, 0.4f, Vector3.zero, Vector3.one, ForceStartingValues);
 
+                if (ForceStartingValues)
+                {
+                    scale_in_anim.SetStartingValuesForward();
+                }
+
                 Sequence seq = scale_in_anim.AnimateForward();
                 seq.SetEase(to_scale_forward_ease);
 
                 sequence.Join(seq);
             }
 
+            sequence.timeScale = time_scale;
+
             sequence.OnComplete(Finish);
+
             sequence.Play();
         }
 
-        protected override void OnAnimateBackwardInternal()
+        protected override void AnimateBackwardInternal(float time_scale)
         {
-            Sequence sequence = DOTween.Sequence();
+            sequence = DOTween.Sequence();
 
             for (int i = 0; i < to_fade.Count; ++i)
             {
@@ -81,6 +104,11 @@ namespace Fast.UI
 
                 Fast.Tweening.FadeTween fade_in_anim
                     = new Fast.Tweening.FadeTween(curr_go, 0.4f, 0, 1, ForceStartingValues);
+
+                if (ForceStartingValues)
+                {
+                    fade_in_anim.SetStartingValuesBackward();
+                }
 
                 Sequence seq = fade_in_anim.AnimateBackward();
                 seq.SetEase(to_fade_backwards_ease);
@@ -99,13 +127,21 @@ namespace Fast.UI
                 Fast.Tweening.ScaleTween scale_in_anim
                     = new Fast.Tweening.ScaleTween(curr_go, 0.3f, Vector3.zero, Vector3.one, ForceStartingValues);
 
+                if (ForceStartingValues)
+                {
+                    scale_in_anim.SetStartingValuesBackward();
+                }
+
                 Sequence seq = scale_in_anim.AnimateBackward();
                 seq.SetEase(to_scale_backwards_ease);
 
                 sequence.Join(seq);
             }
 
+            sequence.timeScale = time_scale;
+
             sequence.OnComplete(Finish);
+
             sequence.Play();
         }
     }

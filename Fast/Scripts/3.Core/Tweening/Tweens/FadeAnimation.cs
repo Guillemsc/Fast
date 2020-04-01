@@ -21,6 +21,18 @@ namespace Fast.Tweening
             this.end_alpha = end_alpha;
         }
 
+        public override void SetStartingValuesForward()
+        {
+            CanvasGroup cg = go.GetOrAddComponent<CanvasGroup>();
+            cg.alpha = start_alpha;
+        }
+
+        public override void SetStartingValuesBackward()
+        {
+            CanvasGroup cg = go.GetOrAddComponent<CanvasGroup>();
+            cg.alpha = end_alpha;
+        }
+
         public override Sequence AnimateForward()
         {
             Sequence ret = DOTween.Sequence();
@@ -29,7 +41,7 @@ namespace Fast.Tweening
 
             if (ForceStartValues)
             {
-                ret.Append(cg.DOFade(start_alpha, 0.0f));
+                ret.AppendCallback(SetStartingValuesForward);
             }
 
             ret.Append(cg.DOFade(end_alpha, time).SetEase(Ease.InOutQuad));
@@ -45,7 +57,7 @@ namespace Fast.Tweening
 
             if (ForceStartValues)
             {
-                ret.Append(cg.DOFade(end_alpha, 0.0f));
+                ret.AppendCallback(SetStartingValuesBackward);
             }
 
             ret.Append(cg.DOFade(start_alpha, time).SetEase(Ease.InOutQuad));

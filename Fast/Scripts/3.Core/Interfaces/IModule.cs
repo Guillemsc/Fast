@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Fast.Modules
+namespace Fast
 {
     public interface IModule
     {

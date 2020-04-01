@@ -21,6 +21,16 @@ namespace Fast.Tweening
             this.end_rotation = end_rotation;
         }
 
+        public override void SetStartingValuesForward()
+        {
+            go.transform.localRotation = Quaternion.Euler(start_rotation);
+        }
+
+        public override void SetStartingValuesBackward()
+        {
+            go.transform.localRotation = Quaternion.Euler(end_rotation);
+        }
+
         public override Sequence AnimateForward()
         {
             Sequence ret = DOTween.Sequence();
@@ -29,7 +39,7 @@ namespace Fast.Tweening
 
             if (ForceStartValues)
             {
-                ret.Append(go.transform.DOLocalRotate(start_rotation, 0.0f));
+                ret.AppendCallback(SetStartingValuesForward);
             }
 
             ret.AppendCallback(delegate ()
@@ -55,7 +65,7 @@ namespace Fast.Tweening
 
             if (ForceStartValues)
             {
-                ret.Append(go.transform.DOLocalRotate(end_rotation, 0.0f));
+                ret.AppendCallback(SetStartingValuesBackward);
             }
 
             ret.Append(go.transform.DOLocalRotate(start_rotation, time).SetEase(Ease.InOutQuad));

@@ -16,14 +16,26 @@ namespace Fast.UI
         [SerializeField] private Ease to_fade_forward_ease = Ease.InOutQuad;
         [SerializeField] private Ease to_fade_backwards_ease = Ease.InOutQuad;
 
+        private Sequence sequence = null;
+
         private FadeInFormAnimation() : base("FadeIn")
         {
 
         }
 
-        protected override void OnAnimateForwardInternal()
+        protected override void TimeScaleChangedInternal(float time_scale)
         {
-            Sequence sequence = DOTween.Sequence();
+            if(sequence == null)
+            {
+                return;
+            }
+
+            sequence.timeScale = time_scale;
+        }
+
+        protected override void AnimateForwardInternal(float time_scale)
+        {
+            sequence = DOTween.Sequence();
 
             for (int i = 0; i < to_fade.Count; ++i)
             {
@@ -35,18 +47,26 @@ namespace Fast.UI
 
                 Fast.Tweening.FadeTween fade_in_anim 
                     = new Fast.Tweening.FadeTween(curr_go, 0.4f, 0, 1, ForceStartingValues);
+
+                if(ForceStartingValues)
+                {
+                    fade_in_anim.SetStartingValuesForward();
+                }
 
                 sequence.Join(fade_in_anim.AnimateForward());
             }
 
             sequence.SetEase(to_fade_forward_ease);
+            sequence.timeScale = time_scale;
+
             sequence.OnComplete(Finish);
+
             sequence.Play();
         }
 
-        protected override void OnAnimateBackwardInternal()
+        protected override void AnimateBackwardInternal(float time_scale)
         {
-            Sequence sequence = DOTween.Sequence();
+            sequence = DOTween.Sequence();
 
             for (int i = 0; i < to_fade.Count; ++i)
             {
@@ -59,11 +79,19 @@ namespace Fast.UI
                 Fast.Tweening.FadeTween fade_in_anim 
                     = new Fast.Tweening.FadeTween(curr_go, 0.4f, 0, 1, ForceStartingValues);
 
+                if (ForceStartingValues)
+                {
+                    fade_in_anim.SetStartingValuesBackward();
+                }
+
                 sequence.Join(fade_in_anim.AnimateBackward());
             }
 
             sequence.SetEase(to_fade_backwards_ease);
+            sequence.timeScale = time_scale;
+
             sequence.OnComplete(Finish);
+
             sequence.Play();
         }
     }

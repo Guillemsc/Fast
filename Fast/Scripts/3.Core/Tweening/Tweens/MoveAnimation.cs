@@ -33,6 +33,16 @@ namespace Fast.Tweening
             this.time = time;
         }
 
+        public override void SetStartingValuesForward()
+        {
+            go.transform.localPosition = start_pos;
+        }
+
+        public override void SetStartingValuesBackward()
+        {
+            go.transform.localPosition = end_pos;
+        }
+
         public override Sequence AnimateForward()
         {
             Sequence ret = DOTween.Sequence();
@@ -41,7 +51,7 @@ namespace Fast.Tweening
 
             if (ForceStartValues)
             {
-                ret.Append(go.transform.DOLocalMove(start_pos, 0.0f));
+                ret.AppendCallback(SetStartingValuesForward);
             }
 
             ret.Append(go.transform.DOLocalMove(end_pos, time).SetEase(ease));
@@ -57,7 +67,7 @@ namespace Fast.Tweening
 
             if (ForceStartValues)
             {
-                ret.Append(go.transform.DOLocalMove(end_pos, 0.0f));
+                ret.AppendCallback(SetStartingValuesBackward);
             }
 
             ret.Append(go.transform.DOLocalMove(start_pos, time).SetEase(ease));

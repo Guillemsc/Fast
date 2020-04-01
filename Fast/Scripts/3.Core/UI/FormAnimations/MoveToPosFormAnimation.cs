@@ -28,14 +28,26 @@ namespace Fast.UI
         [SerializeField] private Ease to_move_forward_ease = Ease.InOutQuad;
         [SerializeField] private Ease to_move_backwards_ease = Ease.InOutQuad;
 
+        private Sequence sequence = null;
+
         private MoveToPosFormAnimation() : base("MoveToPos")
         {
 
         }
 
-        protected override void OnAnimateForwardInternal()
+        protected override void TimeScaleChangedInternal(float time_scale)
         {
-            Sequence sequence = DOTween.Sequence();
+            if (sequence == null)
+            {
+                return;
+            }
+
+            sequence.timeScale = time_scale;
+        }
+
+        protected override void AnimateForwardInternal(float time_scale)
+        {
+            sequence = DOTween.Sequence();
 
             for (int i = 0; i < data_to_move.Count; ++i)
             {
@@ -55,19 +67,28 @@ namespace Fast.UI
                         = new Fast.Tweening.MoveTween(curr_go, curr_data.start_pos.transform.localPosition,
                         curr_data.end_pos.transform.localPosition, 0.4f, ForceStartingValues);
 
+                    if(ForceStartingValues)
+                    {
+                        fade_anim.SetStartingValuesForward();
+                        move_anim.SetStartingValuesForward();
+                    }
+
                     sequence.Join(fade_anim.AnimateForward());
                     sequence.Join(move_anim.AnimateForward());
                 }
             }
 
             sequence.SetEase(to_move_forward_ease);
+            sequence.timeScale = time_scale;
+
             sequence.OnComplete(Finish);
+
             sequence.Play();
         }
 
-        protected override void OnAnimateBackwardInternal()
+        protected override void AnimateBackwardInternal(float time_scale)
         {
-            Sequence sequence = DOTween.Sequence();
+            sequence = DOTween.Sequence();
 
             for (int i = 0; i < data_to_move.Count; ++i)
             {
@@ -87,13 +108,22 @@ namespace Fast.UI
                         = new Fast.Tweening.MoveTween(curr_go, curr_data.start_pos.transform.position,
                         curr_data.end_pos.transform.position, 0.4f, ForceStartingValues);
 
+                    if (ForceStartingValues)
+                    {
+                        fade_anim.SetStartingValuesBackward();
+                        move_anim.SetStartingValuesBackward();
+                    }
+
                     sequence.Join(fade_anim.AnimateForward());
                     sequence.Join(move_anim.AnimateForward());
                 }
             }
 
             sequence.SetEase(to_move_backwards_ease);
+            sequence.timeScale = time_scale;
+
             sequence.OnComplete(Finish);
+
             sequence.Play();
         }
     }
