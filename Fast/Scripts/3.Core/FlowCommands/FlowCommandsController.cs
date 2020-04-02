@@ -48,7 +48,7 @@ namespace Fast.FlowCommands
             {
                 curr_executing.Execute();
 
-                Fast.FastService.MLog.LogInfo($"Starting flow command [{curr_executing.GetType().ToString()}]: { curr_executing.LogCommand()}");
+                Fast.FastService.MLog.LogInfo($"Flow command: [{curr_executing.GetType().ToString()}]: { curr_executing.LogCommand()}");
             }
         }
     }

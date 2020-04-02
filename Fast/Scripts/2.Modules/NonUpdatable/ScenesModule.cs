@@ -31,5 +31,10 @@ namespace Fast.Modules
         {
             await controller.ResolveScenes(resolver);
         }
+
+        public async Task UnresolveScenes(Fast.Scenes.SceneResolver resolver)
+        {
+            await controller.UnresolveScenes(resolver);
+        }
     }
 }

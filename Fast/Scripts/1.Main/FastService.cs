@@ -36,6 +36,7 @@ namespace Fast
         private Fast.Modules.AmazonModule amazon_module = null;
         private Fast.Modules.GameModule game_module = null;
         private Fast.Modules.ScenesModule scenes_module = null;
+        private Fast.Modules.ReferencesModule references_module = null;
 
         private Fast.Modules.SettingsDataSaveModule settings_data_save_module = null;
         private Fast.Modules.TimeModule time_module = null;
@@ -91,6 +92,7 @@ namespace Fast
                 amazon_module = (Modules.AmazonModule)AddModule(new Modules.AmazonModule());
                 game_module = (Modules.GameModule)AddModule(new Modules.GameModule());
                 scenes_module = (Modules.ScenesModule)AddModule(new Modules.ScenesModule());
+                references_module = (Modules.ReferencesModule)AddModule(new Modules.ReferencesModule());
 
                 settings_data_save_module = (Modules.SettingsDataSaveModule)AddUpdatableModule(new Modules.SettingsDataSaveModule());
                 time_module = (Modules.TimeModule)AddUpdatableModule(new Modules.TimeModule());
@@ -259,6 +261,11 @@ namespace Fast
         public static Fast.Modules.ScenesModule MScenes
         {
             get { return Instance.scenes_module; }
+        }
+
+        public static Fast.Modules.ReferencesModule MReferences
+        {
+            get { return Instance.references_module; }
         }
 
         public static Fast.Modules.SettingsDataSaveModule MSettingsDataSave

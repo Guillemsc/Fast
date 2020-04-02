@@ -61,60 +61,73 @@ namespace Fast.Scenes
         {
             TaskCompletionSource<LoadedScene> tcs = new TaskCompletionSource<LoadedScene>();
 
-            bool can_load = true;
+            bool can_continue = true;
 
             if (scene == null)
             {
                 tcs.SetResult(null);
-                can_load = false;
+                can_continue = false;
             }
 
             UnityEngine.SceneManagement.Scene loaded_unity_scene = default;
 
-            if (can_load)
+            if (can_continue)
             {
                 loaded_unity_scene = SceneManager.GetSceneByName(scene.Name);
 
                 if (loaded_unity_scene == null)
                 {
                     tcs.SetResult(null);
-                    can_load = false;
+                    can_continue = false;
                 }
             }
 
-            if(can_load)
+            if(can_continue)
             {
                 bool already_loaded = SceneIsLoaded(scene);
 
                 if(already_loaded)
                 {
                     tcs.SetResult(null);
-                    can_load = false;
+                    can_continue = false;
                 }
             }
 
-            if (can_load)
+            if (can_continue)
             {
                 UnityEngine.AsyncOperation async_load = SceneManager.LoadSceneAsync(scene.Name, mode);
 
-                async_load.completed += async (UnityEngine.AsyncOperation operation) =>
+                async_load.completed += (delegate (UnityEngine.AsyncOperation operation)
                 {
-                    if (loaded_unity_scene == null)
-                    {
+                    loaded_unity_scene = SceneManager.GetSceneByName(scene.Name);
 
+                    if(!loaded_unity_scene.IsValid())
+                    {
+                        Fast.FastService.MLog.LogWarning(this, $"Scene: {scene.Name} is not valid");
+
+                        tcs.SetResult(null);
+                        can_continue = false;
                     }
 
-                    LoadedScene loaded_scene = new LoadedScene(scene, loaded_unity_scene);
-
-                    lock(loaded_scenes)
+                    if (can_continue)
                     {
-                        loaded_scenes.Add(loaded_scene);
+                        SceneRoot root = GetSceneRoot(loaded_unity_scene);
+
+                        if (root == null)
+                        {
+                            Fast.FastService.MLog.LogWarning(this, $"Scene: {scene.Name} root is null, but we continue");
+                        }
+
+                        LoadedScene loaded_scene = new LoadedScene(scene, root, loaded_unity_scene);
+
+                        lock (loaded_scenes)
+                        {
+                            loaded_scenes.Add(loaded_scene);
+                        }
+
+                        tcs.SetResult(loaded_scene);
                     }
-
-                    await Task.Yield();
-
-                    tcs.SetResult(loaded_scene);
-                };
+                });
             }
 
             return await tcs.Task;
@@ -124,27 +137,27 @@ namespace Fast.Scenes
         {
             TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
 
-            bool can_unload = true;
+            bool can_continue = true;
 
             if (scene == null)
             {
                 tcs.SetResult(null);
 
-                can_unload = false;
+                can_continue = false;
             }
 
-            if (can_unload)
+            if (can_continue)
             {
                 bool already_loaded = SceneIsLoaded(scene);
 
                 if (!already_loaded)
                 {
                     tcs.SetResult(null);
-                    can_unload = false;
+                    can_continue = false;
                 }
             }
 
-            if (can_unload)
+            if (can_continue)
             {
                 UnityEngine.AsyncOperation async_unload = SceneManager.UnloadSceneAsync(scene.Name);
 
@@ -267,6 +280,30 @@ namespace Fast.Scenes
             }
 
             return false;
+        }
+
+        private SceneRoot GetSceneRoot(UnityEngine.SceneManagement.Scene unity_scene)
+        {
+            if(unity_scene == null)
+            {
+                return null;
+            }
+
+            GameObject[] root_gameojects = unity_scene.GetRootGameObjects();
+
+            for(int i = 0; i < root_gameojects.Length; ++i)
+            {
+                GameObject curr_go = root_gameojects[i];
+
+                SceneRoot root = curr_go.GetComponent<SceneRoot>();
+
+                if(root != null)
+                {
+                    return root;
+                }
+            }
+
+            return null;
         }
     }
 }
