@@ -35,7 +35,7 @@ namespace Fast.UI
             }
         }
 
-        public void Finish()
+        protected void Finish()
         {
             if(started && finished)
             {

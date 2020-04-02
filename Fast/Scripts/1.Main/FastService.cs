@@ -36,14 +36,15 @@ namespace Fast
         private Fast.Modules.AmazonModule amazon_module = null;
         private Fast.Modules.GameModule game_module = null;
         private Fast.Modules.ScenesModule scenes_module = null;
-        private Fast.Modules.UIModule ui_module = null;
 
         private Fast.Modules.SettingsDataSaveModule settings_data_save_module = null;
         private Fast.Modules.TimeModule time_module = null;
         private Fast.Modules.FlowModule flow_module = null;
         private Fast.Modules.LogicModule logic_module = null;
         private Fast.Modules.TimeSlicedModule time_sliced_module = null;
-        private Fast.Modules.ParticlesModule particles_module = null; 
+        private Fast.Modules.ParticlesModule particles_module = null;
+        private Fast.Modules.UIModule ui_module = null;
+        private Fast.Modules.FlowCommandsModule flow_commands = null;
 
         private List<Modules.Module> all_modules = new List<Modules.Module>();
         private List<Modules.UpdatableModule> updatable_modules = new List<Modules.UpdatableModule>();
@@ -98,6 +99,7 @@ namespace Fast
                 time_sliced_module = (Modules.TimeSlicedModule)AddUpdatableModule(new Modules.TimeSlicedModule());
                 particles_module = (Modules.ParticlesModule)AddUpdatableModule(new Modules.ParticlesModule());
                 ui_module = (Modules.UIModule)AddUpdatableModule(new Modules.UIModule());
+                flow_commands = (Modules.FlowCommandsModule)AddUpdatableModule(new Modules.FlowCommandsModule());
 
                 StartModules();
 
@@ -292,6 +294,11 @@ namespace Fast
         public static Fast.Modules.UIModule MUI
         {
             get { return Instance.ui_module; }
+        }
+
+        public static Fast.Modules.FlowCommandsModule MFlowCommands
+        {
+            get { return Instance.flow_commands; }
         }
     }
 }

@@ -26,5 +26,10 @@ namespace Fast.Modules
         {
             return await controller.LoadSceneAsync(scene, mode);
         }
+
+        public async Task ResolveScenes(Fast.Scenes.SceneResolver resolver)
+        {
+            await controller.ResolveScenes(resolver);
+        }
     }
 }

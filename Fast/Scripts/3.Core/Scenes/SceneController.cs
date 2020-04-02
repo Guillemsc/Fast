@@ -97,7 +97,7 @@ namespace Fast.Scenes
             {
                 UnityEngine.AsyncOperation async_load = SceneManager.LoadSceneAsync(scene.Name, mode);
 
-                async_load.completed += (delegate (UnityEngine.AsyncOperation operation)
+                async_load.completed += async (UnityEngine.AsyncOperation operation) =>
                 {
                     if (loaded_unity_scene == null)
                     {
@@ -111,8 +111,10 @@ namespace Fast.Scenes
                         loaded_scenes.Add(loaded_scene);
                     }
 
+                    await Task.Yield();
+
                     tcs.SetResult(loaded_scene);
-                });
+                };
             }
 
             return await tcs.Task;

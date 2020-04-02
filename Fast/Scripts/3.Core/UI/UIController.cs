@@ -98,16 +98,15 @@ namespace Fast.UI
 
             UIInstruction curr_instruction = curr_playing_behaviour.Instructions[curr_playing_behaviour_instruction_index];
 
-            if(!curr_instruction.Started)
-            {
-                curr_instruction.Start();
-            }
-
             if (curr_instruction.Finished)
             {
                 ++curr_playing_behaviour_instruction_index;
 
                 UpdateCurrPlayingBehaviour();
+            }
+            else if (!curr_instruction.Started)
+            {
+                curr_instruction.Start();
             }
         }
     }
