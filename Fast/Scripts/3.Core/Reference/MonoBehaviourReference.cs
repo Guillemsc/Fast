@@ -1,18 +1,18 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Fast.References
+namespace Fast
 {
-    public class Reference : MonoBehaviour
+    public class MonoBehaviourReference : MonoBehaviour
     {
-        [Tooltip("Reference name")]
+        [Sirenix.OdinInspector.DisableInPlayMode]
+        [Sirenix.OdinInspector.Title("Reference name", "Needs to be unique to the whole project")]
+        [Sirenix.OdinInspector.HideLabel]
         [SerializeField] private string reference_name = "";
 
-        private readonly Fast.Callback on_destroyed = new Fast.Callback();
-
-        public void OnEnable()
+        private void Awake()
         {
-            if (!Fast.FastService.Initialized)
+            if(!Fast.FastService.Initialized)
             {
                 return;
             }
@@ -20,18 +20,14 @@ namespace Fast.References
             Fast.FastService.MReferences.AddReference(reference_name, this);
         }
 
-        public void OnDisable()
+        private void OnDestroy()
         {
             if (!Fast.FastService.Initialized)
             {
                 return;
             }
 
-            on_destroyed.Invoke();
-
             Fast.FastService.MReferences.RemoveReference(reference_name);
         }
-
-        public Fast.Callback OnDestroyed => on_destroyed;
     }
 }

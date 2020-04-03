@@ -111,14 +111,14 @@ namespace Fast.Scenes
 
                     if (can_continue)
                     {
-                        SceneRoot root = GetSceneRoot(loaded_unity_scene);
+                        Fast.SceneServices.SceneService service = GetSceneService(loaded_unity_scene);
 
-                        if (root == null)
+                        if (service == null)
                         {
-                            Fast.FastService.MLog.LogWarning(this, $"Scene: {scene.Name} root is null, but we continue");
+                            Fast.FastService.MLog.LogWarning(this, $"Scene: {scene.Name} does not have scene services");
                         }
 
-                        LoadedScene loaded_scene = new LoadedScene(scene, root, loaded_unity_scene);
+                        LoadedScene loaded_scene = new LoadedScene(scene, service, loaded_unity_scene);
 
                         lock (loaded_scenes)
                         {
@@ -282,7 +282,7 @@ namespace Fast.Scenes
             return false;
         }
 
-        private SceneRoot GetSceneRoot(UnityEngine.SceneManagement.Scene unity_scene)
+        private Fast.SceneServices.SceneService GetSceneService(UnityEngine.SceneManagement.Scene unity_scene)
         {
             if(unity_scene == null)
             {
@@ -295,11 +295,11 @@ namespace Fast.Scenes
             {
                 GameObject curr_go = root_gameojects[i];
 
-                SceneRoot root = curr_go.GetComponent<SceneRoot>();
+                Fast.SceneServices.SceneService scene_service = curr_go.GetComponentInChildren<Fast.SceneServices.SceneService>();
 
-                if(root != null)
+                if(scene_service != null)
                 {
-                    return root;
+                    return scene_service;
                 }
             }
 

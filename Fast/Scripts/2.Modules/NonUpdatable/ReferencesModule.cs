@@ -5,11 +5,11 @@ namespace Fast.Modules
 {
     public class ReferencesModule : Fast.Modules.Module
     {
-        Dictionary<string, Fast.References.Reference> references = new Dictionary<string, Fast.References.Reference>();
+        Dictionary<string, Fast.MonoBehaviourReference> references = new Dictionary<string, Fast.MonoBehaviourReference>();
 
-        public void AddReference(string name, Fast.References.Reference obj)
+        public void AddReference(string name, Fast.MonoBehaviourReference obj)
         {
-            if(obj == null)
+            if (obj == null)
             {
                 return;
             }
@@ -22,26 +22,26 @@ namespace Fast.Modules
             references.Remove(name);
         }
 
-        public bool TryGetReference<T>(string name, out T obj) where T : Fast.References.Reference
+        public bool TryGetReference<T>(string name, out T obj) where T : Fast.MonoBehaviourReference
         {
             obj = default;
 
-            Fast.References.Reference obj_to_find = null;
+            Fast.MonoBehaviourReference obj_to_find = null;
             bool found = references.TryGetValue(name, out obj_to_find);
 
-            if(!found)
+            if (!found)
             {
                 return false;
             }
 
-            if(obj_to_find == null)
+            if (obj_to_find == null)
             {
                 return false;
             }
 
             obj = obj_to_find as T;
 
-            if(obj == null)
+            if (obj == null)
             {
                 return false;
             }

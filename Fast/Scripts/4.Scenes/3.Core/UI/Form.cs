@@ -9,7 +9,7 @@ namespace Fast.UI
     /// Represents a piece of UI that is has some independent functionality
     /// </summary>
     [Sirenix.OdinInspector.HideMonoScript]
-    public abstract class Form : MonoBehaviour
+    public abstract class Form : Fast.MonoBehaviourReference
     {
         [Sirenix.OdinInspector.HideLabel]
         [Sirenix.OdinInspector.Title("Parent", "All form UI objects should be placed as childs of the parent")]

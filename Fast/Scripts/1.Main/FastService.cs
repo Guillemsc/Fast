@@ -32,8 +32,6 @@ namespace Fast
         private Fast.Modules.GameDataSaveModule game_data_save_module = null;
         private Fast.Modules.LocalizationModule localization_module = null;
         private Fast.Modules.EventModule event_module = null;
-        private Fast.Modules.FirebaseModule firebase_module = null;
-        private Fast.Modules.AmazonModule amazon_module = null;
         private Fast.Modules.GameModule game_module = null;
         private Fast.Modules.ScenesModule scenes_module = null;
         private Fast.Modules.ReferencesModule references_module = null;
@@ -88,8 +86,6 @@ namespace Fast
                 game_data_save_module = (Modules.GameDataSaveModule)AddModule(new Modules.GameDataSaveModule());
                 localization_module = (Modules.LocalizationModule)AddModule(new Modules.LocalizationModule());
                 event_module = (Modules.EventModule)AddModule(new Modules.EventModule());
-                firebase_module = (Modules.FirebaseModule)AddModule(new Modules.FirebaseModule());
-                amazon_module = (Modules.AmazonModule)AddModule(new Modules.AmazonModule());
                 game_module = (Modules.GameModule)AddModule(new Modules.GameModule());
                 scenes_module = (Modules.ScenesModule)AddModule(new Modules.ScenesModule());
                 references_module = (Modules.ReferencesModule)AddModule(new Modules.ReferencesModule());
@@ -241,16 +237,6 @@ namespace Fast
         public static Fast.Modules.EventModule MEvent
         {
             get { return Instance.event_module; }
-        }
-
-        public static Fast.Modules.FirebaseModule MFirebase
-        {
-            get { return Instance.firebase_module; }
-        }
-
-        public static Fast.Modules.AmazonModule MAmazon
-        {
-            get { return Instance.amazon_module; }
         }
 
         public static Fast.Modules.GameModule MGame
