@@ -19,18 +19,18 @@ public static class TaskExtensions
         {
             ret = true;
 
-            if(task.Exception != null)
+            if (task.Exception != null)
             {
                 exception = task.Exception;
                 error_message = task.Exception.Message;
             }
             else
             {
-                if(task.IsCanceled)
+                if (task.IsCanceled)
                 {
                     error_message = "Task was canceled";
                 }
-                else if(task.IsFaulted)
+                else if (task.IsFaulted)
                 {
                     error_message = "Task was faulted";
                 }
@@ -42,6 +42,15 @@ public static class TaskExtensions
         }
 
         return ret;
+    }
+
+    public static void ExecuteAsync(this Task task)
+    {
+        task.ContinueWith(
+        delegate(Task t)
+        {
+
+        });
     }
 }
 

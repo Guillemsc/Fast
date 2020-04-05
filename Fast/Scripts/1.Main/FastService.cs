@@ -34,7 +34,7 @@ namespace Fast
         private Fast.Modules.EventModule event_module = null;
         private Fast.Modules.GameModule game_module = null;
         private Fast.Modules.ScenesModule scenes_module = null;
-        private Fast.Modules.ReferencesModule references_module = null;
+        private Fast.Modules.PrefabScenesModule prefab_scenes_module = null;
 
         private Fast.Modules.SettingsDataSaveModule settings_data_save_module = null;
         private Fast.Modules.TimeModule time_module = null;
@@ -73,7 +73,15 @@ namespace Fast
 
         public static bool Initialized
         {
-            get { return Instance.initialized; }
+            get
+            {
+                if(Instance == null)
+                {
+                    return false;
+                }
+
+                return Instance.initialized;
+            }
         }
 
         public void Init()
@@ -88,7 +96,7 @@ namespace Fast
                 event_module = (Modules.EventModule)AddModule(new Modules.EventModule());
                 game_module = (Modules.GameModule)AddModule(new Modules.GameModule());
                 scenes_module = (Modules.ScenesModule)AddModule(new Modules.ScenesModule());
-                references_module = (Modules.ReferencesModule)AddModule(new Modules.ReferencesModule());
+                prefab_scenes_module = (Modules.PrefabScenesModule)AddModule(new Modules.PrefabScenesModule());
 
                 settings_data_save_module = (Modules.SettingsDataSaveModule)AddUpdatableModule(new Modules.SettingsDataSaveModule());
                 time_module = (Modules.TimeModule)AddUpdatableModule(new Modules.TimeModule());
@@ -99,11 +107,12 @@ namespace Fast
                 ui_module = (Modules.UIModule)AddUpdatableModule(new Modules.UIModule());
                 flow_commands = (Modules.FlowCommandsModule)AddUpdatableModule(new Modules.FlowCommandsModule());
 
-                StartModules();
-
                 InitGameConfig();
                 InitScenesConfig();
+
                 SpawnServicesPrefab();
+
+                StartModules();
 
                 initialized = true;
 
@@ -249,9 +258,9 @@ namespace Fast
             get { return Instance.scenes_module; }
         }
 
-        public static Fast.Modules.ReferencesModule MReferences
+        public static Fast.Modules.PrefabScenesModule MPrefabScenes
         {
-            get { return Instance.references_module; }
+            get { return Instance.prefab_scenes_module; }
         }
 
         public static Fast.Modules.SettingsDataSaveModule MSettingsDataSave

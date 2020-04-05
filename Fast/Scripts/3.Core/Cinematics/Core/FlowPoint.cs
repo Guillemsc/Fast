@@ -22,12 +22,16 @@ namespace Fast.Cinematics
         private int valid_finishable_outputs = 0;
         private int finishables_outputs_finished = 0;
 
+#if UNITY_EDITOR
+
         protected override void OnNodeGUI()
         {
             base.OnNodeGUI();
 
             DrawPortModifiersGUI();
         }
+
+#endif
 
         protected override void RegisterPorts()
         {

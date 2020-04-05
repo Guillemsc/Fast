@@ -96,7 +96,7 @@ namespace Fast.UI
         /// </summary>
         public void Finish()
         {
-            if (started && !finished)
+            if (started)
             {
                 OnFinishInternal();
 
@@ -105,7 +105,6 @@ namespace Fast.UI
 
                 time_context.OnTimeScaleChanged.UnSubscribe(TimeScaleChangedInternal);
 
-                finished = true;
                 started = false;
             }
         }

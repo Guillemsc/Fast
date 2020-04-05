@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 
 namespace Fast.Editor.Scenes
 {
@@ -68,6 +69,20 @@ namespace Fast.Editor.Scenes
             }
 
             EditorBuildSettings.scenes = new_settings;
+        }
+
+        public static void OpenScene(string scene_name)
+        {
+            bool exists = SceneExists(scene_name);
+
+            if(!exists)
+            {
+                UnityEngine.Debug.LogError($"Trying to open scene: {scene_name} on the editor but it does not exist");
+            }
+
+            string scene_path = GetSceneAssetPath(scene_name);
+
+            EditorSceneManager.OpenScene(scene_path);
         }
     }
 }

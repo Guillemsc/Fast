@@ -9,7 +9,7 @@ namespace Fast.UI
     /// Represents a piece of UI that is has some independent functionality
     /// </summary>
     [Sirenix.OdinInspector.HideMonoScript]
-    public abstract class Form : Fast.MonoBehaviourReference
+    public abstract class Form : MonoBehaviour
     {
         [Sirenix.OdinInspector.HideLabel]
         [Sirenix.OdinInspector.Title("Parent", "All form UI objects should be placed as childs of the parent")]
@@ -27,8 +27,15 @@ namespace Fast.UI
 
         private bool showing = false;
 
-        public void Awake()
+        private void Awake()
         {
+            if(parent == null)
+            {
+                Fast.FastService.MLog.LogError(this, "UI Form does not have parent reference");
+
+                return;
+            }
+
             parent.SetActive(false);
 
             FindAnimations();

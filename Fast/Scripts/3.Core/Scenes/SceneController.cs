@@ -3,20 +3,37 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 namespace Fast.Scenes
 {
-    public class SceneController
+    public class SceneController : Fast.IStartable
     {
         private readonly List<Scene> scenes = new List<Scene>();
         private readonly List<LoadedScene> loaded_scenes = new List<LoadedScene>();
+        private LoadedScene root_scene = null;
 
-        private readonly List<SceneResolver> using_resolvers = new List<SceneResolver>();
+        public void Start()
+        {
+            LoadRootScene();
+        }
+
+        public LoadedScene RootScene => root_scene;
 
         public void SetLoadableScenes(IReadOnlyList<Scene> scenes)
         {
             this.scenes.Clear();
             this.scenes.AddRange(scenes);
+        }
+
+        private void LoadRootScene()
+        {
+            UnityEngine.SceneManagement.Scene main_scene = SceneManager.GetActiveScene();
+
+            Scene curr_scene = new Scene(main_scene.name);
+            SceneRoot root = new SceneRoot(main_scene.GetRootGameObjects().ToList());
+
+            this.root_scene = new LoadedScene(curr_scene, root, main_scene);
         }
 
         public Scene GetLoadableScene(string name)
@@ -111,14 +128,11 @@ namespace Fast.Scenes
 
                     if (can_continue)
                     {
-                        Fast.SceneServices.SceneService service = GetSceneService(loaded_unity_scene);
+                        GameObject[] root_gameobjects = loaded_unity_scene.GetRootGameObjects();
 
-                        if (service == null)
-                        {
-                            Fast.FastService.MLog.LogWarning(this, $"Scene: {scene.Name} does not have scene services");
-                        }
+                        Fast.Scenes.SceneRoot root = new SceneRoot(root_gameobjects.ToList());
 
-                        LoadedScene loaded_scene = new LoadedScene(scene, service, loaded_unity_scene);
+                        LoadedScene loaded_scene = new LoadedScene(scene, root, loaded_unity_scene);
 
                         lock (loaded_scenes)
                         {
@@ -181,129 +195,6 @@ namespace Fast.Scenes
             }
 
             await tcs.Task;
-        }
-
-        public async Task ResolveScenes(SceneResolver resolver)
-        {
-            if(resolver == null)
-            {
-                return;
-            }
-
-            lock (using_resolvers)
-            {
-                for (int i = 0; i < using_resolvers.Count; ++i)
-                {
-                    if (using_resolvers[i] == resolver)
-                    {
-                        return;
-                    }
-                }
-
-                using_resolvers.Add(resolver);
-            }
-
-            for(int i = 0; i < resolver.ScenesToResolve.Count; ++i)
-            {
-                Scene curr_scene = resolver.ScenesToResolve[i];
-
-                bool loaded = SceneIsLoaded(curr_scene);
-
-                if(loaded)
-                {
-                    continue;
-                }
-
-                await LoadSceneAsync(curr_scene, LoadSceneMode.Additive);
-            }
-        }
-
-        public async Task UnresolveScenes(SceneResolver resolver)
-        {
-            if (resolver == null)
-            {
-                return;
-            }
-
-            bool found = false;
-
-            lock (using_resolvers)
-            {
-                for (int i = 0; i < using_resolvers.Count; ++i)
-                {
-                    if (using_resolvers[i] == resolver)
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!found)
-            {
-                return;
-            }
-
-            for (int i = 0; i < resolver.ScenesToResolve.Count; ++i)
-            {
-                Scene curr_scene = resolver.ScenesToResolve[i];
-
-                bool is_used = SceneIsUsed(curr_scene, resolver);
-
-                if(is_used)
-                {
-                    continue;
-                }
-
-                await UnloadSceneAsync(curr_scene);
-            }
-        }
-
-        private bool SceneIsUsed(Scene scene, SceneResolver to_ignore)
-        {
-            for (int i = 0; i < using_resolvers.Count; ++i)
-            {
-                SceneResolver curr_resolver = using_resolvers[i];
-
-                if(curr_resolver == to_ignore)
-                {
-                    continue;
-                }
-
-                for(int y = 0; y < curr_resolver.ScenesToResolve.Count; ++y)
-                {
-                    if(curr_resolver.ScenesToResolve[y] == scene)
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        private Fast.SceneServices.SceneService GetSceneService(UnityEngine.SceneManagement.Scene unity_scene)
-        {
-            if(unity_scene == null)
-            {
-                return null;
-            }
-
-            GameObject[] root_gameojects = unity_scene.GetRootGameObjects();
-
-            for(int i = 0; i < root_gameojects.Length; ++i)
-            {
-                GameObject curr_go = root_gameojects[i];
-
-                Fast.SceneServices.SceneService scene_service = curr_go.GetComponentInChildren<Fast.SceneServices.SceneService>();
-
-                if(scene_service != null)
-                {
-                    return scene_service;
-                }
-            }
-
-            return null;
         }
     }
 }

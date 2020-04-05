@@ -17,6 +17,13 @@ namespace Fast.Modules
             controller.SetLoadableScenes(scenes_config_asset.Scenes);
         }
 
+        public override void Awake()
+        {
+            controller.Start();
+        }
+
+        public Fast.Scenes.LoadedScene RootScene => controller.RootScene;
+
         public Fast.Scenes.Scene GetLoadableScene(string scene_name)
         {
             return controller.GetLoadableScene(scene_name);
@@ -27,14 +34,9 @@ namespace Fast.Modules
             return await controller.LoadSceneAsync(scene, mode);
         }
 
-        public async Task ResolveScenes(Fast.Scenes.SceneResolver resolver)
+        public async Task UnloadSceneAsync(Fast.Scenes.Scene scene)
         {
-            await controller.ResolveScenes(resolver);
-        }
-
-        public async Task UnresolveScenes(Fast.Scenes.SceneResolver resolver)
-        {
-            await controller.UnresolveScenes(resolver);
+            await controller.UnloadSceneAsync(scene);
         }
     }
 }

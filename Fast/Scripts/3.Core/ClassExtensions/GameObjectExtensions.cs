@@ -16,7 +16,14 @@ public static class GameObjectExtensions
 
     public static void SetParent(this GameObject go, GameObject parent)
     {
-        go.transform.SetParent(parent.transform);
+        if (parent == null)
+        {
+            go.transform.SetParent(null);
+        }
+        else
+        {
+            go.transform.SetParent(parent.transform);
+        }
     }
 
     public static void RemoveParent(this GameObject go)
