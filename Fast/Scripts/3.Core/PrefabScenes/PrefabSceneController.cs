@@ -8,8 +8,39 @@ namespace Fast.PrefabScenes
 {
     public class PrefabSceneController : Fast.IController
     {
-        private readonly Dictionary<string, Fast.PrefabScenes.BasePrefabScene> prefab_scenes
-            = new Dictionary<string, PrefabScenes.BasePrefabScene>();
+        private readonly Dictionary<Type, Dictionary<string, Fast.PrefabScenes.BasePrefabScene>> prefab_scenes 
+            = new Dictionary<Type, Dictionary<string, BasePrefabScene>>();
+
+        private Dictionary<string, Fast.PrefabScenes.BasePrefabScene> GetPrefabScenesType(Type type)
+        {
+            Dictionary<string, Fast.PrefabScenes.BasePrefabScene> ret = null;
+
+            prefab_scenes.TryGetValue(type, out ret);
+
+            return ret;
+        }
+
+        public PrefabScene<T> GetLoadedPrefabScene<T>(string name) where T : MonoBehaviour
+        {
+            Dictionary<string, BasePrefabScene> types = GetPrefabScenesType(typeof(T));
+
+            if(types == null)
+            {
+                return null;
+            }
+
+            BasePrefabScene prefab_scene = null;
+            types.TryGetValue(name, out prefab_scene);
+
+            if(prefab_scene == null)
+            {
+                return null;
+            }
+
+            PrefabScene<T> ret = prefab_scene as PrefabScene<T>;
+
+            return ret;
+        }
 
         public async Task<PrefabScene<T>> LoadPrefabSceneAsync<T>(Fast.Scenes.Scene to_load)
             where T : MonoBehaviour
@@ -21,7 +52,7 @@ namespace Fast.PrefabScenes
 
             lock (prefab_scenes)
             {
-                BasePrefabScene prefab_scene_to_get = GetLoadedPrefabScene(to_load.Name);
+                BasePrefabScene prefab_scene_to_get = GetLoadedPrefabScene<T>(to_load.Name);
 
                 if (prefab_scene_to_get != null)
                 {
@@ -67,29 +98,33 @@ namespace Fast.PrefabScenes
 
             lock (prefab_scenes)
             {
-                prefab_scenes[prefab_scene.LoadedScene.Scene.Name] = prefab_scene;
+                Dictionary<string, BasePrefabScene> types = GetPrefabScenesType(typeof(T));
+
+                if(types == null)
+                {
+                    types = new Dictionary<string, BasePrefabScene>();
+                    prefab_scenes.Add(typeof(T), types);
+                }
+
+                types[prefab_scene.LoadedScene.Scene.Name] = prefab_scene;
             }
 
             return prefab_scene;
         }
 
-        public BasePrefabScene GetLoadedPrefabScene(string name)
-        {
-            BasePrefabScene prefab_scene_to_get = null;
-
-            prefab_scenes.TryGetValue(name, out prefab_scene_to_get);
-
-            return prefab_scene_to_get;
-        }
-
-        public async Task UnloadPrefabSceneAsync(BasePrefabScene prefab_scene)
+        public async Task UnloadPrefabSceneAsync<T>(PrefabScene<T> prefab_scene) where T : MonoBehaviour
         {
             if(prefab_scene == null)
             {
                 return;
             }
 
-            prefab_scenes.Remove(prefab_scene.LoadedScene.Scene.Name);
+            Dictionary<string, BasePrefabScene> types = GetPrefabScenesType(typeof(T));
+
+            if (types != null)
+            {
+                types.Remove(prefab_scene.LoadedScene.Scene.Name);
+            }
 
             if (prefab_scene.MonoBehaviourInstance != null)
             {

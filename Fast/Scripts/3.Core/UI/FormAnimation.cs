@@ -16,6 +16,10 @@ namespace Fast.UI
         [Sirenix.OdinInspector.ReadOnly]
         private string animation_name = "";
 
+        [Sirenix.OdinInspector.Title("Is default animation", "Is this the default animation used for this form")]
+        [Sirenix.OdinInspector.HideLabel]
+        [SerializeField] private bool is_default_animation = false;
+
         private bool started = false;
         private bool finished = false;
 
@@ -35,6 +39,8 @@ namespace Fast.UI
         /// [Internal, don't use] The unique name set to the animation.
         /// </summary>
         public string AnimationName => animation_name;
+
+        public bool IsDefaultAnimation => is_default_animation;
 
         /// <summary>
         /// [Internal, don't use] Defines if the animation must use it's starting values once the animation is started.

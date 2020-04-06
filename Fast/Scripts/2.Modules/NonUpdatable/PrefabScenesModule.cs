@@ -13,14 +13,14 @@ namespace Fast.Modules
             return await controller.LoadPrefabSceneAsync<T>(to_load);
         }
 
-        public async Task UnloadPrefabScene(Fast.PrefabScenes.BasePrefabScene prefab_scene)
+        public async Task UnloadPrefabScene<T>(Fast.PrefabScenes.PrefabScene<T> prefab_scene) where T : MonoBehaviour
         {
-            await controller.UnloadPrefabSceneAsync(prefab_scene);
+            await controller.UnloadPrefabSceneAsync<T>(prefab_scene);
         }
 
-        public Fast.PrefabScenes.BasePrefabScene GetLoadedPrefabScene(string name)
+        public Fast.PrefabScenes.PrefabScene<T> GetLoadedPrefabScene<T>(string name) where T : MonoBehaviour
         {
-            return controller.GetLoadedPrefabScene(name);
+            return controller.GetLoadedPrefabScene<T>(name);
         }
     }
 }

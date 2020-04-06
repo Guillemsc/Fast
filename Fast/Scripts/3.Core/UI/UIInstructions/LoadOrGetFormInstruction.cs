@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace Fast.UI
 {
-    public class LoadFormInstruction : Fast.UI.UIInstruction
+    public class LoadOrGetFormInstruction : Fast.UI.UIInstruction
     {
         private readonly string prefab_scene_name = "";
 
-        public LoadFormInstruction(string prefab_scene_name)
+        public LoadOrGetFormInstruction(string prefab_scene_name)
         {
             this.prefab_scene_name = prefab_scene_name;
         }

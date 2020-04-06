@@ -17,11 +17,7 @@ namespace Fast.UI
         [Sirenix.OdinInspector.SceneObjectsOnly]
         [SerializeField] private GameObject parent = null;
 
-        [Sirenix.OdinInspector.HideLabel]
-        [Sirenix.OdinInspector.Title("Default animation", "Animation used in default ocasions")]
-        [Sirenix.OdinInspector.Required]
-        [Sirenix.OdinInspector.SceneObjectsOnly]
-        [SerializeField] private FormAnimation default_animation = null;
+        private FormAnimation default_animation = null;
 
         private List<FormAnimation> animations = new List<FormAnimation>();
 
@@ -58,6 +54,31 @@ namespace Fast.UI
             FormAnimation[] animations_array = gameObject.GetComponents<FormAnimation>();
 
             animations.AddRange(animations_array);
+
+            for(int i = 0; i < animations_array.Length; ++i)
+            {
+                FormAnimation curr_anim = animations_array[i];
+
+                if (curr_anim.IsDefaultAnimation)
+                {
+                    if (default_animation != null)
+                    {
+                        Fast.FastService.MLog.LogError(this, "There are more than one default animations specified for this form. " +
+                            "Please ensure there is only one default animation");
+
+                        break;
+                    }
+                    else
+                    {
+                        default_animation = curr_anim;
+                    }
+                }
+            }
+
+            if(default_animation == null)
+            {
+                Fast.FastService.MLog.LogError(this, "There is not a default animation specified for this form");
+            }
         }
 
         /// <summary>

@@ -4,21 +4,18 @@ using UnityEngine;
 
 namespace Fast.UI
 {
-    public class UnloadFormInstruction : Fast.UI.UIInstruction
+    public class UnloadCurrFormInstruction : Fast.UI.UIInstruction
     {
-        private readonly string prefab_scene_name = "";
-
-        public UnloadFormInstruction(string prefab_scene_name)
+        public UnloadCurrFormInstruction()
         {
-            this.prefab_scene_name = prefab_scene_name;
+
         }
 
         protected override void StartInternal(Fast.UI.UIBehaviourContext context)
         {
-            Fast.PrefabScenes.PrefabScene<Fast.UI.Form> form_prefab_scene = Fast.FastService.MPrefabScenes.
-                GetLoadedPrefabScene<Fast.UI.Form>(prefab_scene_name);
+            Fast.PrefabScenes.PrefabScene<Fast.UI.Form> form_prefab_scene = context.Controller.CurrForm;
 
-            if(form_prefab_scene == null)
+            if (form_prefab_scene == null)
             {
                 Finish();
 
@@ -26,7 +23,7 @@ namespace Fast.UI
             }
 
             Fast.FastService.MPrefabScenes.UnloadPrefabScene(form_prefab_scene).ContinueWith(
-            delegate(Task t)
+            delegate (Task t)
             {
                 Finish();
             });
