@@ -8,15 +8,19 @@ namespace Fast.Modules
     {
         private readonly Fast.PrefabScenes.PrefabSceneController controller = new PrefabScenes.PrefabSceneController();
 
-        public async Task<Fast.PrefabScenes.PrefabScene<T>> LoadPrefabSceneAsync<T>(Fast.Scenes.Scene to_load, 
-            Fast.Scenes.LoadedScene to_set, GameObject parent) where T : MonoBehaviour
+        public async Task<Fast.PrefabScenes.PrefabScene<T>> LoadPrefabSceneAsync<T>(Fast.Scenes.Scene to_load) where T : MonoBehaviour
         {
-            return await controller.LoadPrefabSceneAsync<T>(to_load, to_set, parent);
+            return await controller.LoadPrefabSceneAsync<T>(to_load);
         }
 
-        public void UnloadPrefabScene(Fast.PrefabScenes.BasePrefabScene prefab_scene)
+        public async Task UnloadPrefabScene(Fast.PrefabScenes.BasePrefabScene prefab_scene)
         {
-            controller.UnloadPrefabScene(prefab_scene);
+            await controller.UnloadPrefabSceneAsync(prefab_scene);
+        }
+
+        public Fast.PrefabScenes.BasePrefabScene GetLoadedPrefabScene(string name)
+        {
+            return controller.GetLoadedPrefabScene(name);
         }
     }
 }

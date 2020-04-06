@@ -126,5 +126,58 @@ namespace Fast.UI
 
             sequence.Play();
         }
+
+
+        public override void SetStartingValuesForward()
+        {
+            for (int i = 0; i < data_to_move.Count; ++i)
+            {
+                MoveToPosData curr_data = data_to_move[i];
+
+                List<GameObject> to_move = curr_data.to_move;
+
+                for (int y = 0; y < to_move.Count; ++y)
+                {
+                    GameObject curr_go = to_move[y];
+
+                    curr_go.gameObject.SetActive(true);
+
+                    Fast.Tweening.FadeTween fade_anim = new Fast.Tweening.FadeTween(curr_go, 0.0f, 1, 1, true);
+
+                    Fast.Tweening.MoveTween move_anim
+                        = new Fast.Tweening.MoveTween(curr_go, curr_data.start_pos.transform.localPosition,
+                        curr_data.end_pos.transform.localPosition, 0.4f, ForceStartingValues);
+
+                    fade_anim.SetStartingValuesForward();
+                    move_anim.SetStartingValuesForward();
+                }
+            }
+        }
+
+        public override void SetStartingValuesBackward()
+        {
+            for (int i = 0; i < data_to_move.Count; ++i)
+            {
+                MoveToPosData curr_data = data_to_move[i];
+
+                List<GameObject> to_move = curr_data.to_move;
+
+                for (int y = 0; y < to_move.Count; ++y)
+                {
+                    GameObject curr_go = to_move[y];
+
+                    curr_go.gameObject.SetActive(true);
+
+                    Fast.Tweening.FadeTween fade_anim = new Tweening.FadeTween(curr_go, 0.0f, 1, 1, true);
+
+                    Fast.Tweening.MoveTween move_anim
+                        = new Fast.Tweening.MoveTween(curr_go, curr_data.start_pos.transform.position,
+                        curr_data.end_pos.transform.position, 0.4f, ForceStartingValues);
+
+                    fade_anim.SetStartingValuesBackward();
+                    move_anim.SetStartingValuesBackward();
+                }
+            }
+        }
     }
 }

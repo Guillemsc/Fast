@@ -11,15 +11,10 @@ namespace Fast.PrefabScenes
         private readonly Dictionary<string, Fast.PrefabScenes.BasePrefabScene> prefab_scenes
             = new Dictionary<string, PrefabScenes.BasePrefabScene>();
 
-        public async Task<PrefabScene<T>> LoadPrefabSceneAsync<T>(Fast.Scenes.Scene to_load, Fast.Scenes.LoadedScene to_set, GameObject parent)
+        public async Task<PrefabScene<T>> LoadPrefabSceneAsync<T>(Fast.Scenes.Scene to_load)
             where T : MonoBehaviour
         {
             if (to_load == null)
-            {
-                return null;
-            }
-
-            if (to_set == null)
             {
                 return null;
             }
@@ -68,17 +63,11 @@ namespace Fast.PrefabScenes
                 return null;
             }
 
-            SceneManager.MoveGameObjectToScene(instance.gameObject, to_set.UnityScene);
-
-            instance.gameObject.SetParent(parent);
-
-            PrefabScene<T> prefab_scene = new PrefabScene<T>(to_load.Name, instance);
-
-            Fast.FastService.MScenes.UnloadSceneAsync(to_load).ExecuteAsync();
+            PrefabScene<T> prefab_scene = new PrefabScene<T>(loaded_scene, instance);
 
             lock (prefab_scenes)
             {
-                prefab_scenes[prefab_scene.Name] = prefab_scene;
+                prefab_scenes[prefab_scene.LoadedScene.Scene.Name] = prefab_scene;
             }
 
             return prefab_scene;
@@ -93,21 +82,21 @@ namespace Fast.PrefabScenes
             return prefab_scene_to_get;
         }
 
-        public void UnloadPrefabScene(BasePrefabScene prefab_scene)
+        public async Task UnloadPrefabSceneAsync(BasePrefabScene prefab_scene)
         {
             if(prefab_scene == null)
             {
                 return;
             }
 
-            prefab_scenes.Remove(prefab_scene.Name);
+            prefab_scenes.Remove(prefab_scene.LoadedScene.Scene.Name);
 
-            if(prefab_scene.MonoBehaviourInstance == null)
+            if (prefab_scene.MonoBehaviourInstance != null)
             {
-                return;
+                prefab_scene.MonoBehaviourInstance.gameObject.SetActive(false);
             }
 
-            MonoBehaviour.Destroy(prefab_scene.MonoBehaviourInstance.gameObject);
+            await Fast.FastService.MScenes.UnloadSceneAsync(prefab_scene.LoadedScene.Scene);
         }
     }
 }

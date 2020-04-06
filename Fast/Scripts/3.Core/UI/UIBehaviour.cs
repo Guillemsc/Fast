@@ -20,8 +20,23 @@ namespace Fast.UI
             set { context = value; }
         }
 
+        public void AppendBehaviour(UIBehaviour behaviour)
+        {
+            if(behaviour == null)
+            {
+                return;
+            }
+
+            instructions.AddRange(behaviour.Instructions);
+        }
+
         public void AddInstruction(UIInstruction behaviour)
         {
+            if(behaviour == null)
+            {
+                return;
+            }
+
             instructions.Add(behaviour);
         }
     }

@@ -3,18 +3,15 @@ using System.Collections.Generic;
 
 namespace Fast.UI
 {
-    public class CurrFormPlayFormAnimInstruction : Fast.UI.UIInstruction
+    public class SetCurrFormAnimationStartingValues : Fast.UI.UIInstruction
     {
         private readonly string animation_name = "";
         private readonly Fast.UI.FormAnimationDirection direction = FormAnimationDirection.FORWARD;
-        private readonly bool force_starting_values = false;
 
-        public CurrFormPlayFormAnimInstruction(string animation_name, Fast.UI.FormAnimationDirection direction,
-            bool force_starting_values)
+        public SetCurrFormAnimationStartingValues(string animation_name, Fast.UI.FormAnimationDirection direction)
         {
             this.animation_name = animation_name;
             this.direction = direction;
-            this.force_starting_values = force_starting_values;
         }
 
         protected override void StartInternal(Fast.UI.UIBehaviourContext context)
@@ -22,8 +19,6 @@ namespace Fast.UI
             if (context.Controller.CurrForm == null)
             {
                 Finish();
-
-                return;
             }
 
             Fast.UI.Form form = context.Controller.CurrForm.Instance;
@@ -33,28 +28,27 @@ namespace Fast.UI
             if (form_animation == null)
             {
                 Finish();
+
+                return;
             }
-
-            form_animation.ForceStartingValues = force_starting_values;
-
-            form_animation.OnFinish.Subscribe(Finish);
 
             switch (direction)
             {
                 case FormAnimationDirection.FORWARD:
                     {
-                        form_animation.AnimateForward(Fast.FastService.MTime.GeneralTimeContext);
+                        form_animation.SetStartingValuesForward();
+
                         break;
                     }
 
                 case FormAnimationDirection.BACKWARD:
                     {
-                        form_animation.AnimateBackward(Fast.FastService.MTime.GeneralTimeContext);
+                        form_animation.SetStartingValuesBackward();
                         break;
                     }
             }
 
-            form.Parent.SetActive(true);
+            Finish();
         }
     }
 }

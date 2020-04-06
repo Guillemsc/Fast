@@ -145,5 +145,15 @@ namespace Fast.UI
         {
 
         }
+
+        public virtual void SetStartingValuesForward()
+        {
+
+        }
+
+        public virtual void SetStartingValuesBackward()
+        {
+
+        }
     }
 }

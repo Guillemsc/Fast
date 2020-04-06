@@ -78,6 +78,8 @@ namespace Fast.Editor.Scenes
             if(!exists)
             {
                 UnityEngine.Debug.LogError($"Trying to open scene: {scene_name} on the editor but it does not exist");
+
+                return;
             }
 
             string scene_path = GetSceneAssetPath(scene_name);

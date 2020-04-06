@@ -5,16 +5,16 @@ namespace Fast.PrefabScenes
 {
     public class BasePrefabScene
     {
-        private readonly string name = "";
+        private readonly Fast.Scenes.LoadedScene loaded_scene = null;
         protected readonly MonoBehaviour instance = null;
 
-        public BasePrefabScene(string name, MonoBehaviour instance)
+        public BasePrefabScene(Fast.Scenes.LoadedScene loaded_scene, MonoBehaviour instance)
         {
-            this.name = name;
+            this.loaded_scene = loaded_scene;
             this.instance = instance;
         }
 
-        public string Name => name;
+        public Fast.Scenes.LoadedScene LoadedScene => loaded_scene;
         public MonoBehaviour MonoBehaviourInstance => instance;
     }
 }

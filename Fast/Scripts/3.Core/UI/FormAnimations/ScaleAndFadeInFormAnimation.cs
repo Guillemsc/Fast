@@ -144,5 +144,67 @@ namespace Fast.UI
 
             sequence.Play();
         }
+
+        public override void SetStartingValuesForward()
+        {
+            for (int i = 0; i < to_fade.Count; ++i)
+            {
+                GameObject curr_go = to_fade[i];
+
+                curr_go.SetActive(true);
+
+                CanvasGroup curr_go_cg = curr_go.GetOrAddComponent<CanvasGroup>();
+
+                Fast.Tweening.FadeTween fade_in_anim
+                    = new Fast.Tweening.FadeTween(curr_go, 0.4f, 0, 1, ForceStartingValues);
+
+                fade_in_anim.SetStartingValuesForward();
+            }
+
+            for (int i = 0; i < to_scale.Count; ++i)
+            {
+                GameObject curr_go = to_scale[i];
+
+                curr_go.SetActive(true);
+
+                CanvasGroup curr_go_cg = curr_go.GetOrAddComponent<CanvasGroup>();
+
+                Fast.Tweening.ScaleTween scale_in_anim
+                    = new Fast.Tweening.ScaleTween(curr_go, 0.4f, Vector3.zero, Vector3.one, ForceStartingValues);
+
+                scale_in_anim.SetStartingValuesForward();
+            }
+        }
+
+        public override void SetStartingValuesBackward()
+        {
+            for (int i = 0; i < to_fade.Count; ++i)
+            {
+                GameObject curr_go = to_fade[i];
+
+                curr_go.SetActive(true);
+
+                CanvasGroup curr_go_cg = curr_go.GetOrAddComponent<CanvasGroup>();
+
+                Fast.Tweening.FadeTween fade_in_anim
+                    = new Fast.Tweening.FadeTween(curr_go, 0.4f, 0, 1, ForceStartingValues);
+
+                fade_in_anim.SetStartingValuesBackward();
+            }
+
+            for (int i = 0; i < to_scale.Count; ++i)
+            {
+                GameObject curr_go = to_scale[i];
+
+                curr_go.SetActive(true);
+
+                CanvasGroup curr_go_cg = curr_go.GetOrAddComponent<CanvasGroup>();
+
+                Fast.Tweening.ScaleTween scale_in_anim
+                    = new Fast.Tweening.ScaleTween(curr_go, 0.3f, Vector3.zero, Vector3.one, ForceStartingValues);
+
+                scale_in_anim.SetStartingValuesBackward();
+            }
+        }
     }
 }

@@ -13,6 +13,8 @@ namespace Fast.UI
 
         private Fast.Callback on_finish = new Callback();
 
+        private UIBehaviourContext behaviour_context = null;
+
         public bool Started => started;
         public bool Finished => finished;
         public Fast.Callback OnFinish => on_finish;
@@ -22,6 +24,8 @@ namespace Fast.UI
             if(!started)
             {
                 started = true;
+
+                this.behaviour_context = context;
 
                 StartInternal(context);
             }
@@ -34,7 +38,7 @@ namespace Fast.UI
                 finished = true;
                 started = false;
 
-                FinishInternal();
+                FinishInternal(behaviour_context);
 
                 on_finish.Invoke();
             }
@@ -45,9 +49,9 @@ namespace Fast.UI
 
         }
 
-        protected virtual void FinishInternal()
+        protected virtual void FinishInternal(Fast.UI.UIBehaviourContext context)
         {
-
+            
         }
     }
 }

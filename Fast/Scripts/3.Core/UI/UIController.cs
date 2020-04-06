@@ -8,15 +8,23 @@ namespace Fast.UI
 {
     public class UIController : Fast.IController, Fast.IUpdatable
     {
+        private readonly Fast.Time.TimeContext time_context = null;
         private readonly List<UIBehaviour> behaviours_to_start = new List<UIBehaviour>();
         private int curr_behaivour_instruction = 0;
 
         private Fast.PrefabScenes.PrefabScene<Fast.UI.Form> curr_form = null;
 
+        public UIController(Fast.Time.TimeContext time_context)
+        {
+            this.time_context = time_context;
+        }
+
         public void Update()
         {
             UpdateBehaviours();
         }
+
+        public Fast.Time.TimeContext TimeContext => time_context;
 
         public Fast.PrefabScenes.PrefabScene<Fast.UI.Form> CurrForm
         {
