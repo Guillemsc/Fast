@@ -6,17 +6,17 @@ namespace Fast.UI
 {
     public class UnloadFormInstruction : Fast.UI.UIInstruction
     {
-        private readonly string prefab_scene_name = "";
+        private readonly Fast.PrefabScenes.PrefabSceneReference<Fast.UI.Form> reference = null;
 
-        public UnloadFormInstruction(string prefab_scene_name)
+        public UnloadFormInstruction(Fast.PrefabScenes.PrefabSceneReference<Fast.UI.Form> reference)
         {
-            this.prefab_scene_name = prefab_scene_name;
+            this.reference = reference;
         }
 
         protected override void StartInternal(Fast.UI.UIBehaviourContext context)
         {
             Fast.PrefabScenes.PrefabScene<Fast.UI.Form> form_prefab_scene = Fast.FastService.MPrefabScenes.
-                GetLoadedPrefabScene<Fast.UI.Form>(prefab_scene_name);
+                GetLoadedPrefabScene<Fast.UI.Form>(reference);
 
             if(form_prefab_scene == null)
             {
@@ -25,7 +25,7 @@ namespace Fast.UI
                 return;
             }
 
-            Fast.FastService.MPrefabScenes.UnloadPrefabScene(form_prefab_scene).ContinueWith(
+            Fast.FastService.MPrefabScenes.UnloadPrefabSceneAsync(reference).ContinueWith(
             delegate(Task t)
             {
                 Finish();

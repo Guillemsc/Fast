@@ -13,6 +13,8 @@ namespace Fast.UI
         private int curr_behaivour_instruction = 0;
 
         private Fast.PrefabScenes.PrefabScene<Fast.UI.Form> curr_form = null;
+        private Fast.PrefabScenes.PrefabScene<Fast.UI.Form> curr_sub_form = null;
+        private readonly List<Fast.PrefabScenes.PrefabScene<Fast.UI.Form>> curr_sub_forms = new List<PrefabScenes.PrefabScene<Form>>();
 
         public UIController(Fast.Time.TimeContext time_context)
         {
@@ -30,6 +32,17 @@ namespace Fast.UI
         {
             get { return curr_form; }
             set { curr_form = value; }
+        }
+
+        public Fast.PrefabScenes.PrefabScene<Fast.UI.Form> CurrSubForm
+        {
+            get { return curr_sub_form; }
+            set { curr_sub_form = value; }
+        }
+
+        public List<Fast.PrefabScenes.PrefabScene<Fast.UI.Form>> CurrSubForms
+        {
+            get { return curr_sub_forms; }
         }
 
         public void PlayBehaviour(UIBehaviour behaviour)

@@ -20,8 +20,13 @@ namespace Fast.PrefabScenes
             return ret;
         }
 
-        public PrefabScene<T> GetLoadedPrefabScene<T>(string name) where T : MonoBehaviour
+        public PrefabScene<T> GetLoadedPrefabScene<T>(PrefabSceneReference<T> reference) where T : MonoBehaviour
         {
+            if(reference == null)
+            {
+                return null;
+            }
+
             Dictionary<string, BasePrefabScene> types = GetPrefabScenesType(typeof(T));
 
             if(types == null)
@@ -30,7 +35,7 @@ namespace Fast.PrefabScenes
             }
 
             BasePrefabScene prefab_scene = null;
-            types.TryGetValue(name, out prefab_scene);
+            types.TryGetValue(reference.UID, out prefab_scene);
 
             if(prefab_scene == null)
             {
@@ -42,17 +47,17 @@ namespace Fast.PrefabScenes
             return ret;
         }
 
-        public async Task<PrefabScene<T>> LoadPrefabSceneAsync<T>(Fast.Scenes.Scene to_load)
+        public async Task<PrefabScene<T>> LoadPrefabSceneAsync<T>(PrefabSceneReference<T> reference)
             where T : MonoBehaviour
         {
-            if (to_load == null)
+            if (reference == null)
             {
                 return null;
             }
 
             lock (prefab_scenes)
             {
-                BasePrefabScene prefab_scene_to_get = GetLoadedPrefabScene<T>(to_load.Name);
+                BasePrefabScene prefab_scene_to_get = GetLoadedPrefabScene<T>(reference);
 
                 if (prefab_scene_to_get != null)
                 {
@@ -63,6 +68,13 @@ namespace Fast.PrefabScenes
                         return to_check_type;
                     }
                 }
+            }
+
+            Fast.Scenes.Scene to_load = Fast.FastService.MScenes.GetLoadableScene(reference.SceneName);
+
+            if(to_load == null)
+            {
+                return null;
             }
 
             Fast.Scenes.LoadedScene loaded_scene =
@@ -94,7 +106,7 @@ namespace Fast.PrefabScenes
                 return null;
             }
 
-            PrefabScene<T> prefab_scene = new PrefabScene<T>(loaded_scene, instance);
+            PrefabScene<T> prefab_scene = new PrefabScene<T>(reference.UID, loaded_scene, instance);
 
             lock (prefab_scenes)
             {
@@ -106,15 +118,27 @@ namespace Fast.PrefabScenes
                     prefab_scenes.Add(typeof(T), types);
                 }
 
-                types[prefab_scene.LoadedScene.Scene.Name] = prefab_scene;
+                types[reference.UID] = prefab_scene;
             }
 
             return prefab_scene;
         }
 
+        public async Task UnloadPrefabSceneAsync<T>(PrefabSceneReference<T> reference) where T : MonoBehaviour
+        {
+            if(reference == null)
+            {
+                return;
+            }
+
+            PrefabScene<T> prefab_scene = GetLoadedPrefabScene(reference);
+
+            await UnloadPrefabSceneAsync(prefab_scene);
+        }
+
         public async Task UnloadPrefabSceneAsync<T>(PrefabScene<T> prefab_scene) where T : MonoBehaviour
         {
-            if(prefab_scene == null)
+            if (prefab_scene == null)
             {
                 return;
             }
@@ -123,15 +147,10 @@ namespace Fast.PrefabScenes
 
             if (types != null)
             {
-                types.Remove(prefab_scene.LoadedScene.Scene.Name);
+                types.Remove(prefab_scene.UID);
             }
 
-            if (prefab_scene.MonoBehaviourInstance != null)
-            {
-                prefab_scene.MonoBehaviourInstance.gameObject.SetActive(false);
-            }
-
-            await Fast.FastService.MScenes.UnloadSceneAsync(prefab_scene.LoadedScene.Scene);
+            await Fast.FastService.MScenes.UnloadSceneAsync(prefab_scene.LoadedScene);
         }
     }
 }

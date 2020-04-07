@@ -8,7 +8,8 @@ namespace Fast.Scenes
         private readonly Fast.Scenes.SceneRoot scene_root = null;
         private readonly UnityEngine.SceneManagement.Scene unity_scene = default;
 
-        public LoadedScene(Fast.Scenes.Scene scene, Fast.Scenes.SceneRoot scene_root, UnityEngine.SceneManagement.Scene unity_scene)
+        public LoadedScene(Fast.Scenes.Scene scene, Fast.Scenes.SceneRoot scene_root, 
+            UnityEngine.SceneManagement.Scene unity_scene)
         {
             this.scene = scene;
             this.scene_root = scene_root;

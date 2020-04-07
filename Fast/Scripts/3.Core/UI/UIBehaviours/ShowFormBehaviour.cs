@@ -4,9 +4,9 @@ namespace Fast.UI
 {
     public class ShowFormBehaviour : UIBehaviour
     {
-        public ShowFormBehaviour(string prefab_scene_name, string animation)
+        public ShowFormBehaviour(Fast.PrefabScenes.PrefabSceneReference<Fast.UI.Form> form_ref, string animation)
         {
-            Fast.UI.LoadOrGetFormInstruction ins1 = new Fast.UI.LoadOrGetFormInstruction(prefab_scene_name);
+            Fast.UI.LoadOrGetFormInstruction ins1 = new Fast.UI.LoadOrGetFormInstruction(form_ref);
             Fast.UI.SetLastLoadedFormAsCurrentFormInstruction ins2 = new Fast.UI.SetLastLoadedFormAsCurrentFormInstruction();
             Fast.UI.SetCurrFormAnimationStartingValues ins3 = new Fast.UI.SetCurrFormAnimationStartingValues("FadeIn", 
                 FormAnimationDirection.FORWARD);

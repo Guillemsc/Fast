@@ -51,6 +51,29 @@ namespace Fast.Scenes
             return null;
         }
 
+        public bool SceneIsLoaded(LoadedScene loaded_scene)
+        {
+            if (loaded_scene == null)
+            {
+                return false;
+            }
+
+            lock (loaded_scenes)
+            {
+                for (int i = 0; i < loaded_scenes.Count; ++i)
+                {
+                    LoadedScene curr_scene = loaded_scenes[i];
+
+                    if (curr_scene == loaded_scene)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         public bool SceneIsLoaded(Scene scene)
         {
             if(scene == null)
@@ -74,7 +97,7 @@ namespace Fast.Scenes
             return false;
         }
 
-        public async Task<LoadedScene> LoadSceneAsync(Scene scene, LoadSceneMode mode)
+        public async Task<LoadedScene> LoadSceneAsync(Scene scene, LoadSceneMode mode, bool allow_repeated = true)
         {
             TaskCompletionSource<LoadedScene> tcs = new TaskCompletionSource<LoadedScene>();
 
@@ -101,12 +124,15 @@ namespace Fast.Scenes
 
             if(can_continue)
             {
-                bool already_loaded = SceneIsLoaded(scene);
-
-                if(already_loaded)
+                if (!allow_repeated)
                 {
-                    tcs.SetResult(null);
-                    can_continue = false;
+                    bool already_loaded = SceneIsLoaded(scene);
+
+                    if (already_loaded)
+                    {
+                        tcs.SetResult(null);
+                        can_continue = false;
+                    }
                 }
             }
 
@@ -118,7 +144,7 @@ namespace Fast.Scenes
                 {
                     loaded_unity_scene = SceneManager.GetSceneByName(scene.Name);
 
-                    if(!loaded_unity_scene.IsValid())
+                    if (!loaded_unity_scene.IsValid())
                     {
                         Fast.FastService.MLog.LogWarning(this, $"Scene: {scene.Name} is not valid");
 
@@ -147,13 +173,13 @@ namespace Fast.Scenes
             return await tcs.Task;
         }
 
-        public async Task UnloadSceneAsync(Scene scene)
+        public async Task UnloadSceneAsync(LoadedScene loaded_scene, bool allow_repeated = true)
         {
             TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
 
             bool can_continue = true;
 
-            if (scene == null)
+            if (loaded_scene == null)
             {
                 tcs.SetResult(null);
 
@@ -162,7 +188,7 @@ namespace Fast.Scenes
 
             if (can_continue)
             {
-                bool already_loaded = SceneIsLoaded(scene);
+                bool already_loaded = SceneIsLoaded(loaded_scene);
 
                 if (!already_loaded)
                 {
@@ -173,7 +199,7 @@ namespace Fast.Scenes
 
             if (can_continue)
             {
-                UnityEngine.AsyncOperation async_unload = SceneManager.UnloadSceneAsync(scene.Name);
+                UnityEngine.AsyncOperation async_unload = SceneManager.UnloadSceneAsync(loaded_scene.UnityScene, UnloadSceneOptions.None);
 
                 async_unload.completed += (delegate (UnityEngine.AsyncOperation operation)
                 {
@@ -181,7 +207,7 @@ namespace Fast.Scenes
                     {
                         for(int i = 0; i < loaded_scenes.Count; ++i)
                         {
-                            if(loaded_scenes[i].Scene.Name == scene.Name)
+                            if(loaded_scenes[i].Scene.Name == loaded_scene.Scene.Name)
                             {
                                 loaded_scenes.RemoveAt(i);
 

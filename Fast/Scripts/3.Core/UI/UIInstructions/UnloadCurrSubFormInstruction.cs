@@ -4,16 +4,11 @@ using UnityEngine;
 
 namespace Fast.UI
 {
-    public class UnloadCurrFormInstruction : Fast.UI.UIInstruction
+    public class UnloadCurrSubFormInstruction : Fast.UI.UIInstruction
     {
-        public UnloadCurrFormInstruction()
-        {
-
-        }
-
         protected override void StartInternal(Fast.UI.UIBehaviourContext context)
         {
-            Fast.PrefabScenes.PrefabScene<Fast.UI.Form> form_prefab_scene = context.Controller.CurrForm;
+            Fast.PrefabScenes.PrefabScene<Fast.UI.Form> form_prefab_scene = context.Controller.CurrSubForm;
 
             if (form_prefab_scene == null)
             {
@@ -28,9 +23,10 @@ namespace Fast.UI
                 Finish();
             });
 
-            if (form_prefab_scene == context.Controller.CurrForm)
+            if (form_prefab_scene == context.Controller.CurrSubForm)
             {
-                context.Controller.CurrForm = null;
+                context.Controller.CurrSubForm = null;
+                context.Controller.CurrSubForms.Remove(form_prefab_scene);
             }
         }
     }

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace Fast.UI
 {
-    public class CurrFormPlayFormAnimInstruction : Fast.UI.UIInstruction
+    public class CurrSubFormPlayAnimationInstruction : Fast.UI.UIInstruction
     {
         private readonly string animation_name = "";
         private readonly Fast.UI.FormAnimationDirection direction = FormAnimationDirection.FORWARD;
         private readonly bool force_starting_values = false;
 
-        public CurrFormPlayFormAnimInstruction(string animation_name, Fast.UI.FormAnimationDirection direction,
+        public CurrSubFormPlayAnimationInstruction(string animation_name, Fast.UI.FormAnimationDirection direction,
             bool force_starting_values)
         {
             this.animation_name = animation_name;
@@ -19,14 +19,14 @@ namespace Fast.UI
 
         protected override void StartInternal(Fast.UI.UIBehaviourContext context)
         {
-            if (context.Controller.CurrForm == null)
+            if (context.Controller.CurrSubForm == null)
             {
                 Finish();
 
                 return;
             }
 
-            Fast.UI.Form form = context.Controller.CurrForm.Instance;
+            Fast.UI.Form form = context.Controller.CurrSubForm.Instance;
 
             FormAnimation form_animation = form.GetAnimation(animation_name);
 

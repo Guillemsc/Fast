@@ -6,25 +6,23 @@ namespace Fast.UI
 {
     public class LoadOrGetFormInstruction : Fast.UI.UIInstruction
     {
-        private readonly string prefab_scene_name = "";
+        private readonly Fast.PrefabScenes.PrefabSceneReference<Fast.UI.Form> form_reference = null;
 
-        public LoadOrGetFormInstruction(string prefab_scene_name)
+        public LoadOrGetFormInstruction(Fast.PrefabScenes.PrefabSceneReference<Fast.UI.Form> form_reference)
         {
-            this.prefab_scene_name = prefab_scene_name;
+            this.form_reference = form_reference;
         }
 
         protected override void StartInternal(Fast.UI.UIBehaviourContext context)
         {
-            Scenes.Scene loadable_scene = Fast.FastService.MScenes.GetLoadableScene(prefab_scene_name);
-
-            if(loadable_scene == null)
+            if(form_reference == null)
             {
                 Finish();
 
                 return;
             }
 
-            Fast.FastService.MPrefabScenes.LoadPrefabSceneAsync<Fast.UI.Form>(loadable_scene).ContinueWith(
+            Fast.FastService.MPrefabScenes.LoadPrefabSceneAsync(form_reference).ContinueWith(
             delegate(Task<Fast.PrefabScenes.PrefabScene<Fast.UI.Form>> task)
             {
                 context.LastLoadedForm = task.Result;

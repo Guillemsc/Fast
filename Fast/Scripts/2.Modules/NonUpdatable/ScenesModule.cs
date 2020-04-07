@@ -29,14 +29,14 @@ namespace Fast.Modules
             return controller.GetLoadableScene(scene_name);
         }
 
-        public async Task<Fast.Scenes.LoadedScene> LoadSceneAsync(Fast.Scenes.Scene scene, LoadSceneMode mode)
+        public async Task<Fast.Scenes.LoadedScene> LoadSceneAsync(Fast.Scenes.Scene scene, LoadSceneMode mode, bool allow_repeated = true)
         {
-            return await controller.LoadSceneAsync(scene, mode);
+            return await controller.LoadSceneAsync(scene, mode, allow_repeated);
         }
 
-        public async Task UnloadSceneAsync(Fast.Scenes.Scene scene)
+        public async Task UnloadSceneAsync(Fast.Scenes.LoadedScene loaded_scene)
         {
-            await controller.UnloadSceneAsync(scene);
+            await controller.UnloadSceneAsync(loaded_scene);
         }
     }
 }
