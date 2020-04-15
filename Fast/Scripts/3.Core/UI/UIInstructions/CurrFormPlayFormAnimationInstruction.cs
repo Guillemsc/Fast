@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace Fast.UI
 {
-    public class CurrFormPlayFormAnimInstruction : Fast.UI.UIInstruction
+    public class CurrFormPlayFormAnimationInstruction : Fast.UI.UIInstruction
     {
         private readonly string animation_name = "";
         private readonly Fast.UI.FormAnimationDirection direction = FormAnimationDirection.FORWARD;
         private readonly bool force_starting_values = false;
 
-        public CurrFormPlayFormAnimInstruction(string animation_name, Fast.UI.FormAnimationDirection direction,
+        public CurrFormPlayFormAnimationInstruction(string animation_name, Fast.UI.FormAnimationDirection direction,
             bool force_starting_values)
         {
             this.animation_name = animation_name;

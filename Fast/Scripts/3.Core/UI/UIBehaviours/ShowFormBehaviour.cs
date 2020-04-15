@@ -11,7 +11,7 @@ namespace Fast.UI
             Fast.UI.SetCurrFormAnimationStartingValues ins3 = new Fast.UI.SetCurrFormAnimationStartingValues("FadeIn", 
                 FormAnimationDirection.FORWARD);
             Fast.UI.CurrFormSetActive ins4 = new Fast.UI.CurrFormSetActive(true);
-            Fast.UI.CurrFormPlayFormAnimInstruction ins5 = new Fast.UI.CurrFormPlayFormAnimInstruction("FadeIn", 
+            Fast.UI.CurrFormPlayFormAnimationInstruction ins5 = new Fast.UI.CurrFormPlayFormAnimationInstruction("FadeIn", 
                 Fast.UI.FormAnimationDirection.FORWARD, true);
 
             AddInstruction(ins1);
