@@ -5,8 +5,9 @@ namespace Fast.Commands
 {
     public interface ICommand
     {
+        IReadOnlyList<ICommand> GeneratePreCommands();
         bool CanExecute();
         IReadOnlyList<ICommandEffect> Execute();
-        IReadOnlyList<ICommand> GenerateCommands();
+        IReadOnlyList<ICommand> GeneratePostCommands();
     }
 }

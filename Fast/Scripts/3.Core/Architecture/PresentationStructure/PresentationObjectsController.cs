@@ -9,13 +9,13 @@ namespace Fast.Architecture
         private readonly Dictionary<Type, GameObject> parents
            = new Dictionary<Type, GameObject>();
 
-        private readonly Dictionary<Type, BaseMatchPresentationObject> prefabs
-           = new Dictionary<Type, BaseMatchPresentationObject>();
+        private readonly Dictionary<Type, MatchPresentationObject> prefabs
+           = new Dictionary<Type, MatchPresentationObject>();
 
-        private readonly Dictionary<Type, List<BaseMatchPresentationObject>> instances 
-            = new Dictionary<Type, List<BaseMatchPresentationObject>>();
+        private readonly Dictionary<Type, List<MatchPresentationObject>> instances 
+            = new Dictionary<Type, List<MatchPresentationObject>>();
 
-        public void AddParent<T>(GameObject parent) where T : BaseMatchLogicObject
+        public void AddParent<T>(GameObject parent) where T : MatchLogicObject
         {
             Type type = typeof(T);
 
@@ -36,16 +36,16 @@ namespace Fast.Architecture
             return parent;
         }
 
-        public void AddPrefab<T>(BaseMatchPresentationObject prefab) where T : BaseMatchLogicObject
+        public void AddPrefab<T>(MatchPresentationObject prefab) where T : MatchLogicObject
         {
             Type type = typeof(T);
 
             prefabs.Add(type, prefab);
         }
 
-        private BaseMatchPresentationObject GetPrefab(Type type)
+        private MatchPresentationObject GetPrefab(Type type)
         {
-            BaseMatchPresentationObject prefab = null;
+            MatchPresentationObject prefab = null;
             prefabs.TryGetValue(type, out prefab);
 
             if(prefab == null)
@@ -57,11 +57,11 @@ namespace Fast.Architecture
             return prefab;
         }
 
-        public BaseMatchPresentationObject CreateInstance(BaseMatchLogicObject obj)
+        public MatchPresentationObject CreateInstance(MatchLogicObject obj)
         {
             Type type = obj.GetType();
 
-            BaseMatchPresentationObject prefab = GetPrefab(type);
+            MatchPresentationObject prefab = GetPrefab(type);
             GameObject parent = GetParent(type);
 
             if(prefab == null)
@@ -73,14 +73,14 @@ namespace Fast.Architecture
             GameObject instance_go = MonoBehaviour.Instantiate(prefab.gameObject, Vector3.zero, Quaternion.identity);
             instance_go.SetParent(parent);
 
-            BaseMatchPresentationObject instance = instance_go.GetComponent<BaseMatchPresentationObject>();
+            MatchPresentationObject instance = instance_go.GetComponent<MatchPresentationObject>();
 
-            List<BaseMatchPresentationObject> instances_list = null;
+            List<MatchPresentationObject> instances_list = null;
             bool found = instances.TryGetValue(type, out instances_list);
 
             if(!found)
             {
-                instances_list = new List<BaseMatchPresentationObject>();
+                instances_list = new List<MatchPresentationObject>();
                 instances.Add(type, instances_list);
             }
 
@@ -91,22 +91,22 @@ namespace Fast.Architecture
             return instance;
         }
 
-        public void DestroyInstance(BaseMatchPresentationObject obj)
+        public void DestroyInstance(MatchPresentationObject obj)
         {
             if(obj == null)
             {
                 return;
             }
 
-            if(obj.BaseMatchLogicObject == null)
+            if(obj.MatchLogicObject == null)
             {
                 return;
             }
 
-            DestroyInstance(obj.BaseMatchLogicObject);
+            DestroyInstance(obj.MatchLogicObject);
         }
 
-        public void DestroyInstance(BaseMatchLogicObject logic_obj)
+        public void DestroyInstance(MatchLogicObject logic_obj)
         {
             if (logic_obj == null)
             {
@@ -115,7 +115,7 @@ namespace Fast.Architecture
 
             Type type = logic_obj.GetType();
 
-            List<BaseMatchPresentationObject> instances_list = null;
+            List<MatchPresentationObject> instances_list = null;
             bool found = instances.TryGetValue(type, out instances_list);
 
             if (!found)
@@ -123,12 +123,12 @@ namespace Fast.Architecture
                 return;
             }
 
-            BaseMatchPresentationObject to_destroy = null;
+            MatchPresentationObject to_destroy = null;
             for (int i = 0; i < instances_list.Count; ++i)
             {
-                BaseMatchPresentationObject curr_obj = instances_list[i];
+                MatchPresentationObject curr_obj = instances_list[i];
 
-                if (curr_obj.BaseMatchLogicObject.ObjectUID == logic_obj.ObjectUID)
+                if (curr_obj.MatchLogicObject.ObjectUID == logic_obj.ObjectUID)
                 {
                     instances_list.RemoveAt(i);
 
@@ -146,7 +146,7 @@ namespace Fast.Architecture
             MonoBehaviour.Destroy(to_destroy);
         }
 
-        public BaseMatchPresentationObject GetInstance(BaseMatchLogicObject logic_obj)
+        public MatchPresentationObject GetInstance(MatchLogicObject logic_obj)
         {
             if (logic_obj == null)
             {
@@ -155,7 +155,7 @@ namespace Fast.Architecture
 
             Type type = logic_obj.GetType();
 
-            List<BaseMatchPresentationObject> instances_list = null;
+            List<MatchPresentationObject> instances_list = null;
             bool found = instances.TryGetValue(type, out instances_list);
 
             if (!found)
@@ -165,9 +165,9 @@ namespace Fast.Architecture
 
             for (int i = 0; i < instances_list.Count; ++i)
             {
-                BaseMatchPresentationObject curr_obj = instances_list[i];
+                MatchPresentationObject curr_obj = instances_list[i];
 
-                if (curr_obj.BaseMatchLogicObject.ObjectUID == logic_obj.ObjectUID)
+                if (curr_obj.MatchLogicObject.ObjectUID == logic_obj.ObjectUID)
                 {
                     instances_list.RemoveAt(i);
 

@@ -8,17 +8,12 @@ namespace Fast.TimeSliced
     /// </summary>
     class TimeSlicedController : IController, IUpdatable
     {
-        private readonly Fast.Time.Timer timer = null;
+        private readonly Fast.Time.TimerStopwatch timer = new Time.TimerStopwatch();
 
         private Fast.Containers.PriorityQueue<TimeSlicedTask> tasks_queue
             = new Fast.Containers.PriorityQueue<TimeSlicedTask>();
 
         private TimeSpan max_time_per_frame = TimeSpan.FromMilliseconds(2);
-
-        public TimeSlicedController(Fast.Time.Timer timer)
-        {
-            this.timer = timer;
-        }
 
         public void Update()
         {
@@ -69,7 +64,7 @@ namespace Fast.TimeSliced
 
         private void UpdateTasks()
         {
-            timer.Start();
+            timer.Restart();
 
             bool finish = false;
 
@@ -104,7 +99,7 @@ namespace Fast.TimeSliced
                     finish = true;
                 }
 
-                if(timer.ReadUnscaledTime().Milliseconds > max_time_per_frame.Milliseconds)
+                if(timer.ReadTime().Milliseconds > max_time_per_frame.Milliseconds)
                 {
                     finish = true;
                 }

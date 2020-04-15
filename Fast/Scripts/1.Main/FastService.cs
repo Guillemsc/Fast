@@ -26,6 +26,9 @@ namespace Fast
 
         private bool initialized = false;
 
+        private List<Modules.Module> all_modules = new List<Modules.Module>();
+        private List<Modules.UpdatableModule> updatable_modules = new List<Modules.UpdatableModule>();
+
         private Fast.Modules.LogModule log_module = null;
         private Fast.Modules.ApplicationModule application_module = null;
         private Fast.Modules.PlatformModule platform_module = null;
@@ -38,15 +41,11 @@ namespace Fast
 
         private Fast.Modules.SettingsDataSaveModule settings_data_save_module = null;
         private Fast.Modules.TimeModule time_module = null;
-        private Fast.Modules.FlowModule flow_module = null;
         private Fast.Modules.LogicModule logic_module = null;
         private Fast.Modules.TimeSlicedModule time_sliced_module = null;
         private Fast.Modules.ParticlesModule particles_module = null;
         private Fast.Modules.UIModule ui_module = null;
         private Fast.Modules.FlowCommandsModule flow_commands = null;
-
-        private List<Modules.Module> all_modules = new List<Modules.Module>();
-        private List<Modules.UpdatableModule> updatable_modules = new List<Modules.UpdatableModule>();
 
         FastService()
         {
@@ -100,7 +99,6 @@ namespace Fast
 
                 settings_data_save_module = (Modules.SettingsDataSaveModule)AddUpdatableModule(new Modules.SettingsDataSaveModule());
                 time_module = (Modules.TimeModule)AddUpdatableModule(new Modules.TimeModule());
-                flow_module = (Modules.FlowModule)AddUpdatableModule(new Modules.FlowModule());
                 logic_module = (Modules.LogicModule)AddUpdatableModule(new Modules.LogicModule());
                 time_sliced_module = (Modules.TimeSlicedModule)AddUpdatableModule(new Modules.TimeSlicedModule());
                 particles_module = (Modules.ParticlesModule)AddUpdatableModule(new Modules.ParticlesModule());
@@ -271,11 +269,6 @@ namespace Fast
         public static Fast.Modules.TimeModule MTime
         {
             get { return Instance.time_module; }
-        }
-
-        public static Fast.Modules.FlowModule MFlow
-        {
-            get { return Instance.flow_module; }
         }
 
         public static Fast.Modules.LogicModule MLogic

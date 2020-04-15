@@ -39,27 +39,15 @@ namespace Fast.Commands
 
             Queue<ICommand> commands_queue = new Queue<ICommand>();
 
-            commands_queue.Enqueue(command);
+            AddCommandToCommandsQueue(ref commands_queue, command);
 
             while (commands_queue.Count > 0)
             {
                 ICommand curr_command = commands_queue.Dequeue();
 
                 IReadOnlyList<ICommandEffect> curr_command_effects = curr_command.Execute();
+
                 effects.AddRange(curr_command_effects);
-
-                for (int i = 0; i < curr_command_effects.Count; ++i)
-                {
-                    ICommandEffect curr_effect = curr_command_effects[i];
-
-                    IReadOnlyList<ICommand> curr_effect_new_commands = curr_effect.GenerateCommands();
-
-                    AddCommandsToCommandsQueue(ref commands_queue, curr_effect_new_commands);
-                }
-
-                IReadOnlyList<ICommand> curr_command_new_commands = curr_command.GenerateCommands();
-
-                AddCommandsToCommandsQueue(ref commands_queue, curr_command_new_commands);
             }
 
             return effects;
@@ -78,11 +66,27 @@ namespace Fast.Commands
             return ExecuteCommands(commands);
         }
 
+        private void AddCommandToCommandsQueue(ref Queue<ICommand> commands_queue, ICommand command)
+        {
+            IReadOnlyList<ICommand> pre_commands = command.GeneratePreCommands();
+            AddCommandsToCommandsQueue(ref commands_queue, pre_commands);
+
+            commands_queue.Enqueue(command);
+
+            IReadOnlyList<ICommand> post_commands = command.GeneratePostCommands();
+            AddCommandsToCommandsQueue(ref commands_queue, post_commands);
+        }
+
         private void AddCommandsToCommandsQueue(ref Queue<ICommand> commands_queue, IReadOnlyList<ICommand> commands)
         {
+            if (commands == null)
+            {
+                return;
+            }
+
             for(int i = 0; i < commands.Count; ++i)
             {
-                commands_queue.Enqueue(commands[i]);
+                AddCommandToCommandsQueue(ref commands_queue, commands[i]);
             }
         }
     }

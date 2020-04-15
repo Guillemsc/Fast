@@ -8,86 +8,31 @@ namespace Fast.Modules
 {
     public class LogicModule : UpdatableModule
     {
-        private readonly List<Architecture.GameLogic> game_logic_running = new List<Architecture.GameLogic>();
+        private readonly Fast.Logic.GameLogicController controller = new Logic.GameLogicController(); 
 
         public override void Update()
         {
-            UpdateLogic();
+            controller.Update();
         }
 
-        public void StartLogic(Architecture.GameLogic logic)
+        public async Task LoadAndSetCurrGameLogic(Fast.PrefabScenes.PrefabSceneReference<Fast.Logic.GameLogic> logic_reference)
         {
-            if (logic != null)
-            {
-                bool already_running = false;
-
-                for (int i = 0; i < game_logic_running.Count; ++i)
-                {
-                    Architecture.GameLogic curr_game_logic = game_logic_running[i];
-
-                    if (curr_game_logic == logic)
-                    {
-                        already_running = true;
-
-                        break;
-                    }
-                }
-
-                if (!already_running)
-                {
-                    if (!logic.Running)
-                    {
-                        game_logic_running.Add(logic);
-                    }
-                }
-            }
+            await controller.LoadAndSetCurrGameLogic(logic_reference);
         }
 
-        public void StopLogic(Architecture.GameLogic logic)
+        public async Task UnloadAndClearCurrGameLogic()
         {
-            if (logic != null)
-            {
-                if (logic.Running)
-                {
-                    logic.Finish();
-
-                    for (int i = 0; i < game_logic_running.Count; ++i)
-                    {
-                        Architecture.GameLogic curr_game_logic = game_logic_running[i];
-
-                        if (curr_game_logic == logic)
-                        {
-                            game_logic_running.RemoveAt(i);
-
-                            break;
-                        }
-                    }
-                }
-            }
+            await controller.UnloadAndClearCurrGameLogic();
         }
 
-        private void UpdateLogic()
+        public void StartCurrGameLogic()
         {
-            List<Architecture.GameLogic> to_start = new List<Architecture.GameLogic>(game_logic_running);
+            controller.StartCurrGameLogic();
+        }
 
-            for (int i = 0; i < to_start.Count; ++i)
-            {
-                Architecture.GameLogic curr_game_logic = to_start[i];
-
-                if (!curr_game_logic.Running)
-                {
-                    curr_game_logic.Start();
-                }
-            }
-
-            List<Architecture.GameLogic> to_update = new List<Architecture.GameLogic>(game_logic_running);
-
-            for (int i = 0; i < to_update.Count; ++i)
-            {
-                Architecture.GameLogic curr_game_logic = to_update[i];
-
-                curr_game_logic.Update();
-            }
+        public void FinishCurrGameLogic()
+        {
+            controller.FinishCurrGameLogic();
         }
     }
 }

@@ -3,12 +3,12 @@ using UnityEngine;
 
 namespace Fast.Architecture
 {
-    public class BaseMatchPresentationObject : MonoBehaviour
+    public class MatchPresentationObject : MonoBehaviour
     {
         private bool inited = false;
-        private BaseMatchLogicObject logic_object = null;
+        private MatchLogicObject logic_object = null;
 
-        public void Init(BaseMatchLogicObject logic_object)
+        public void Init(MatchLogicObject logic_object)
         {
             if(inited)
             {
@@ -22,6 +22,6 @@ namespace Fast.Architecture
 
         public bool Inited => inited;
 
-        public BaseMatchLogicObject BaseMatchLogicObject => logic_object;
+        public MatchLogicObject MatchLogicObject => logic_object;
     }
 }

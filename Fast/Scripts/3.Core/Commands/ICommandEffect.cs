@@ -5,6 +5,6 @@ namespace Fast.Commands
 {
     public interface ICommandEffect
     {
-        IReadOnlyList<ICommand> GenerateCommands();
+        
     }
 }
