@@ -4,13 +4,7 @@ namespace Fast.Modules
 {
     public class TimeSlicedModule : UpdatableModule
     {
-        private TimeSliced.TimeSlicedController time_sliced_controller = null;
-
-        public override void Start()
-        {
-            Fast.Time.Timer timer_to_use = FastService.MTime.GeneralTimeContext.GetTimer();
-            time_sliced_controller = new TimeSliced.TimeSlicedController(timer_to_use);
-        }
+        private readonly TimeSliced.TimeSlicedController time_sliced_controller = new TimeSliced.TimeSlicedController();
 
         public override void Update()
         {
