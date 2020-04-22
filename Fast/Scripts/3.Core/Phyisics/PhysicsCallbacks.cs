@@ -2,27 +2,27 @@
 
 namespace Fast.Physics
 {
-    class PhysicsCallbacks : MonoBehaviour
+    public class PhysicsCallbacks : MonoBehaviour
     {
-        private Callback<CollisionData> on_collision_enter = new Callback<CollisionData>();
-        private Callback<CollisionData> on_collision_stay = new Callback<CollisionData>();
-        private Callback<CollisionData> on_collision_exit = new Callback<CollisionData>();
-
-        private Callback<Collision2DData> on_collision_enter2d = new Callback<Collision2DData>();
-        private Callback<Collision2DData> on_collision_stay2d = new Callback<Collision2DData>();
-        private Callback<Collision2DData> on_collision_exit2d = new Callback<Collision2DData>();
-
-        private Callback<ColliderData> on_trigger_enter = new Callback<ColliderData>();
-        private Callback<ColliderData> on_trigger_stay = new Callback<ColliderData>();
-        private Callback<ColliderData> on_trigger_exit = new Callback<ColliderData>();
-
-        private Callback<Collider2DData> on_trigger_enter2d = new Callback<Collider2DData>();
-        private Callback<Collider2DData> on_trigger_stay2d = new Callback<Collider2DData>();
-        private Callback<Collider2DData> on_trigger_exit2d = new Callback<Collider2DData>();
+        private Fast.Callback<CollisionData> on_collision_enter = new Fast.Callback<CollisionData>();
+        private Fast.Callback<CollisionData> on_collision_stay = new Fast.Callback<CollisionData>();
+        private Fast.Callback<CollisionData> on_collision_exit = new Fast.Callback<CollisionData>();
+                
+        private Fast.Callback<Collision2DData> on_collision_enter2d = new Fast.Callback<Collision2DData>();
+        private Fast.Callback<Collision2DData> on_collision_stay2d = new Fast.Callback<Collision2DData>();
+        private Fast.Callback<Collision2DData> on_collision_exit2d = new Fast.Callback<Collision2DData>();
+                
+        private Fast.Callback<ColliderData> on_trigger_enter = new Fast.Callback<ColliderData>();
+        private Fast.Callback<ColliderData> on_trigger_stay = new Fast.Callback<ColliderData>();
+        private Fast.Callback<ColliderData> on_trigger_exit = new Fast.Callback<ColliderData>();
+                
+        private Fast.Callback<Collider2DData> on_trigger_enter2d = new Fast.Callback<Collider2DData>();
+        private Fast.Callback<Collider2DData> on_trigger_stay2d = new Fast.Callback<Collider2DData>();
+        private Fast.Callback<Collider2DData> on_trigger_exit2d = new Fast.Callback<Collider2DData>();
 
         public Callback<CollisionData> OnCollEnter
         {
-            get { return on_collision_enter; }
+            get { return on_collision_enter; } 
         }
 
         public Callback<CollisionData> OnCollStay

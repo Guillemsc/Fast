@@ -8,10 +8,6 @@ namespace Fast
     public class FastService : Fast.MonoSingleton<FastService>
     {
         [Sirenix.OdinInspector.Required]
-        [Sirenix.OdinInspector.LabelText("Game configuration")]
-        [SerializeField] private Fast.Game.GameConfigAsset game_config = null;
-
-        [Sirenix.OdinInspector.Required]
         [Sirenix.OdinInspector.LabelText("Scenes configuration")]
         [SerializeField] private Fast.Scenes.ScenesConfigAsset scenes_config = null;
 
@@ -32,6 +28,7 @@ namespace Fast
         private Fast.Modules.LogModule log_module = null;
         private Fast.Modules.ApplicationModule application_module = null;
         private Fast.Modules.PlatformModule platform_module = null;
+        private Fast.Modules.InputModule input_module = null;
         private Fast.Modules.GameDataSaveModule game_data_save_module = null;
         private Fast.Modules.LocalizationModule localization_module = null;
         private Fast.Modules.EventModule event_module = null;
@@ -41,7 +38,6 @@ namespace Fast
 
         private Fast.Modules.SettingsDataSaveModule settings_data_save_module = null;
         private Fast.Modules.TimeModule time_module = null;
-        private Fast.Modules.LogicModule logic_module = null;
         private Fast.Modules.TimeSlicedModule time_sliced_module = null;
         private Fast.Modules.ParticlesModule particles_module = null;
         private Fast.Modules.UIModule ui_module = null;
@@ -90,6 +86,7 @@ namespace Fast
                 log_module = (Modules.LogModule)AddModule(new Modules.LogModule());
                 application_module = (Modules.ApplicationModule)AddModule(new Modules.ApplicationModule());
                 platform_module = (Modules.PlatformModule)AddModule(new Modules.PlatformModule());
+                input_module = (Modules.InputModule)AddModule(new Modules.InputModule());
                 game_data_save_module = (Modules.GameDataSaveModule)AddModule(new Modules.GameDataSaveModule());
                 localization_module = (Modules.LocalizationModule)AddModule(new Modules.LocalizationModule());
                 event_module = (Modules.EventModule)AddModule(new Modules.EventModule());
@@ -99,13 +96,11 @@ namespace Fast
 
                 settings_data_save_module = (Modules.SettingsDataSaveModule)AddUpdatableModule(new Modules.SettingsDataSaveModule());
                 time_module = (Modules.TimeModule)AddUpdatableModule(new Modules.TimeModule());
-                logic_module = (Modules.LogicModule)AddUpdatableModule(new Modules.LogicModule());
                 time_sliced_module = (Modules.TimeSlicedModule)AddUpdatableModule(new Modules.TimeSlicedModule());
                 particles_module = (Modules.ParticlesModule)AddUpdatableModule(new Modules.ParticlesModule());
                 ui_module = (Modules.UIModule)AddUpdatableModule(new Modules.UIModule());
                 flow_commands = (Modules.FlowCommandsModule)AddUpdatableModule(new Modules.FlowCommandsModule());
 
-                InitGameConfig();
                 InitScenesConfig();
 
                 SpawnServicesPrefab();
@@ -114,20 +109,8 @@ namespace Fast
 
                 initialized = true;
 
-                MLog.LogInfo(this, "Init success");
+                MLog.LogInfo(this, "Fast services inited");
             }
-        }
-
-        private void InitGameConfig()
-        {
-            if (game_config == null)
-            {
-                MLog.LogError(this, "Game config is null, quitting application");
-                MApplication.Quit();
-                return;
-            }
-
-            MGame.SetGameConfig(game_config);
         }
 
         private void InitScenesConfig()
@@ -231,6 +214,11 @@ namespace Fast
             get { return Instance.platform_module; }
         }
 
+        public static Fast.Modules.InputModule MInput
+        {
+            get { return Instance.input_module; }
+        }
+
         public static Fast.Modules.GameDataSaveModule MGameDataSave
         {
             get { return Instance.game_data_save_module; }
@@ -269,11 +257,6 @@ namespace Fast
         public static Fast.Modules.TimeModule MTime
         {
             get { return Instance.time_module; }
-        }
-
-        public static Fast.Modules.LogicModule MLogic
-        {
-            get { return Instance.logic_module; }
         }
 
         public static Modules.TimeSlicedModule MTimeSliced

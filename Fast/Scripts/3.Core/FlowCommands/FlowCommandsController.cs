@@ -22,13 +22,7 @@ namespace Fast.FlowCommands
                 return;
             }
 
-            IReadOnlyList<FlowCommand> to_pre_add = command.PreAddCommands();
-            to_execute.AddRange(to_pre_add);
-
             to_execute.Add(command);
-
-            IReadOnlyList<FlowCommand> to_post_add = command.PostAddCommands();
-            to_execute.AddRange(to_post_add);
         }
 
         private void UpdateCommands()
