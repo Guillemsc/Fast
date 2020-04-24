@@ -26,7 +26,7 @@ namespace Fast.Logic
 
         private void GatherLogicPresentation()
         {
-            if(presentation == null)
+            if(presentation != null)
             {
                 return;
             }
@@ -37,6 +37,11 @@ namespace Fast.Logic
         private void UpdateLogicAndPresentation()
         {
             if (!started)
+            {
+                return;
+            }
+
+            if(presentation == null)
             {
                 return;
             }

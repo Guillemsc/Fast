@@ -6,7 +6,7 @@ namespace Fast.Logic.Presentation
 {
     public class LogicPresentation : MonoBehaviour
     {
-        private readonly List<LogicSubPresentations> sub_presentations = new List<LogicSubPresentations>();
+        private readonly List<LogicSubPresentation> sub_presentations = new List<LogicSubPresentation>();
 
         private void Awake()
         {
@@ -15,7 +15,7 @@ namespace Fast.Logic.Presentation
 
         private void GatherSubPresentations()
         {
-            LogicSubPresentations[] curr_sub_presentations = gameObject.GetComponents<LogicSubPresentations>();
+            LogicSubPresentation[] curr_sub_presentations = gameObject.GetComponents<LogicSubPresentation>();
             sub_presentations.AddRange(curr_sub_presentations);
 
             for(int i = 0; i < sub_presentations.Count; ++i)

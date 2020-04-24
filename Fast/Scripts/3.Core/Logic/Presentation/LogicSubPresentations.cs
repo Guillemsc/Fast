@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Fast.Logic.Presentation
 {
-    public class LogicSubPresentations : MonoBehaviour
+    public class LogicSubPresentation : MonoBehaviour
     {
         private LogicPresentation logic_presentation = null;
 
