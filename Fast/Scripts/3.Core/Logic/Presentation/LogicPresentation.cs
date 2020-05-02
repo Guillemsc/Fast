@@ -22,6 +22,14 @@ namespace Fast.Logic.Presentation
             {
                 sub_presentations[i].SetLogicParent(this);
             }
+
+            curr_sub_presentations = gameObject.GetComponentsInChildren<LogicSubPresentation>();
+            sub_presentations.AddRange(curr_sub_presentations);
+
+            for (int i = 0; i < sub_presentations.Count; ++i)
+            {
+                sub_presentations[i].SetLogicParent(this);
+            }
         }
 
         public void ReceiveEffect(Commands.ILogicCommandEffect effect)
