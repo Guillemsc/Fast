@@ -7,18 +7,18 @@ namespace Fast.Scenes
     [CreateAssetMenu(fileName = "ScenesConfig", menuName = "Fast/ScenesConfig", order = 1)]
     public class ScenesConfigAsset : ScriptableObject
     {
-        [SerializeField] private List<Scene> scenes = new List<Scene>();
+        [SerializeField] private List<string> scenes = new List<string>();
 
-        public IReadOnlyList<Scene> Scenes => scenes;
+        public IReadOnlyList<string> Scenes => scenes;
 
-        public void AddScene(Scene scene)
+        public void AddScene(string scene)
         {
             if(scene == null)
             {
                 return;
             }
 
-            bool already_added = SceneAdded(scene.Name);
+            bool already_added = SceneAdded(scene);
 
             if (already_added)
             {
@@ -28,28 +28,13 @@ namespace Fast.Scenes
             scenes.Add(scene);
         }
 
-        public Scene GetScene(string name)
-        {
-            for (int i = 0; i < scenes.Count; ++i)
-            {
-                Scene curr_scene = scenes[i];
-
-                if (curr_scene.Name == name)
-                {
-                    return curr_scene;
-                }
-            }
-
-            return null;
-        }
-
         public bool SceneAdded(string name)
         {
             for (int i = 0; i < scenes.Count; ++i)
             {
-                Scene curr_scene = scenes[i];
+                string curr_scene = scenes[i];
 
-                if (curr_scene.Name == name)
+                if (curr_scene == name)
                 {
                     return true;
                 }
@@ -62,13 +47,52 @@ namespace Fast.Scenes
         {
             for (int i = 0; i < scenes.Count; ++i)
             {
-                Scene curr_scene = scenes[i];
+                string curr_scene = scenes[i];
 
-                if (curr_scene.Name == name)
+                if (curr_scene == name)
                 {
                     scenes.RemoveAt(i);
 
                     break;
+                }
+            }
+        }
+
+        public void UpdateScene(string scene, string to_update)
+        {
+            for (int i = 0; i < scenes.Count; ++i)
+            {
+                string curr_scene = scenes[i];
+
+                if (curr_scene == scene)
+                {
+                    scenes[i] = to_update;
+
+                    break;
+                }
+            }
+        }
+
+        public void SwapScene(string scene, string to_swap)
+        {
+            for (int i = 0; i < scenes.Count; ++i)
+            {
+                string curr_scene = scenes[i];
+
+                if (curr_scene == scene)
+                {
+                    for (int y = 0; y < scenes.Count; ++y)
+                    {
+                        string curr_scene2 = scenes[y];
+
+                        if(curr_scene2 == to_swap)
+                        {
+                            scenes[i] = to_swap;
+                            scenes[y] = scene;
+
+                            return;
+                        }
+                    }
                 }
             }
         }

@@ -14,29 +14,17 @@ namespace Fast.Modules
         {
             this.scenes_config_asset = scenes_config_asset;
 
-            controller.SetLoadableScenes(scenes_config_asset.Scenes);
+            controller.SetConfig(scenes_config_asset);
         }
 
-        public override void Awake()
+        public async Task<bool> LoadSceneAsync(Fast.Scenes.SceneReference reference)
         {
-            controller.Start();
+            return await controller.LoadSceneAsync(reference);
         }
 
-        public Fast.Scenes.LoadedScene RootScene => controller.RootScene;
-
-        public Fast.Scenes.Scene GetLoadableScene(string scene_name)
+        public async Task UnloadSceneAsync(Fast.Scenes.SceneReference reference)
         {
-            return controller.GetLoadableScene(scene_name);
-        }
-
-        public async Task<Fast.Scenes.LoadedScene> LoadSceneAsync(Fast.Scenes.Scene scene, LoadSceneMode mode, bool allow_repeated = true)
-        {
-            return await controller.LoadSceneAsync(scene, mode, allow_repeated);
-        }
-
-        public async Task UnloadSceneAsync(Fast.Scenes.LoadedScene loaded_scene)
-        {
-            await controller.UnloadSceneAsync(loaded_scene);
+            await controller.UnloadSceneAsync(reference);
         }
     }
 }

@@ -11,7 +11,7 @@ using UnityEditor.SceneManagement;
 
 namespace Fast.Editor.Scenes
 {
-    class Utils
+    public class Utils
     {
         public static IReadOnlyList<string> GetAllSceneAssetsPath()
         {
@@ -53,16 +53,16 @@ namespace Fast.Editor.Scenes
             return "";
         }
 
-        public static void AddScenesToBuild(IReadOnlyList<Fast.Scenes.Scene> scenes)
+        public static void AddScenesToBuild(IReadOnlyList<string> scenes)
         {
             EditorBuildSettingsScene[] original = EditorBuildSettings.scenes;
             EditorBuildSettingsScene[] new_settings = new EditorBuildSettingsScene[scenes.Count];
 
             for (int i = 0; i < scenes.Count; ++i)
             {
-                Fast.Scenes.Scene curr_scene = scenes[i];
+                string curr_scene = scenes[i];
 
-                string assets_path = GetSceneAssetPath(curr_scene.Name);
+                string assets_path = GetSceneAssetPath(curr_scene);
 
                 EditorBuildSettingsScene new_build_scene = new EditorBuildSettingsScene(assets_path, true);
                 new_settings[i] = new_build_scene;

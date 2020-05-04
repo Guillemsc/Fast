@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Fast.Logic
 {
-    public abstract class LogicHub : MonoBehaviour
+    public abstract class LogicHub : Fast.Scenes.SceneInstance
     {
         private readonly LogicCluster cluster = new LogicCluster();
 

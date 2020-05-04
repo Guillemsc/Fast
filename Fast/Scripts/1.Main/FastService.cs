@@ -34,7 +34,6 @@ namespace Fast
         private Fast.Modules.EventModule event_module = null;
         private Fast.Modules.GameModule game_module = null;
         private Fast.Modules.ScenesModule scenes_module = null;
-        private Fast.Modules.PrefabScenesModule prefab_scenes_module = null;
 
         private Fast.Modules.SettingsDataSaveModule settings_data_save_module = null;
         private Fast.Modules.TimeModule time_module = null;
@@ -92,7 +91,6 @@ namespace Fast
                 event_module = (Modules.EventModule)AddModule(new Modules.EventModule());
                 game_module = (Modules.GameModule)AddModule(new Modules.GameModule());
                 scenes_module = (Modules.ScenesModule)AddModule(new Modules.ScenesModule());
-                prefab_scenes_module = (Modules.PrefabScenesModule)AddModule(new Modules.PrefabScenesModule());
 
                 settings_data_save_module = (Modules.SettingsDataSaveModule)AddUpdatableModule(new Modules.SettingsDataSaveModule());
                 time_module = (Modules.TimeModule)AddUpdatableModule(new Modules.TimeModule());
@@ -242,11 +240,6 @@ namespace Fast
         public static Fast.Modules.ScenesModule MScenes
         {
             get { return Instance.scenes_module; }
-        }
-
-        public static Fast.Modules.PrefabScenesModule MPrefabScenes
-        {
-            get { return Instance.prefab_scenes_module; }
         }
 
         public static Fast.Modules.SettingsDataSaveModule MSettingsDataSave
