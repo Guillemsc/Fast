@@ -35,6 +35,8 @@ namespace Fast.Editor
 
             OnDrawInspectorGUI();
 
+            base.DrawDefaultInspector();
+
             EndDrawGUI();
         }
 

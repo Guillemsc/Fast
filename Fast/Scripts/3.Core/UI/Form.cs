@@ -11,19 +11,17 @@ namespace Fast.UI
     [Sirenix.OdinInspector.HideMonoScript]
     public abstract class Form : MonoBehaviour
     {
+        [SerializeField] private bool show_on_awake = false;
+
         [Sirenix.OdinInspector.HideLabel]
         [Sirenix.OdinInspector.Title("Parent", "All form UI objects should be placed as childs of the parent")]
         [Sirenix.OdinInspector.Required]
         [Sirenix.OdinInspector.SceneObjectsOnly]
         [SerializeField] private GameObject parent = null;
 
-        private FormAnimation default_animation = null;
-
-        private List<FormAnimation> animations = new List<FormAnimation>();
-
         private bool showing = false;
 
-        private void Awake()
+        protected void Awake()
         {
             if(parent == null)
             {
@@ -32,9 +30,14 @@ namespace Fast.UI
                 return;
             }
 
-            parent.SetActive(false);
-
-            FindAnimations();
+            if (!show_on_awake)
+            {
+                parent.SetActive(false);
+            }
+            else
+            {
+                Show();
+            }
 
             AwakeInternal();
         }
@@ -45,78 +48,20 @@ namespace Fast.UI
         public GameObject Parent => parent;
 
         /// <summary>
-        /// Animation used in default ocasions.
-        /// </summary>
-        public FormAnimation DefaultAnimation => default_animation;
-
-        private void FindAnimations()
-        {
-            FormAnimation[] animations_array = gameObject.GetComponents<FormAnimation>();
-
-            animations.AddRange(animations_array);
-
-            for(int i = 0; i < animations_array.Length; ++i)
-            {
-                FormAnimation curr_anim = animations_array[i];
-
-                if (curr_anim.IsDefaultAnimation)
-                {
-                    if (default_animation != null)
-                    {
-                        Fast.FastService.MLog.LogError(this, "There are more than one default animations specified for this form. " +
-                            "Please ensure there is only one default animation");
-
-                        break;
-                    }
-                    else
-                    {
-                        default_animation = curr_anim;
-                    }
-                }
-            }
-
-            if(default_animation == null)
-            {
-                Fast.FastService.MLog.LogError(this, "There is not a default animation specified for this form");
-            }
-        }
-
-        /// <summary>
-        /// [Internal, don't use] Gets an animation added to this form.
-        /// </summary>
-        /// <param name="animation_name"> The unique name of the animation.</param>
-        public FormAnimation GetAnimation(string animation_name)
-        {
-            FormAnimation ret = null;
-
-            for (int i = 0; i < animations.Count; ++i)
-            {
-                FormAnimation curr_animation = animations[i];
-
-                if (curr_animation != null)
-                {
-                    if (curr_animation.AnimationName == animation_name)
-                    {
-                        ret = curr_animation;
-                    }
-                }
-                else
-                {
-                    Debug.LogError("[Fast.Form.GetAnimation] There is a null animation on the form animations list");
-                }
-            }
-
-            return ret;
-        }
-
-        /// <summary>
         /// [Internal, don't use] Calls the virtual method OnShowInternal(), and marks the form as being used.
         /// </summary>
         public void Show()
         {
+            if (parent == null)
+            {
+                return;
+            }
+
             if (!showing)
             {
                 showing = true;
+
+                parent.SetActive(true);
 
                 ShowInternal();
             }
@@ -127,9 +72,16 @@ namespace Fast.UI
         /// </summary>
         public void Hide()
         {
+            if (parent == null)
+            {
+                return;
+            }
+
             if (showing)
             {
                 HideInternal();
+
+                parent.SetActive(false);
 
                 showing = false;
             }
