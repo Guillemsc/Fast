@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DG.Tweening;
+using System;
 using UnityEngine;
 
 namespace Fast.UI
@@ -10,6 +11,7 @@ namespace Fast.UI
         [SerializeField] [HideInInspector] private bool bind_automatically = true;
         [SerializeField] [HideInInspector] private bool use_custom_binding_properties = true;
         [SerializeField] [HideInInspector] private string binding_name = "";
+        [SerializeField] [HideInInspector] private float delay = 0.0f;
 
         public BindableForm BindedForm
         {
@@ -33,6 +35,20 @@ namespace Fast.UI
         {
             get { return binding_name; } 
             set { binding_name = value; }
+        }
+
+        public float Delay
+        {
+            get { return delay; }
+            set
+            {
+                delay = value;
+
+                if(delay < 0)
+                {
+                    delay = 0.0f;
+                }
+            }
         }
 
         private void Awake()
@@ -114,7 +130,21 @@ namespace Fast.UI
             binded_form = null;
         }
 
-        public virtual void OnValueRaised(object value)
+        public void RiseValue(object value)
+        {
+            Sequence sequence = DOTween.Sequence();
+
+            sequence.AppendInterval(Delay);
+
+            sequence.AppendCallback(delegate ()
+            {
+                OnValueRised(value);
+            });
+
+            sequence.Play();
+        }
+
+        public virtual void OnValueRised(object value)
         {
 
         }

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Fast.UI.Bindings
 {
-    public class DOTweenFadeBinding : DOTweenBinding
+    public class FadeBinding : DOTweenBinding
     {
         [SerializeField] private float start_alpha = 0.0f;
         [SerializeField] private float end_alpha = 0.0f;

@@ -2,9 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEditor;
-using ParadoxNotion.Design;
 using System.Reflection;
 
 namespace Fast.Editor.UI
@@ -15,7 +13,7 @@ namespace Fast.Editor.UI
     {
         private Fast.UI.FormBinding target_script = null;
 
-        private void OnEnable()
+        protected void OnEnable()
         {
             target_script = (Fast.UI.FormBinding)target;
         }
@@ -27,6 +25,8 @@ namespace Fast.Editor.UI
             DrawBindableForm();
 
             DrawBindablePropertiesGUI();
+
+            DrawOtherPropertiesGUI();
 
             EditorElements.HorizontalLine(Style);
         }
@@ -98,6 +98,11 @@ namespace Fast.Editor.UI
             }
         }
 
+        private void DrawOtherPropertiesGUI()
+        {
+            target_script.Delay = EditorGUILayout.FloatField("Delay", target_script.Delay);
+        }
+
         private List<string> GetCustomBindableProperties()
         {
             if(target_script.BindedForm == null)
@@ -145,6 +150,8 @@ namespace Fast.Editor.UI
             List<string> ret = new List<string>();
 
             ret.Add(nameof(Fast.UI.BindableForm.OnFormAwake));
+            ret.Add(nameof(Fast.UI.BindableForm.OnFormShow));
+            ret.Add(nameof(Fast.UI.BindableForm.OnFormHide));
 
             return ret;
 

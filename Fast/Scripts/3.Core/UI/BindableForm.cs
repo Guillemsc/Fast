@@ -14,17 +14,30 @@ namespace Fast.UI
 
         [BindingProperty] public static string OnFormAwake;
         [BindingProperty] public static string OnFormShow;
+        [BindingProperty] public static string OnFormHide;
 
-        private new void Awake()
+        private void Start()
         {
-            base.Awake();
-
             RiseProperty(nameof(OnFormAwake), OnFormAwake);
         }
 
         private void OnDestroy()
         {
             RemoveFromAllBindings();
+        }
+
+        public override void Show()
+        {
+            RiseProperty(nameof(OnFormShow), OnFormShow);
+
+            base.Show();
+        }
+
+        public override void Hide()
+        {
+            RiseProperty(nameof(OnFormHide), OnFormShow);
+
+            base.Hide();
         }
 
         public void AddBinding(FormBinding binding)
@@ -70,7 +83,7 @@ namespace Fast.UI
                     continue;
                 }
 
-                curr_binding.OnValueRaised(variable);
+                curr_binding.RiseValue(variable);
             }
         }
     }

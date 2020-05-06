@@ -11,8 +11,6 @@ namespace Fast.UI
     [Sirenix.OdinInspector.HideMonoScript]
     public abstract class Form : MonoBehaviour
     {
-        [SerializeField] private bool show_on_awake = false;
-
         [Sirenix.OdinInspector.HideLabel]
         [Sirenix.OdinInspector.Title("Parent", "All form UI objects should be placed as childs of the parent")]
         [Sirenix.OdinInspector.Required]
@@ -30,15 +28,6 @@ namespace Fast.UI
                 return;
             }
 
-            if (!show_on_awake)
-            {
-                parent.SetActive(false);
-            }
-            else
-            {
-                Show();
-            }
-
             AwakeInternal();
         }
 
@@ -50,7 +39,7 @@ namespace Fast.UI
         /// <summary>
         /// [Internal, don't use] Calls the virtual method OnShowInternal(), and marks the form as being used.
         /// </summary>
-        public void Show()
+        public virtual void Show()
         {
             if (parent == null)
             {
@@ -61,8 +50,6 @@ namespace Fast.UI
             {
                 showing = true;
 
-                parent.SetActive(true);
-
                 ShowInternal();
             }
         }
@@ -70,7 +57,7 @@ namespace Fast.UI
         /// <summary>
         /// [Internal, don't use] Calls the virtual method OnShowInternal(), and marks the form as not being used.
         /// </summary>
-        public void Hide()
+        public virtual void Hide()
         {
             if (parent == null)
             {
@@ -80,8 +67,6 @@ namespace Fast.UI
             if (showing)
             {
                 HideInternal();
-
-                parent.SetActive(false);
 
                 showing = false;
             }
