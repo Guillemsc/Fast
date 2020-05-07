@@ -1,11 +1,11 @@
-﻿using DG.Tweening;
-using System;
+﻿using System;
+using DG.Tweening;
 using UnityEngine;
 
 namespace Fast.UI
 {
     [ExecuteAlways]
-    public abstract class FormBinding : MonoBehaviour
+    public abstract class BaseBinding : MonoBehaviour
     {
         [SerializeField] [HideInInspector] private BindableForm binded_form = null;
         [SerializeField] [HideInInspector] private bool bind_automatically = true;

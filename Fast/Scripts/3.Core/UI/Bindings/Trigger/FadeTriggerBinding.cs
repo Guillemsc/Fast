@@ -5,12 +5,12 @@ using UnityEngine;
 
 namespace Fast.UI.Bindings
 {
-    public class FadeBinding : DOTweenBinding
+    public class FadeTriggerBinding : DOTweenMultipleTargetBinding<GameObject>
     {
         [SerializeField] private float start_alpha = 0.0f;
         [SerializeField] private float end_alpha = 0.0f;
 
-        protected override void SetupSequence(Sequence seq, GameObject target)
+        protected override void SetupTarget(Sequence seq, GameObject target, object value)
         {
             CanvasGroup cg = target.GetOrAddComponent<CanvasGroup>();
 

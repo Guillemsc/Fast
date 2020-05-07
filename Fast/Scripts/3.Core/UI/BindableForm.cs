@@ -10,7 +10,7 @@ namespace Fast.UI
     [Sirenix.OdinInspector.HideMonoScript]
     public abstract class BindableForm : Form
     {
-        private List<FormBinding> bindings = new List<FormBinding>();
+        private List<BaseBinding> bindings = new List<BaseBinding>();
 
         [BindingProperty] public static string OnFormAwake;
         [BindingProperty] public static string OnFormShow;
@@ -40,7 +40,7 @@ namespace Fast.UI
             base.Hide();
         }
 
-        public void AddBinding(FormBinding binding)
+        public void AddBinding(BaseBinding binding)
         {
             if(binding == null)
             {
@@ -52,7 +52,7 @@ namespace Fast.UI
             bindings.Add(binding);
         }
 
-        public void RemoveBinding(FormBinding binding)
+        public void RemoveBinding(BaseBinding binding)
         {
             if (binding == null)
             {
@@ -72,11 +72,11 @@ namespace Fast.UI
             bindings.Clear();
         }
 
-        public void RiseProperty(string parameter_name, object variable)
+        public void RiseProperty(string parameter_name, object variable = null)
         {
             for(int i = 0; i < bindings.Count; ++i)
             {
-                FormBinding curr_binding = bindings[i];
+                BaseBinding curr_binding = bindings[i];
 
                 if(curr_binding.BindingName != parameter_name)
                 {

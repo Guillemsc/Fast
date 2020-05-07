@@ -1,11 +1,10 @@
 ﻿using System;
 using DG.Tweening;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Fast.UI.Bindings
 {
-    public abstract class DOTweenBinding : MultipleGameObjectTargetsBinding
+    public abstract class DOTweenBinding : BaseBinding
     {
         [SerializeField] [HideInInspector] private bool use_starting_value = false;
         [SerializeField] [HideInInspector] private bool use_custom_easing = false;
@@ -13,7 +12,7 @@ namespace Fast.UI.Bindings
         [SerializeField] [HideInInspector] private AnimationCurve custom_easing = new AnimationCurve();
         [SerializeField] [HideInInspector] private float duration = 0.0f;
 
-        private Sequence seq = null;
+        protected Sequence seq = null;
 
         public bool UseStartingValue
         {
@@ -46,53 +45,11 @@ namespace Fast.UI.Bindings
             {
                 duration = value;
 
-                if(duration < 0)
+                if (duration < 0)
                 {
                     duration = 0.0f;
                 }
             }
-        }
-
-        public override void OnValueRised(object value)
-        {
-            if(seq != null)
-            {
-                seq.Kill();
-            }
-
-            seq = DOTween.Sequence();
-
-            for (int i = 0; i < Targets.Count; ++i)
-            {
-                Sequence target_sequence = DOTween.Sequence();
-
-                GameObject curr_target = Targets[i];
-
-                if(curr_target == null)
-                {
-                    continue;
-                }
-
-                SetupSequence(target_sequence, curr_target);
-
-                if (!UseCustomEasing)
-                {
-                    target_sequence.SetEase(Easing);
-                }
-                else
-                {
-                    target_sequence.SetEase(CustomEasing);
-                }
-
-                seq.Join(target_sequence);
-            }
-
-            seq.Play();
-        }
-
-        protected virtual void SetupSequence(Sequence seq, GameObject target)
-        {
-
         }
     }
 }

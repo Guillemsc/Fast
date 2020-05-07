@@ -5,12 +5,12 @@ using UnityEngine;
 
 namespace Fast.UI.Bindings
 {
-    public class ScaleBinding : DOTweenBinding
+    public class ScaleTriggerBinding : DOTweenMultipleTargetBinding<GameObject>
     {
         [SerializeField] private Vector2 start_scale = Vector2.zero;
         [SerializeField] private Vector2 end_scale = Vector2.one;
 
-        protected override void SetupSequence(Sequence seq, GameObject target)
+        protected override void SetupTarget(Sequence seq, GameObject target, object value)
         {
             if (UseStartingValue)
             {

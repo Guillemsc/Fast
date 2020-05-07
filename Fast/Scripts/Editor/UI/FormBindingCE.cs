@@ -7,15 +7,15 @@ using System.Reflection;
 
 namespace Fast.Editor.UI
 {
-    [CustomEditor(typeof(Fast.UI.FormBinding), true)]
+    [CustomEditor(typeof(Fast.UI.BaseBinding), true)]
     [Sirenix.OdinInspector.HideMonoScript]
     class FormBindingCE : EditorHelper
     {
-        private Fast.UI.FormBinding target_script = null;
+        private Fast.UI.BaseBinding target_script = null;
 
         protected void OnEnable()
         {
-            target_script = (Fast.UI.FormBinding)target;
+            target_script = (Fast.UI.BaseBinding)target;
         }
 
         protected override void OnDrawInspectorGUI()
