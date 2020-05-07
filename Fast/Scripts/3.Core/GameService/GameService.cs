@@ -11,7 +11,7 @@ namespace Fast.Game
 
         private bool initialized = false;
 
-        GameService()
+        GameService() 
         {
             InitInstance(this);
         }

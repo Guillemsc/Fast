@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Fast.UI
+namespace Fast.UI.Bindings
 {
     public abstract class FormTriggerBinding : BaseBinding
     {

@@ -42,7 +42,10 @@ namespace Fast.Editor.UI
                 target_script_inherited.CustomEasing = EditorGUILayout.CurveField("Easing", target_script_inherited.CustomEasing);
             }
 
-            target_script_inherited.UseStartingValue = EditorGUILayout.Toggle("Use starting value", target_script_inherited.UseStartingValue);
+            if (target_script_inherited.HasStartingValue)
+            {
+                target_script_inherited.UseStartingValue = EditorGUILayout.Toggle("Use starting value", target_script_inherited.UseStartingValue);
+            }
         }
     }
 }

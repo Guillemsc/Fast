@@ -11,6 +11,11 @@ namespace Fast.UI.Bindings
 
         public IReadOnlyList<T> Targets => targets;
 
+        protected DOTweenMultipleTargetBinding(bool has_starting_value) : base(has_starting_value)
+        {
+
+        }
+
         public override void OnValueRised(object value)
         {
             if (seq != null)
@@ -34,16 +39,6 @@ namespace Fast.UI.Bindings
                 SetupTarget(target_sequence, curr_target, value);
 
                 seq.Join(target_sequence);
-            }
-
-
-            if (!UseCustomEasing)
-            {
-                seq.SetEase(Easing);
-            }
-            else
-            {
-                seq.SetEase(CustomEasing);
             }
 
             seq.Play();

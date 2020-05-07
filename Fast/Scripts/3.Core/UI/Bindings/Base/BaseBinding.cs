@@ -2,7 +2,7 @@
 using DG.Tweening;
 using UnityEngine;
 
-namespace Fast.UI
+namespace Fast.UI.Bindings
 {
     [ExecuteAlways]
     public abstract class BaseBinding : MonoBehaviour

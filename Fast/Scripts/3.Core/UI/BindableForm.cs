@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Fast.UI.Bindings;
 
 namespace Fast.UI
 {

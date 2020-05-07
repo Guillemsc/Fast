@@ -10,6 +10,11 @@ namespace Fast.UI.Bindings
         [SerializeField] private GameObject start_position = null;
         [SerializeField] private GameObject end_position = null;
 
+        GameObjectPositionTriggerBinding() : base(true)
+        {
+
+        }
+
         protected override void SetupTarget(Sequence seq, GameObject target, object value)
         {
             if (UseStartingValue)
@@ -22,7 +27,10 @@ namespace Fast.UI.Bindings
 
             if (end_position != null)
             {
-                seq.Append(target.transform.DOMove(end_position.transform.position, Duration));
+                Tween tween = target.transform.DOMove(end_position.transform.position, Duration);
+                SetEasing(tween);
+
+                seq.Append(tween);
             }
         }
     }

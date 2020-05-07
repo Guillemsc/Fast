@@ -4,18 +4,19 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using System.Reflection;
+using Fast.UI.Bindings;
 
 namespace Fast.Editor.UI
 {
-    [CustomEditor(typeof(Fast.UI.BaseBinding), true)]
+    [CustomEditor(typeof(BaseBinding), true)]
     [Sirenix.OdinInspector.HideMonoScript]
     class FormBindingCE : EditorHelper
     {
-        private Fast.UI.BaseBinding target_script = null;
+        private BaseBinding target_script = null;
 
         protected void OnEnable()
         {
-            target_script = (Fast.UI.BaseBinding)target;
+            target_script = (BaseBinding)target;
         }
 
         protected override void OnDrawInspectorGUI()

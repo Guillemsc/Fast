@@ -1,32 +1,17 @@
 ﻿using System;
-using DG.Tweening;
 using UnityEngine;
+using DG.Tweening;
 
-namespace Fast.UI.Bindings
+namespace Fast.UI.Actives
 {
-    public abstract class DOTweenBinding : BaseBinding
+    public class DOTweenActive : BaseActive
     {
-        [SerializeField] [HideInInspector] private bool has_starting_value = false;
-        [SerializeField] [HideInInspector] private bool use_starting_value = false;
-        [SerializeField] [HideInInspector] private bool use_custom_easing = false;
-        [SerializeField] [HideInInspector] private Ease easing = Ease.Linear;
-        [SerializeField] [HideInInspector] private AnimationCurve custom_easing = new AnimationCurve();
-        [SerializeField] [HideInInspector] private float duration = 0.0f;
+        [SerializeField] private bool use_custom_easing = false;
+        [SerializeField] private Ease easing = Ease.Linear;
+        [SerializeField] private AnimationCurve custom_easing = new AnimationCurve();
+        [SerializeField] private float duration = 0.0f;
 
         protected Sequence seq = null;
-
-        protected DOTweenBinding(bool has_starting_value)
-        {
-            this.has_starting_value = has_starting_value;
-        }
-
-        public bool HasStartingValue => has_starting_value;
-
-        public bool UseStartingValue
-        {
-            get { return use_starting_value; }
-            set { use_starting_value = value; }
-        }
 
         public bool UseCustomEasing
         {

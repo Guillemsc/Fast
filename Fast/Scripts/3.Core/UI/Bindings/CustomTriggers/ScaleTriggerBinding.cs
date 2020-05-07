@@ -10,6 +10,11 @@ namespace Fast.UI.Bindings
         [SerializeField] private Vector2 start_scale = Vector2.zero;
         [SerializeField] private Vector2 end_scale = Vector2.one;
 
+        ScaleTriggerBinding() : base(true)
+        {
+
+        }
+
         protected override void SetupTarget(Sequence seq, GameObject target, object value)
         {
             if (UseStartingValue)
@@ -17,7 +22,10 @@ namespace Fast.UI.Bindings
                 seq.Append(target.transform.DOScale(start_scale, 0.0f));
             }
 
-            seq.Append(target.transform.DOScale(end_scale, Duration));
+            Tween tween = target.transform.DOScale(end_scale, Duration);
+            SetEasing(tween);
+
+            seq.Append(tween);
         }
     }
 }

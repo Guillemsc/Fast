@@ -10,6 +10,11 @@ namespace Fast.UI.Bindings
         [SerializeField] private float start_alpha = 0.0f;
         [SerializeField] private float end_alpha = 0.0f;
 
+        FadeTriggerBinding() : base(true)
+        {
+
+        }
+
         protected override void SetupTarget(Sequence seq, GameObject target, object value)
         {
             CanvasGroup cg = target.GetOrAddComponent<CanvasGroup>();
@@ -19,7 +24,10 @@ namespace Fast.UI.Bindings
                 seq.Append(cg.DOFade(start_alpha, 0.0f));
             }
 
-            seq.Append(cg.DOFade(end_alpha, Duration));
+            Tween tween = cg.DOFade(end_alpha, Duration);
+            SetEasing(tween);
+
+            seq.Append(tween);
         }
     }
 }
