@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DG.Tweening;
+using System;
 using System.Collections.Generic;
 
 namespace Fast.UI
@@ -16,9 +17,13 @@ namespace Fast.UI
 
         public void SetMainForm(Form form)
         {
+            float show_delay = 0.0f;
+
             if(main_form != null)
             {
                 main_form.Hide();
+
+                show_delay += main_form.EndHideDelay;
             }
 
             if(form == null)
@@ -28,7 +33,23 @@ namespace Fast.UI
 
             main_form = form;
 
-            main_form.Show();
+            if(main_form == null)
+            {
+                return;
+            }
+
+            show_delay += main_form.StartShowDelay;
+
+            Sequence sequence = DOTween.Sequence();
+
+            sequence.AppendInterval(show_delay);
+
+            sequence.onComplete += (delegate ()
+            {
+                main_form.Show();
+            });
+
+            sequence.Play();
         }
 
         public void AddSubForm(Form form)

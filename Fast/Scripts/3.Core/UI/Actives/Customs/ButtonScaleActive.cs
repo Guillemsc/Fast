@@ -17,7 +17,7 @@ namespace Fast.UI.Actives
         {
             InitButton();
 
-            ScaleDown();
+            ScaleOut();
         }
 
         private void InitButton()

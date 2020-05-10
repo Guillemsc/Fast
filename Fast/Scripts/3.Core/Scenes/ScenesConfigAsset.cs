@@ -7,7 +7,7 @@ namespace Fast.Scenes
     [CreateAssetMenu(fileName = "ScenesConfig", menuName = "Fast/ScenesConfig", order = 1)]
     public class ScenesConfigAsset : ScriptableObject
     {
-        [SerializeField] private List<string> scenes = new List<string>();
+        [SerializeField] [HideInInspector] private List<string> scenes = new List<string>();
 
         public IReadOnlyList<string> Scenes => scenes;
 

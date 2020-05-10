@@ -9,7 +9,7 @@ namespace Fast.UI
     /// Represents a piece of UI that is has some independent functionality
     /// </summary>
     [Sirenix.OdinInspector.HideMonoScript]
-    public abstract class Form : MonoBehaviour
+    public abstract class Form : Fast.Scenes.SceneInstance
     {
         [Sirenix.OdinInspector.HideLabel]
         [Sirenix.OdinInspector.Title("Parent", "All form UI objects should be placed as childs of the parent")]
@@ -17,7 +17,13 @@ namespace Fast.UI
         [Sirenix.OdinInspector.SceneObjectsOnly]
         [SerializeField] private GameObject parent = null;
 
+        [SerializeField] private float start_show_delay = 0.0f;
+        [SerializeField] private float end_hide_delay = 0.0f;
+
         private bool showing = false;
+
+        public float StartShowDelay => start_show_delay;
+        public float EndHideDelay => end_hide_delay;
 
         protected void Awake()
         {

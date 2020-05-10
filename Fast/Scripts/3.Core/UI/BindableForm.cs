@@ -87,5 +87,10 @@ namespace Fast.UI
                 curr_binding.RiseValue(variable);
             }
         }
+
+        public virtual void OnEventRised(string event_name)
+        {
+
+        }
     }
 }

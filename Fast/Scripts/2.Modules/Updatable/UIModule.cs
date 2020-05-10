@@ -4,27 +4,21 @@ namespace Fast.Modules
 {
     public class UIModule : UpdatableModule
     {
-        //private Fast.UI.UIController controller = null;
+        private readonly Fast.UI.UIController controller = new Fast.UI.UIController();
 
-        //private Time.TimeContext time_context = null;
+        public void SetMainForm(Fast.UI.Form form)
+        {
+            controller.SetMainForm(form);
+        }
 
-        //public override void Start()
-        //{
-        //    Time.TimeContext time_context = Fast.FastService.MTime.CreateTimeContext();
+        public void AddSubForm(Fast.UI.Form form)
+        {
+            controller.AddSubForm(form);
+        }
 
-        //    controller = new UI.UIController(time_context);
-        //}
-
-        //public override void Update()
-        //{
-        //    controller.Update();
-        //}
-
-        //public Time.TimeContext TimeContext => time_context;
-
-        //public void PlayBehaviour(Fast.UI.UIBehaviour behaviour)
-        //{
-        //    controller.PlayBehaviour(behaviour);
-        //}
+        public void RemoveSubForm(Fast.UI.Form form)
+        {
+            controller.RemoveSubForm(form);
+        }
     }
 }
