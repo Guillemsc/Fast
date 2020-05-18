@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Fast.UI.Bindings
 {
-    public class RiseFormEventBinding : BaseBinding
+    public class FormEventBinding : BaseBinding
     {
         [SerializeField] private string event_name = "";
 

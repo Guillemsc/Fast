@@ -92,5 +92,10 @@ namespace Fast.UI
         {
 
         }
+
+        public virtual void OnValueRised(object value)
+        {
+
+        }
     }
 }
