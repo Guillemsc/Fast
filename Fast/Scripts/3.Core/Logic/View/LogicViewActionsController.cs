@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Fast.Logic.Presentation
+namespace Fast.Logic.View
 {
-    public class LogicPresentationActionsController : Fast.IController, Fast.IUpdatable
+    public class LogicViewActionsController : Fast.IController, Fast.IUpdatable
     {
-        private readonly List<LogicPresentationAction> actions_to_play = new List<LogicPresentationAction>();
+        private readonly List<LogicViewAction> actions_to_play = new List<LogicViewAction>();
 
         public void Update()
         {
@@ -19,7 +19,7 @@ namespace Fast.Logic.Presentation
                 return;
             }
 
-            LogicPresentationAction curr_action = actions_to_play[0];
+            LogicViewAction curr_action = actions_to_play[0];
 
             if(!curr_action.Started)
             {
@@ -35,7 +35,7 @@ namespace Fast.Logic.Presentation
             }
         }
 
-        public void PushAction(LogicPresentationAction action)
+        public void PushAction(LogicViewAction action)
         {
             if(action == null)
             {

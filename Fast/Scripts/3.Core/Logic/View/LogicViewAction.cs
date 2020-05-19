@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Fast.Logic.Presentation
+namespace Fast.Logic.View
 {
-    public abstract class LogicPresentationAction
+    public abstract class LogicViewAction
     {
         private bool started = false;
         private bool finished = false;

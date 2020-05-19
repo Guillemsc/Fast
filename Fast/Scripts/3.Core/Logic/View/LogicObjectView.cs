@@ -1,9 +1,9 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Fast.Logic.Presentation
+namespace Fast.Logic.View
 {
-    public class LogicPresentationObject : MonoBehaviour
+    public class LogicObjectView : MonoBehaviour
     {
         private int object_uid = 0;
 

@@ -8,7 +8,7 @@ namespace Fast.Logic
     {
         private readonly LogicCluster cluster = new LogicCluster();
 
-        private Presentation.LogicPresentation presentation = null;
+        private View.LogicView logic_view = null;
 
         private bool started = false;
 
@@ -26,12 +26,12 @@ namespace Fast.Logic
 
         private void GatherLogicPresentation()
         {
-            if(presentation != null)
+            if(logic_view != null)
             {
                 return;
             }
 
-            presentation = gameObject.GetComponent<Presentation.LogicPresentation>();
+            logic_view = gameObject.GetComponent<View.LogicView>();
         }
 
         private void UpdateLogicAndPresentation()
@@ -41,7 +41,7 @@ namespace Fast.Logic
                 return;
             }
 
-            if(presentation == null)
+            if(logic_view == null)
             {
                 return;
             }
@@ -54,7 +54,7 @@ namespace Fast.Logic
             {
                 Commands.ILogicCommandEffect curr_effect = effects[i];
 
-                presentation.ReceiveEffect(curr_effect);
+                logic_view.ReceiveEffect(curr_effect);
             }
         }
 
