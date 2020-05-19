@@ -4,9 +4,12 @@ using UnityEngine;
 
 namespace Fast.Logic
 {
+    // Intermediate class between shared logic and views
     public abstract class LogicHub : Fast.Scenes.SceneInstance
     {
-        private readonly LogicCluster cluster = new LogicCluster();
+        // Local cluster that controls the logic
+        // If online match, this would be on a server
+        private readonly LogicCluster local_cluster = new LogicCluster();
 
         private View.LogicView logic_view = null;
 
@@ -14,17 +17,17 @@ namespace Fast.Logic
 
         private void Awake()
         {
-            GatherLogicPresentation();
+            GatherLogicView();
         }
 
         private void Update()
         {
             LogicUpdateLocal();
 
-            UpdateLogicAndPresentation();
+            UpdateLogicAndView();
         }
 
-        private void GatherLogicPresentation()
+        private void GatherLogicView()
         {
             if(logic_view != null)
             {
@@ -32,9 +35,14 @@ namespace Fast.Logic
             }
 
             logic_view = gameObject.GetComponent<View.LogicView>();
+
+            if(logic_view != null)
+            {
+                logic_view.SetLogicHub(this);
+            }
         }
 
-        private void UpdateLogicAndPresentation()
+        private void UpdateLogicAndView()
         {
             if (!started)
             {
@@ -46,9 +54,9 @@ namespace Fast.Logic
                 return;
             }
 
-            cluster.UpdateLogic();
+            local_cluster.UpdateLogic();
 
-            IReadOnlyList<Commands.ILogicCommandEffect> effects = cluster.PopEffects();
+            IReadOnlyList<Commands.ILogicCommandEffect> effects = local_cluster.PopEffects();
 
             for(int i = 0; i < effects.Count; ++i)
             {
@@ -67,12 +75,12 @@ namespace Fast.Logic
                 return;
             }
 
-            cluster.Init(data);
+            local_cluster.Init(data);
         }
 
         public void LogicStartLocal()
         {
-            if(!cluster.Initialized)
+            if(!local_cluster.Initialized)
             {
                 return;
             }
@@ -99,7 +107,7 @@ namespace Fast.Logic
 
         public void PushInput(Commands.ILogicCommandInput input)
         {
-            cluster.PushInput(input);
+            local_cluster.PushInput(input);
         }
 
         protected virtual Match.LogicMatchData LogicInitLocalInternal()

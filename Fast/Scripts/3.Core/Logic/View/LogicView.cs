@@ -6,11 +6,19 @@ namespace Fast.Logic.View
 {
     public class LogicView : MonoBehaviour
     {
+        private LogicHub logic_hub = null;
         private readonly List<LogicSubView> sub_views = new List<LogicSubView>();
+
+        public LogicHub LogicHub => logic_hub;
 
         private void Awake()
         {
             GatherSubPresentations();
+        }
+
+        public void SetLogicHub(LogicHub logic_hub)
+        {
+            this.logic_hub = logic_hub;
         }
 
         private void GatherSubPresentations()
