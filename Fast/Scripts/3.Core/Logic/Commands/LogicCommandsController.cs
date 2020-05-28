@@ -5,6 +5,8 @@ namespace Fast.Logic.Commands
 {
     public class LogicCommandsController : Fast.IController
     {
+        private readonly List<ILogicCommand> all_commands = new List<ILogicCommand>();
+
         public IReadOnlyList<ILogicCommand> GenerateCommands(Match.LogicMatchData match_data, IReadOnlyList<ILogicCommandInput> input)
         {
             if(input == null)
@@ -12,9 +14,9 @@ namespace Fast.Logic.Commands
                 return null;
             }
 
-            List<ILogicCommand> all_commands = new List<ILogicCommand>();
+            all_commands.Clear();
 
-            for(int i = 0; i < input.Count; ++i)
+            for (int i = 0; i < input.Count; ++i)
             {
                 IReadOnlyList<ILogicCommand> commands = GenerateCommand(match_data, input[i]);
 
