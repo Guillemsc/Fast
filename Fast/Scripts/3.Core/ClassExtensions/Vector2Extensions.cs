@@ -19,14 +19,10 @@ public static class Vector2Extensions
 
     public static float AngleBetweenPoints(this Vector2 vector, Vector2 to_check)
     {
-        float ret = 0.0f;
-
         float xDiff = to_check.x - vector.x;
         float yDiff = to_check.y - vector.y;
 
-        ret = Mathf.Atan2(yDiff, xDiff) * 180.0f / Mathf.PI;
-
-        return ret;
+        return Mathf.Atan2(yDiff, xDiff) * 180.0f / Mathf.PI;
     }
 
     public static Vector2 PerpendicularClockwise(this Vector2 vector)

@@ -20,7 +20,7 @@ namespace Fast.Logic
             GatherLogicView();
         }
 
-        private void Update()
+        private void LateUpdate()
         {
             LogicUpdateLocal();
 
