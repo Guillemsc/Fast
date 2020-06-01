@@ -157,12 +157,15 @@ namespace Fast.Animation2D
                     }
                 }
 
+                timer.Start();
+            }
+
+            if (playing_animation_sprite_index < playing_animation.Sprites.Count)
+            {
                 if (sprite_renderer != null)
                 {
                     sprite_renderer.sprite = playing_animation.Sprites[playing_animation_sprite_index];
                 }
-
-                timer.Start();
             }
         }
     }

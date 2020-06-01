@@ -12,15 +12,16 @@ namespace Fast.Time
         private float start_time = 0.0f;
         private float unscaled_start_time = 0.0f;
 
+        public bool Started => started;
+        public float DeltaTime => context.DeltaTime;
+        public float UnscaledDeltaTime => context.UnscaledDeltaTime;
+
         public Timer(TimeContext context)
         {
             Contract.IsNotNull(context);
 
             this.context = context;
         }
-
-        public float DeltaTime => context.DeltaTime;
-        public float UnscaledDeltaTime => context.UnscaledDeltaTime;
 
         public void Start()
         {
