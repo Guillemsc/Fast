@@ -14,7 +14,7 @@ namespace Fast.Logic.View
             this.logic_view = logic_view;
         }
 
-        public virtual void ReceiveEffect(Commands.ILogicCommandEffect effect)
+        public virtual void OnCommandReceived(Commands.ILogicOutputCommand command)
         {
 
         }

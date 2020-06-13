@@ -35,11 +35,11 @@ namespace Fast.Logic.View
             }
         }
 
-        public void ReceiveEffect(Commands.ILogicCommandEffect effect)
+        public void OnCommandReceived(Commands.ILogicOutputCommand effect)
         {
             for(int i = 0; i < sub_views.Count; ++i)
             {
-                sub_views[i].ReceiveEffect(effect);
+                sub_views[i].OnCommandReceived(effect);
             }
         }
     }

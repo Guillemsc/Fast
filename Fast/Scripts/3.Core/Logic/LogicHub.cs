@@ -9,7 +9,7 @@ namespace Fast.Logic
     {
         // Local cluster that controls the logic
         // If online match, this would be on a server
-        private readonly LogicCluster local_cluster = new LogicCluster();
+        private LogicCluster local_cluster = null;
 
         private View.LogicView logic_view = null;
 
@@ -23,8 +23,6 @@ namespace Fast.Logic
         private void LateUpdate()
         {
             LogicUpdateLocal();
-
-            UpdateLogicAndView();
         }
 
         private void GatherLogicView()
@@ -42,33 +40,12 @@ namespace Fast.Logic
             }
         }
 
-        private void UpdateLogicAndView()
+        public void InitLocalLogic()
         {
-            if (!started)
-            {
-                return;
-            }
+            local_cluster = new LogicCluster();
+            local_cluster.OnOutputCommandSent.Subscribe(OnOutputCommandReceived);
 
-            if(logic_view == null)
-            {
-                return;
-            }
-
-            local_cluster.UpdateLogic();
-
-            IReadOnlyList<Commands.ILogicCommandEffect> effects = local_cluster.PopEffects();
-
-            for(int i = 0; i < effects.Count; ++i)
-            {
-                Commands.ILogicCommandEffect curr_effect = effects[i];
-
-                logic_view.ReceiveEffect(curr_effect);
-            }
-        }
-
-        public void LogicInitLocal()
-        {
-            Match.LogicMatchData data = LogicInitLocalInternal();
+            Match.LogicMatchData data = InitLocalLogicInternal();
 
             if(data == null)
             {
@@ -78,7 +55,7 @@ namespace Fast.Logic
             local_cluster.Init(data);
         }
 
-        public void LogicStartLocal()
+        public void StartLocalLogic()
         {
             if(!local_cluster.Initialized)
             {
@@ -92,7 +69,7 @@ namespace Fast.Logic
 
             started = true;
 
-            LogicStartLocalInternal();
+            StartLocalLogicInternal();
         }
 
         private void LogicUpdateLocal()
@@ -105,17 +82,35 @@ namespace Fast.Logic
             LogicUpdateLocalInternal();
         }
 
-        public void PushInput(Commands.ILogicCommandInput input)
+        public void PushInput(Commands.ILogicInputCommand input)
         {
-            local_cluster.PushInput(input);
+            if(input == null)
+            {
+                return;
+            }
+
+            if(local_cluster != null)
+            {
+                local_cluster.ReceiveInput(input);
+            }
         }
 
-        protected virtual Match.LogicMatchData LogicInitLocalInternal()
+        private void OnOutputCommandReceived(Commands.ILogicOutputCommand command)
+        {
+            if(logic_view == null)
+            {
+                return;
+            }
+
+            logic_view.OnCommandReceived(command);
+        }
+
+        protected virtual Match.LogicMatchData InitLocalLogicInternal()
         {
             return null;
         }
 
-        protected virtual void LogicStartLocalInternal()
+        protected virtual void StartLocalLogicInternal()
         {
            
         }

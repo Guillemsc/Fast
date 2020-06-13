@@ -2,7 +2,7 @@
 
 namespace Fast.Logic.Commands
 {
-    public interface ILogicCommandEffect
+    public interface ILogicOutputCommand
     {
         
     }
