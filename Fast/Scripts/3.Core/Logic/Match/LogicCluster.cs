@@ -13,6 +13,8 @@ namespace Fast.Logic
 
         private Callback<Commands.ILogicOutputCommand> on_output_command_sent = new Callback<Commands.ILogicOutputCommand>();
 
+        protected Match.LogicMatchData LogicMatchData => match_data;
+
         public Callback<Commands.ILogicOutputCommand> OnOutputCommandSent => on_output_command_sent;
 
         public void Init(Match.LogicMatchData match_data)

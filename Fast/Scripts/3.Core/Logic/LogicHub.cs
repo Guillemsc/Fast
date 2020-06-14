@@ -40,9 +40,14 @@ namespace Fast.Logic
             }
         }
 
-        public void InitLocalLogic()
+        public void InitLocalLogic(LogicCluster cluster)
         {
-            local_cluster = new LogicCluster();
+            if(cluster == null)
+            {
+                return;
+            }
+
+            local_cluster = cluster;
             local_cluster.OnOutputCommandSent.Subscribe(OnOutputCommandReceived);
 
             Match.LogicMatchData data = InitLocalLogicInternal();
@@ -57,6 +62,11 @@ namespace Fast.Logic
 
         public void StartLocalLogic()
         {
+            if(local_cluster == null)
+            {
+                return;
+            }
+
             if(!local_cluster.Initialized)
             {
                 return;
